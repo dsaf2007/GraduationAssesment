@@ -1,0 +1,11 @@
+﻿@{
+    Layout = null;
+}
+<p>파일 업로드/다운로드하기</p>
+<hr />
+<form asp-controller="Test" asp-action="Upload"
+    method="post"
+    enctype="multipart/form-data">
+    <p><input type="file" name="fileCollection" multiple /></p>
+    <p><input type="submit" value="업로드" /></p>
+</form>
