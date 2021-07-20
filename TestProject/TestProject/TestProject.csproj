@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\upload\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
   </ItemGroup>

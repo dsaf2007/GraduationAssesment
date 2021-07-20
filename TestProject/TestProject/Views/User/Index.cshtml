@@ -20,17 +20,21 @@
                 <hr />
                 <table cellpadding="0" cellspacing="0" border="1">
                     <tr>
-                        <th>Nmae</th>
-                        <th>Phone</th>
-                        <th>Email</th>
+                        <th>구분</th>
+                        <th>일련번호</th>
+                        <th>질문</th>
+                        <th>응답유형</th>
+                        <th>비고</th>
                     </tr>
                     @foreach (UserModel user in Model)
                 {
-                    <tr>
-                        <td>@user.Name</td>
-                        <td>@user.Email</td>
-                        <td>@user.Phone</td>
-                    </tr>
+                <tr>
+                    <td>@user.A</td>
+                    <td>@user.B</td>
+                    <td>@user.C</td>
+                    <td>@user.D</td>
+                    <td>@user.E</td>-
+                </tr>
                 }
                 </table>
             }
