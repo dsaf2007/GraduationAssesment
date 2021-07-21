@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ReadExcel.Models
+﻿namespace ReadExcel.Models
 {
     public class UserModel
     {
@@ -14,11 +9,49 @@ namespace ReadExcel.Models
         public string E { get; set; }
     }
 
-    public class classnum
+    public class Math
     {
-        public string num { get; set; }
-        public string name { get; set; }
-        public string grade { get; set; }
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
         public string year { get; set; }
+    }
+    public class BasicLiberalArts
+    {
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+    }
+
+    public class BasicKnowledge
+    {
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+    }
+    public class ScienceExperiment
+    {
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+    }
+    public class MSC
+    {
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+    }
+
+    public class MajorRequired
+    {
+        public string class_num { get; set; }
+        public string class_name { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+        public string project { get; set; }
     }
 }
