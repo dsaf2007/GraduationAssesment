@@ -173,26 +173,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\정동구\\.nuget\\packages\\": {}
+    "/Users/apple/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj",
+      "projectUniqueName": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/TestProject.csproj",
       "projectName": "TestProject",
-      "projectPath": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj",
-      "packagesPath": "C:\\Users\\정동구\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\obj\\",
+      "projectPath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/TestProject.csproj",
+      "packagesPath": "/Users/apple/.nuget/packages/",
+      "outputPath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\정동구\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/apple/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -238,7 +236,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.301/RuntimeIdentifierGraph.json"
       }
     }
   }
