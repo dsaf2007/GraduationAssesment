@@ -12,7 +12,8 @@ namespace ReadExcel.Models
 
         public override string ToString()
         {
-            return this.type + "_" + this.number + "_" + this.question + (this.reference == "" ? "" : "_") + this.reference + "\n";
+            return this.type + "_" + this.number + "_" + this.question + "_" 
+              + this.input + "_" + this.flag + (this.reference == "" ? "" : "_") + this.reference + "\n";
         }
         public int getQuestionType()
         {
@@ -29,6 +30,10 @@ namespace ReadExcel.Models
         public string className { get; set; }
         public string credit { get; set; }
         public string year { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
+        }
     }
     public class BasicLiberalArts
     {
@@ -36,6 +41,56 @@ namespace ReadExcel.Models
         public string className { get; set; }
         public string credit { get; set; }
         public string year { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
+        }
+    }
+
+    public class BasicKnowledge
+    {
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
+        }
+    }
+    public class ScienceExperiment
+    {
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
+        }
+    }
+    public class MSC
+    {
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
+        }
+    }
+    public class MajorRequired
+    {
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string credit { get; set; }
+        public string year { get; set; }
+        public string project { get; set; }
+        public override string ToString()
+        {
+            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + " " + this.project + "\n";
+        }
     }
     public class Class
     {
@@ -47,6 +102,11 @@ namespace ReadExcel.Models
       public int credit;
       // 개설년도
       public int year;
+      // (교양)
+      public string category;
+      // 전공 
+      public int design;
+      public int essential;
 
       public Class(string classCode, string className, int credit, int year)
       {
@@ -55,7 +115,25 @@ namespace ReadExcel.Models
         this.credit = credit;
         this.year = year;
       }
+      public Class(string classCode, string className, int credit, int year, string category)
+      {
+        this.classCode = classCode;
+        this.className = className;
+        this.credit = credit;
+        this.year = year;
+        this.category = category;
+      }
+      public Class(string classCode, string className, int credit, int year, int design, int essential)
+      {
+        this.classCode = classCode;
+        this.className = className;
+        this.credit = credit;
+        this.year = year;
+        this.design = design;
+        this.essential = essential;
+      }
     }
+    
     public class Rule
     {
       // 구분 (교양, 전공, 졸업요건, 예외)
@@ -159,35 +237,5 @@ namespace ReadExcel.Models
         }
         return isSatisfied;
       }
-    }
-    public class BasicKnowledge
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-    }
-    public class ScienceExperiment
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-    }
-    public class MSC
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-    }
-
-    public class MajorRequired
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public string project { get; set; }
     }
 }

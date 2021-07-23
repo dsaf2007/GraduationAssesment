@@ -39,15 +39,17 @@ namespace ReadExcel.Controllers
             {
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
                 {
+                    int sheetNum = 1;
                     string entireRule = "";
                     string mathTable = "";
                     string artTable = "";
-                    string BasicKnowledgeTable = "";
+                    string basicKnowledgeTable = "";
                     string scienceExperimentTable = "";
                     string mscTable = "";
                     string majorTable = "";
                     
                     string ruleType = "";
+                    // 
                     while(reader.Read())
                     {
                         string[] value_arr = new string[6]; // 모두 string임에 주의
@@ -59,9 +61,7 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        // if (value_arr[5] == "단수")
-                        // {
-                        
+
                         if(value_arr[0] == "" || value_arr[0] == null)
                           value_arr[0] = ruleType;
                         else
@@ -75,14 +75,22 @@ namespace ReadExcel.Controllers
                             flag = value_arr[4], // 응답유형
                             reference = value_arr[5] // 비고
                         };
+                        // todo encoding
+                        // if(getEncoding(newRule.reference) != "목록")
+                        // {
+                        //   newRule.input = "List";
+                        // }
+                        // UserModel newRule = null;
                         rules.Add(newRule);
                         entireRule += newRule.ToString();
-
-                        // }
                     }
                     System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet"+Path.DirectorySeparatorChar, "rule_result.txt"),
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                            "Sheet"+sheetNum.ToString()+".txt"),
                           entireRule, System.Text.Encoding.GetEncoding("UTF-8"));
+
+                    sheetNum++;
+                    // Math      
                     reader.NextResult();//수학 필수
                     while (reader.Read())
                     {
@@ -96,17 +104,20 @@ namespace ReadExcel.Controllers
                         }
                         Models.Math newMath = new Models.Math
                         {
-                          
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3]
                         };
                         classList.Add(newMath);
-                        System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet"+Path.DirectorySeparatorChar, "math.txt"),
-                          entireRule, System.Text.Encoding.GetEncoding("UTF-8"));
+                        mathTable += newMath.ToString();
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          mathTable, System.Text.Encoding.GetEncoding("UTF-8"));
+                    // art
+                    sheetNum++;
                     reader.NextResult();//교양필수
                     while (reader.Read())
                     {
@@ -118,14 +129,22 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        liberalarts.Add(new BasicLiberalArts
+                        BasicLiberalArts newArts = new BasicLiberalArts
                         {
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3]
-                        });
+                        };
+                        liberalarts.Add(newArts);
+                        artTable += newArts.ToString();
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          artTable, System.Text.Encoding.GetEncoding("UTF-8"));
+                    // basick knowledge
+                    sheetNum++;
                     reader.NextResult();//기본소양
                     while (reader.Read())
                     {
@@ -137,14 +156,22 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        basic_knowldege.Add(new BasicKnowledge
+                        BasicKnowledge newBasicKnowledge = new BasicKnowledge
                         {
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3]
-                        });
+                        };
+                        basic_knowldege.Add(newBasicKnowledge);
+                        basicKnowledgeTable += newBasicKnowledge.ToString(); 
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          basicKnowledgeTable, System.Text.Encoding.GetEncoding("UTF-8"));
+                    // science experiment
+                    sheetNum++;
                     reader.NextResult();//과학실험
                     while (reader.Read())
                     {
@@ -156,15 +183,23 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        science_experiment.Add(new ScienceExperiment
+                        ScienceExperiment newScienceExperiment = new ScienceExperiment
                         {
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3]
-                        });
+                        };
+                        science_experiment.Add(newScienceExperiment);
+                        scienceExperimentTable += newScienceExperiment.ToString();
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          scienceExperimentTable, System.Text.Encoding.GetEncoding("UTF-8"));
 
+                    // MSC
+                    sheetNum++;
                     reader.NextResult();//MSC
                     while (reader.Read())
                     {
@@ -176,14 +211,22 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        msc.Add(new MSC
+                        MSC newMSC = new MSC
                         {
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3]
-                        });
+                        };
+                        msc.Add(newMSC);
+                        mscTable += newMSC.ToString();
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          mscTable, System.Text.Encoding.GetEncoding("UTF-8"));
+                    // major
+                    sheetNum++;
                     reader.NextResult();//전공필수
                     while (reader.Read())
                     {
@@ -195,15 +238,21 @@ namespace ReadExcel.Controllers
                             else
                                 value_arr[i] = reader.GetValue(i).ToString();
                         }
-                        major_required.Add(new MajorRequired
+                        MajorRequired newMajorReq = new MajorRequired
                         {
                             classCode = value_arr[0],
                             className = value_arr[1],
                             credit = value_arr[2],
                             year = value_arr[3],
                             project = value_arr[4]
-                        });
+                        };
+                        major_required.Add(newMajorReq);
+                        majorTable += newMajorReq.ToString();
                     }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+sheetNum.ToString()+".txt"),
+                          majorTable, System.Text.Encoding.GetEncoding("UTF-8"));
                 }
             }
             var t = new Tuple<IEnumerable<UserModel>, IEnumerable<Models.Math>, IEnumerable<BasicLiberalArts>,
@@ -211,5 +260,14 @@ namespace ReadExcel.Controllers
                 (rules, classList,liberalarts,basic_knowldege,science_experiment,msc,major_required) { };
             return View(t);
         }
+        // for encoding
+        // public string getEncoding(string input)
+        // {
+        //   byte[] bytes = System.Text.Encoding.GetEncoding("ks_c_5601-1987").GetBytes(input);
+        //   string result = System.Text.Encoding.GetEncoding("ks_c_5601-1987").GetString(bytes);
+        //   return result;
+        // }
     }
+
+
 }
