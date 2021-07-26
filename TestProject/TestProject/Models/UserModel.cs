@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System;
+using System.Collections.Generic;
 namespace ReadExcel.Models
 {
     public class UserModel
@@ -95,18 +97,18 @@ namespace ReadExcel.Models
     public class Class
     {
       // 학수번호
-      public string classCode;
+      public string classCode { get; set; }
       // 과목명
-      public string className; 
+      public string className { get; set; }
       // 학점
-      public int credit;
+      public int credit { get; set; }
       // 개설년도
-      public int year;
+      public int year { get; set; }
       // (교양)
-      public string category;
+      public string category { get; set; }
       // 전공 
-      public int design;
-      public int essential;
+      public int design { get; set; }
+      public int essential { get; set; }
 
       public Class(string classCode, string className, int credit, int year)
       {
@@ -137,105 +139,167 @@ namespace ReadExcel.Models
     public class Rule
     {
       // 구분 (교양, 전공, 졸업요건, 예외)
-      public int type;
-      // 응답유형(대소비교, 과목 목록 선택)
-      public int flag;
+      public string type { get; set; }
+      // 일련번호
+      public string number { get; set; }
       // 질문
-      public string question;
-      // 기준에서 요구하는 학점
-      public int requiredCredit;
-      // 선택형(O/X)
-      public char requiredOX;
-      // 기준에서 요구하는 대상 과목
-      public List<Class> requiredClasses;
+      public string question { get; set; }
+      // 엑셀 입력 데이터
+      public string singleInput { get; set; }
+      public string[] multiInput { get; set; }
+      // 응답유형
+        /* 
+        0: 대소비교
+        1: OX
+        2: 목록중선택
+        3: 목록전체필수
+        */
+      public int flag { get; set; }
+      // 비고
+      public string reference { get; set; }
 
       public override string ToString()
       {
-          return this.type + this.question;
+        string result = this.type + " "
+            + this.number + " " 
+            + this.question + " " + this.singleInput + " "
+            + this.flag + " " + this.reference + "\n";
+        return result;
       }
-
-      public Rule(int type, int flag, string question)
-      {
-        this.type = type;
-        this.flag = flag;
-        this.question = question;
-      }
-      public Rule(int type, int flag, string question, int requiredCredit)
-      {
-        this.type = type;
-        this.flag = flag;
-        this.question = question;
-        this.requiredCredit = requiredCredit;
-      }
-      public Rule(int type, int flag, string question, char requiredOX)
-      {
-        this.type = type;
-        this.flag = flag;
-        this.question = question;
-        this.requiredOX = requiredOX;
-      } 
-      public Rule(int type, int flag, string question, List<Class> requiredClasses)
-      {
-        this.type = type;
-        this.flag = flag;
-        this.question = question;
-        this.requiredClasses = requiredClasses;
-      } 
+      // TODO 사용자 데이터가 필요함
       public bool check()
       {
-        // User's dummy data
-        // Rule 만족 여부
-        bool isSatisfied = false;
+        bool isRuleSatisfied = false;
+        List<Class> reqClasses = new List<Class>();
+        
+        // dummy data
+        int userCredit = 83; // 사용자 학점
+        string userOX = "X"; // 사용자 OX
+        List<Class> userClasses = new List<Class>();
+        // 공통교양 dummy data
+        userClasses.Add(new Class("RGC1001", "자아와명상1", 1, 2021));
+        // userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
+        userClasses.Add(new Class("RGC1003", "나의삶나의비전", 1, 2021));
+
+        // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
         int flag = this.flag;
-        // 사용자가 수강한 과목
-        // TODO: 과목의 성격(전공, 공교 등) 구분
-        Class c1 = new Class("PRI2021", "미적분학1", 3, 2019);
-        Class c2 = new Class("PRI2022", "확률및통계학", 3, 2020);
-        List<Class> tempUserClasses = new List<Class>();
-        tempUserClasses.Add(c1);
-        tempUserClasses.Add(c2);
-        int tempUserCredit = 0;
-        for(int i = 0 ; i < tempUserClasses.Count; i++)
+        // int flag = 3;
+        // 수업 목록 초기화
+        if(flag >= 2)
         {
-          tempUserCredit += tempUserClasses[i].credit;
+            for(int i = 0 ; i < this.multiInput.Length; i++)
+            {
+              string[] classInfo = this.multiInput[i].Split();
+              reqClasses.Add(new Class(
+                classInfo[0],
+                classInfo[1],
+                Convert.ToInt32(classInfo[2]),
+                Convert.ToInt32(classInfo[3])
+              ));
+            }
         }
-        int count = 0;
-        // switch(this.flag)
         switch(flag)
         {
-          case 0:
-            if(tempUserCredit >= this.requiredCredit)
-              isSatisfied = true;
+          case 0: // 대소비교 (학점, 평균학점 등)
+            if(Convert.ToDouble(this.singleInput) >= userCredit)
+              isRuleSatisfied = true;
             break;
-          case 1:
-            // 선택 포함
-            foreach(Class tempClass in requiredClasses)
+          case 1: // OX
+            if(this.singleInput.Trim() == userOX.Trim())
+              isRuleSatisfied = true;
+            break;
+          case 2: // 최소한 하나 만족
+            foreach(Class userClass in userClasses)
             {
-              // 하나라도 만족
-              if(tempClass.classCode == tempUserClasses[0].classCode)
-                isSatisfied = true;
+              foreach(Class reqClass in reqClasses)
+              {
+                if(userClass.classCode == reqClass.classCode)
+                {
+                  isRuleSatisfied = true;
+                  break;
+                }
+              }
+              if(isRuleSatisfied)
+                break;
             }
             break;
-          case 2:
-            // 모두 포함
-            foreach(Class tempClass in requiredClasses)
+          case 3:
+            int count = 0;
+            foreach(Class userClass in userClasses)
             {
-              foreach(Class tempUserClass in tempUserClasses)
+              foreach(Class reqClass in reqClasses)
               {
-                if(tempClass.classCode == tempUserClass.classCode)
+                if(userClass.classCode == reqClass.classCode)
                 {
                   count += 1;
                   break;
                 }
               }
             }
-            if(count == requiredClasses.Count)
-              isSatisfied = true;
+            if(count == reqClasses.Count)
+              isRuleSatisfied = true;
             break;
           default:
             break;
         }
-        return isSatisfied;
+        return isRuleSatisfied;
       }
+
+    //   public bool check()
+    //   {
+    //     // User's dummy data
+    //     // Rule 만족 여부
+    //     bool isSatisfied = false;
+    //     int flag = this.flag;
+    //     // 사용자가 수강한 과목
+    //     // TODO: 과목의 성격(전공, 공교 등) 구분
+    //     Class c1 = new Class("PRI2021", "미적분학1", 3, 2019);
+    //     Class c2 = new Class("PRI2022", "확률및통계학", 3, 2020);
+    //     List<Class> tempUserClasses = new List<Class>();
+    //     tempUserClasses.Add(c1);
+    //     tempUserClasses.Add(c2);
+    //     int tempUserCredit = 0;
+    //     for(int i = 0 ; i < tempUserClasses.Count; i++)
+    //     {
+    //       tempUserCredit += tempUserClasses[i].credit;
+    //     }
+    //     int count = 0;
+    //     // switch(this.flag)
+    //     switch(flag)
+    //     {
+    //       case 0:
+    //         if(tempUserCredit >= this.requiredCredit)
+    //           isSatisfied = true;
+    //         break;
+    //       case 1:
+    //         // 선택 포함
+    //         foreach(Class tempClass in requiredClasses)
+    //         {
+    //           // 하나라도 만족
+    //           if(tempClass.classCode == tempUserClasses[0].classCode)
+    //             isSatisfied = true;
+    //         }
+    //         break;
+    //       case 2:
+    //         // 모두 포함
+    //         foreach(Class tempClass in requiredClasses)
+    //         {
+    //           foreach(Class tempUserClass in tempUserClasses)
+    //           {
+    //             if(tempClass.classCode == tempUserClass.classCode)
+    //             {
+    //               count += 1;
+    //               break;
+    //             }
+    //           }
+    //         }
+    //         if(count == requiredClasses.Count)
+    //           isSatisfied = true;
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //     return isSatisfied;
+    //   }
     }
 }
