@@ -24,12 +24,12 @@ namespace ReadExcel.Controllers
         public IActionResult Index()
         {
             List<UserModel> rules = new List<UserModel>();
-            List<Models.Math> classList = new List<Models.Math>();//¼öÇĞÇÊ¼ö
-            List<BasicLiberalArts> liberalarts = new List<BasicLiberalArts>();//±âÃÊ±³¾çÇÊ¼ö
-            List<BasicKnowledge> basic_knowldege = new List<BasicKnowledge>();//±âº»¼Ò¾çÇÊ¼ö
-            List<ScienceExperiment> science_experiment = new List<ScienceExperiment>();//°úÇĞ½ÇÇè
+            List<Models.Math> classList = new List<Models.Math>();//ìˆ˜í•™í•„ìˆ˜
+            List<BasicLiberalArts> liberalarts = new List<BasicLiberalArts>();//ê¸°ì´ˆêµì–‘í•„ìˆ˜
+            List<BasicKnowledge> basic_knowldege = new List<BasicKnowledge>();//ê¸°ë³¸ì†Œì–‘í•„ìˆ˜
+            List<ScienceExperiment> science_experiment = new List<ScienceExperiment>();//ê³¼í•™ì‹¤í—˜
             List<MSC> msc = new List<MSC>();//MSC
-            List<MajorRequired> major_required = new List<MajorRequired>();//Àü°øÇÊ¼ö
+            List<MajorRequired> major_required = new List<MajorRequired>();//ì „ê³µí•„ìˆ˜
 
             const string filename = "./wwwroot/upload/testtest.xlsx";
 
@@ -39,6 +39,7 @@ namespace ReadExcel.Controllers
             {
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
                 {
+                    int currentSheet = 1;
                     int sheetNum = 1;
                     string entireRule = "";
                     string mathTable = "";
@@ -52,7 +53,7 @@ namespace ReadExcel.Controllers
                     // 
                     while(reader.Read())
                     {
-                        string[] value_arr = new string[6]; // ¸ğµÎ stringÀÓ¿¡ ÁÖÀÇ
+                        string[] value_arr = new string[6]; // ëª¨ë‘ stringì„ì— ì£¼ì˜
                         
                         for(int i = 0; i < 6; i++)
                         {
@@ -67,31 +68,42 @@ namespace ReadExcel.Controllers
                         else
                           ruleType = value_arr[0];
 
+                        string ruleInput = "";
+                        // string singleValue = "ë‹¨ìˆ˜";
+                        if(value_arr[5] == "ë‹¨ìˆ˜") 
+                        {
+                          ruleInput = value_arr[3];
+                        }
+                        if(value_arr[5] == "ëª©ë¡") 
+                        {
+                          sheetNum++;
+                          ruleInput = readFromSheet(sheetNum);
+                          // string[] classes = readFromSheet(sheetNum);
+                          // for(int i = 1 ; i < classes.Length; i++)
+                          // {
+                          //   ruleInput += classes[i]+"\n";
+                          // }
+                        }
                         UserModel newRule = new UserModel{
-                            type = ruleType, // ±¸ºĞ
-                            number = value_arr[1], // ÀÏ·Ã¹øÈ£
-                            question = value_arr[2], // Áú¹®
-                            input = value_arr[3], // ÀÔ·Â
-                            flag = value_arr[4], // ÀÀ´äÀ¯Çü
-                            reference = value_arr[5] // ºñ°í
+                            type = ruleType, // êµ¬ë¶„
+                            number = value_arr[1], // ì¼ë ¨ë²ˆí˜¸
+                            question = value_arr[2], // ì§ˆë¬¸
+                            input = ruleInput, // ì…ë ¥
+                            flag = value_arr[4], // ì‘ë‹µìœ í˜•
+                            reference = value_arr[5] // ë¹„ê³ 
                         };
-                        // todo encoding
-                        // if(getEncoding(newRule.reference) != "¸ñ·Ï")
-                        // {
-                        //   newRule.input = "List";
-                        // }
-                        // UserModel newRule = null;
                         rules.Add(newRule);
                         entireRule += newRule.ToString();
+
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                            "Sheet"+sheetNum.ToString()+".txt"),
+                            "Sheet"+currentSheet.ToString()+".txt"),
                           entireRule, System.Text.Encoding.GetEncoding("UTF-8"));
 
-                    sheetNum++;
+                    currentSheet++;
                     // Math      
-                    reader.NextResult();//¼öÇĞ ÇÊ¼ö
+                    reader.NextResult();//ìˆ˜í•™ í•„ìˆ˜
                     while (reader.Read())
                     {
                         string[] value_arr = new string[4];
@@ -114,11 +126,11 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           mathTable, System.Text.Encoding.GetEncoding("UTF-8"));
                     // art
-                    sheetNum++;
-                    reader.NextResult();//±³¾çÇÊ¼ö
+                    currentSheet++;
+                    reader.NextResult();//êµì–‘í•„ìˆ˜
                     while (reader.Read())
                     {
                         string[] value_arr = new string[4];
@@ -141,11 +153,11 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           artTable, System.Text.Encoding.GetEncoding("UTF-8"));
                     // basick knowledge
-                    sheetNum++;
-                    reader.NextResult();//±âº»¼Ò¾ç
+                    currentSheet++;
+                    reader.NextResult();//ê¸°ë³¸ì†Œì–‘
                     while (reader.Read())
                     {
                         string[] value_arr = new string[4];
@@ -168,11 +180,11 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           basicKnowledgeTable, System.Text.Encoding.GetEncoding("UTF-8"));
                     // science experiment
-                    sheetNum++;
-                    reader.NextResult();//°úÇĞ½ÇÇè
+                    currentSheet++;
+                    reader.NextResult();//ê³¼í•™ì‹¤í—˜
                     while (reader.Read())
                     {
                         string[] value_arr = new string[4];
@@ -195,11 +207,11 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           scienceExperimentTable, System.Text.Encoding.GetEncoding("UTF-8"));
 
                     // MSC
-                    sheetNum++;
+                    currentSheet++;
                     reader.NextResult();//MSC
                     while (reader.Read())
                     {
@@ -223,11 +235,11 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           mscTable, System.Text.Encoding.GetEncoding("UTF-8"));
                     // major
-                    sheetNum++;
-                    reader.NextResult();//Àü°øÇÊ¼ö
+                    currentSheet++;
+                    reader.NextResult();//ì „ê³µí•„ìˆ˜
                     while (reader.Read())
                     {
                         string[] value_arr = new string[5];
@@ -251,7 +263,7 @@ namespace ReadExcel.Controllers
                     }
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+sheetNum.ToString()+".txt"),
+                          "Sheet"+currentSheet.ToString()+".txt"),
                           majorTable, System.Text.Encoding.GetEncoding("UTF-8"));
                 }
             }
@@ -260,13 +272,24 @@ namespace ReadExcel.Controllers
                 (rules, classList,liberalarts,basic_knowldege,science_experiment,msc,major_required) { };
             return View(t);
         }
-        // for encoding
-        // public string getEncoding(string input)
-        // {
-        //   byte[] bytes = System.Text.Encoding.GetEncoding("ks_c_5601-1987").GetBytes(input);
-        //   string result = System.Text.Encoding.GetEncoding("ks_c_5601-1987").GetString(bytes);
-        //   return result;
-        // }
+        public string readFromSheet(int sheetNum)
+        {
+          if(sheetNum <= 1) 
+            return null;
+          string filePath = Path.Combine(this.environment.WebRootPath, "sheet", "Sheet"+sheetNum.ToString()+".txt");
+          if(System.IO.File.Exists(filePath))
+          {
+            string text = "";
+            string[] classes = System.IO.File.ReadAllText(filePath).Split("\n");
+            for(int i = 1; i < classes.Length; i++)
+            {
+              text += classes[i] + "_";
+            }
+            return text;
+          }
+          else
+            return null;
+        }
     }
 
 
