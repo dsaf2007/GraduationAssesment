@@ -84,7 +84,7 @@ namespace ReadExcel.Controllers
                             type = ruleType, // 구분
                             number = value_arr[1], // 일련번호
                             question = value_arr[2], // 질문
-                            input = ((value_arr[5] == "목록")? "[List]" : singleInput), // 입력
+                            input = ((value_arr[5] == "목록")? "[List]" : value_arr[3]), // 입력
                             flag = ruleFlag.ToString(), // 응답유형
                             reference = value_arr[5] // 비고
                         };
@@ -131,24 +131,26 @@ namespace ReadExcel.Controllers
                         entireRule += newRule.ToString();
                         // -----------------------------------------------
                     }
+                    // ------ rule test start 
+                    string ruleTest = "";
 
-                    string multiInputTest = "";
-                    for(int i = 0 ; i < rules[5].multiInput.Length; i++)
-                    {
-                      multiInputTest += rules[5].multiInput[i] + "\n";
-                    }
-                    multiInputTest += rules[5].check().ToString() + "\n";
-
+                    // for(int i = 0 ; i < rules[5].multiInput.Length; i++)
+                    // {
+                    //   ruleTest += rules[5].multiInput[i] + "\n";
+                    // }
+                    ruleTest += rules[17].check().ToString() + "\n";
+                    
                     System.IO.File.WriteAllText(
                       Path.Combine(this.environment.WebRootPath, "sheet",
                         "test.txt"),
-                      multiInputTest, System.Text.Encoding.GetEncoding("UTF-8"));
+                      ruleTest, System.Text.Encoding.GetEncoding("UTF-8"));
+                    // test end -----------
 
                     System.IO.File.WriteAllText(
                       Path.Combine(this.environment.WebRootPath, "sheet",
                         "Rules.txt"),
                       entireRule.ToString(), System.Text.Encoding.GetEncoding("UTF-8"));
-                      
+                    
                     System.IO.File.WriteAllText(
                           Path.Combine(this.environment.WebRootPath, "sheet",
                             "Sheet"+currentSheetNum.ToString()+".txt"),

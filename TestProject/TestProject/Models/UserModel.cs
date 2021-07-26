@@ -201,10 +201,11 @@ namespace ReadExcel.Models
         switch(flag)
         {
           case 0: // 대소비교 (학점, 평균학점 등)
-            if(Convert.ToDouble(this.singleInput) >= userCredit)
+            if(userCredit >= Convert.ToDouble(this.singleInput))
               isRuleSatisfied = true;
             break;
           case 1: // OX
+            // TODO: OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등
             if(this.singleInput.Trim() == userOX.Trim())
               isRuleSatisfied = true;
             break;
