@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel;
 using System;
 using System.IO;
@@ -10,7 +11,7 @@ using ExcelDataReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
-
+// 인코딩..
 namespace ReadExcel.Controllers
 {
     public class UserController : Controller
@@ -30,12 +31,13 @@ namespace ReadExcel.Controllers
             // TODO 1: 실제 Sheet 에 맞게 모델 추가, 수정(컬럼 개수; 설계학점 등) 디비 정보 반영 및 순서 변경 
             // TODO 2: 하드코딩 되어있는것 반복문&클래스설계로 바꿔야할듯..?
             // TODO 3: 예외처리용 동일,대체교과목 설계
+            List<BasicLiberalArts> liberalarts = new List<BasicLiberalArts>(); // 공통교양
+            List<BasicKnowledge> basic_knowldege = new List<BasicKnowledge>(); // 기본소양
             List<Models.Math> classList = new List<Models.Math>();//수학필수
-            List<BasicLiberalArts> liberalarts = new List<BasicLiberalArts>();//기초교양필수
-            List<BasicKnowledge> basic_knowldege = new List<BasicKnowledge>();//기본소양필수
             List<ScienceExperiment> science_experiment = new List<ScienceExperiment>();//과학실험
-            List<MSC> msc = new List<MSC>();//MSC
+            // TODO 과학필수, 전산학필수, 전공필수, (기초,요소,종합)설계, 전공동일교과, MSC대체, 타학과전공
             List<MajorRequired> major_required = new List<MajorRequired>();//전공필수
+            List<MSC> msc = new List<MSC>();//MSC
 
             const string filename = "./wwwroot/upload/template_test.xlsx";
 
@@ -45,9 +47,9 @@ namespace ReadExcel.Controllers
             {
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    // 엑셀 sheet 번호
+                    // 占쎈퓡占쏙옙占� sheet 甕곕뜇�깈
                     int currentSheetNum = 1;
-                    // 목록 List sheet
+                    // 筌뤴뫖以� List sheet
                     int sheetNum = 1;
                     string entireRule = "";
                     string entireUserModel = "";
@@ -157,37 +159,8 @@ namespace ReadExcel.Controllers
                           entireUserModel, System.Text.Encoding.GetEncoding("UTF-8"));
 
                     currentSheetNum++;
-                    // Math      
-                    reader.NextResult();//수학 필수
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        Models.Math newMath = new Models.Math
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        classList.Add(newMath);
-                        mathTable += newMath.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          mathTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    // art
-                    currentSheetNum++;
-                    reader.NextResult();//교양필수
+                    // Art  (공교)
+                    reader.NextResult(); // 공교
                     // 엑셀 첫 두줄 패스 (컬럼명, 예시)
                     reader.Read();reader.Read();
                     while (reader.Read())
@@ -214,10 +187,39 @@ namespace ReadExcel.Controllers
                           Path.Combine(this.environment.WebRootPath, "sheet",
                           "Sheet"+currentSheetNum.ToString()+".txt"),
                           artTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    // basick knowledge
+                    
+                    // art
                     currentSheetNum++;
-                    reader.NextResult();//기본소양
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
+                    reader.NextResult();
+                    reader.Read();reader.Read();
+                    while (reader.Read())
+                    {
+                        string[] value_arr = new string[5];
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (reader.GetValue(i) == null)
+                                value_arr[i] = "";
+                            else
+                                value_arr[i] = reader.GetValue(i).ToString();
+                        }
+                        Models.Math newMath = new Models.Math
+                        {
+                            classCode = value_arr[1],
+                            className = value_arr[2],
+                            credit = value_arr[3],
+                            year = value_arr[4]
+                        };
+                        classList.Add(newMath);
+                        mathTable += newMath.ToString();
+                    }
+                    System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+currentSheetNum.ToString()+".txt"),
+                          mathTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    
+                    // basick knowledge 기본소양
+                    currentSheetNum++;
+                    reader.NextResult();
                     reader.Read();reader.Read();
                     while (reader.Read())
                     {
@@ -245,8 +247,7 @@ namespace ReadExcel.Controllers
                           basicKnowledgeTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
                     // science experiment
                     currentSheetNum++;
-                    reader.NextResult();//과학실험
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
+                    reader.NextResult(); // 과학실험
                     reader.Read();reader.Read();
                     while (reader.Read())
                     {
@@ -275,7 +276,7 @@ namespace ReadExcel.Controllers
                     // MSC
                     currentSheetNum++;
                     reader.NextResult();//MSC
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
+
                     reader.Read();reader.Read();
                     while (reader.Read())
                     {
@@ -303,8 +304,7 @@ namespace ReadExcel.Controllers
                           mscTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
                     // major
                     currentSheetNum++;
-                    reader.NextResult();//전공필수
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
+                    reader.NextResult();
                     reader.Read();reader.Read();
                     while (reader.Read())
                     {
@@ -334,11 +334,11 @@ namespace ReadExcel.Controllers
                 }
             }
             var t = new Tuple<IEnumerable<UserModel>, IEnumerable<Models.Math>, IEnumerable<BasicLiberalArts>,
-                IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>>
-                (userModels, classList,liberalarts,basic_knowldege,science_experiment,msc,major_required) { };
+                IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>, Tuple<IEnumerable<Rule>>>
+                (userModels, classList,liberalarts, basic_knowldege,science_experiment,msc, major_required, new Tuple<IEnumerable<Rule>>(rules)) { };
             return View(t);
         }
-        // Sheet 과목 목록 읽어오기
+    
         public string[] readClassesFromSheet(int sheetNum)
         {
           if(sheetNum <= 1) 

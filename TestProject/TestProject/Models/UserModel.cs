@@ -162,24 +162,36 @@ namespace ReadExcel.Models
       {
         string result = this.type + " "
             + this.number + " " 
-            + this.question + " " + this.singleInput + " "
-            + this.flag + " " + this.reference + "\n";
+            + this.question + " " 
+            + this.singleInput + " "
+            + this.flag + " " 
+            + this.reference + "\n";
         return result;
       }
       // TODO 사용자 데이터가 필요함
       public bool check()
       {
+        // if(Convert.ToInt32(this.number) < 6)
+        //   return;
         bool isRuleSatisfied = false;
         List<Class> reqClasses = new List<Class>();
         
-        // dummy data
-        int userCredit = 83; // 사용자 학점
+        // dummy data ----------------
+        int userCredit = 80; // 사용자 학점
         string userOX = "X"; // 사용자 OX
         List<Class> userClasses = new List<Class>();
         // 공통교양 dummy data
         userClasses.Add(new Class("RGC1001", "자아와명상1", 1, 2021));
-        // userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
+        userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
         userClasses.Add(new Class("RGC1003", "나의삶나의비전", 1, 2021));
+        // 기본소양 dummy data
+        userClasses.Add(new Class("ABC1001", "기본소양1",	3,	2021));
+        // 수학 필수
+        userClasses.Add(new Class("PRI4011", "공학수학1", 3,	2021));
+        userClasses.Add(new Class("PRI4012", "공학수학2", 3,	2021));
+
+        userClasses.Add(new Class("PRI4013", "공학수학3", 3,	2021));
+        // -------------------------------- 
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
         int flag = this.flag;
@@ -187,27 +199,36 @@ namespace ReadExcel.Models
         // 수업 목록 초기화
         if(flag >= 2)
         {
-            for(int i = 0 ; i < this.multiInput.Length; i++)
-            {
-              string[] classInfo = this.multiInput[i].Split();
-              reqClasses.Add(new Class(
-                classInfo[0],
-                classInfo[1],
-                Convert.ToInt32(classInfo[2]),
-                Convert.ToInt32(classInfo[3])
-              ));
-            }
+          if(this.multiInput == null || this.multiInput.Length <= 0)
+            return false;
+            
+          for(int i = 0 ; i < this.multiInput.Length; i++)
+          {
+            string[] classInfo = this.multiInput[i].Split();
+            reqClasses.Add(new Class(
+              classInfo[0],
+              classInfo[1],
+              Convert.ToInt32(classInfo[2]),
+              Convert.ToInt32(classInfo[3])
+            ));
+          }
         }
         switch(flag)
         {
           case 0: // 대소비교 (학점, 평균학점 등)
-            if(userCredit >= Convert.ToDouble(this.singleInput))
-              isRuleSatisfied = true;
+            if(!this.singleInput.Contains("예시"))
+            {
+              if(userCredit >= Convert.ToInt32(this.singleInput))
+                isRuleSatisfied = true;
+            }
             break;
           case 1: // OX
             // TODO: OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등
-            if(this.singleInput.Trim() == userOX.Trim())
-              isRuleSatisfied = true;
+            if(!this.singleInput.Contains("예시"))
+            {
+              if(this.singleInput.Trim() == userOX.Trim())
+                isRuleSatisfied = true;
+            }
             break;
           case 2: // 최소한 하나 만족
             foreach(Class userClass in userClasses)

@@ -1,6 +1,7 @@
 ﻿@using ReadExcel.Models
 @model Tuple<IEnumerable<UserModel>, IEnumerable<ReadExcel.Models.Math>, IEnumerable<BasicLiberalArts>,
-IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>>
+IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>,
+Tuple<IEnumerable<Rule>>>
 @{
   Layout = null;
 }
@@ -47,8 +48,7 @@ IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, I
   {
     <hr />
     <table cellpadding="0" cellspacing="0" border="1">
-      <!-- 아래 학수번호~연도 row 내용은 두번 출력됨(html하드코딩1번, 엑셀내용1번) -->
-    <tr>
+      <tr>
         <th>학수번호</th>
         <th>과목명</th>
         <th>학점</th>
@@ -169,6 +169,25 @@ IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, I
           <td>@majorRequired.year</td>
           <td>@majorRequired.project</td>
         </tr>
+      }
+    </table>
+  }
+  @if (Model.Rest.Item1.Count() > 0)
+  {
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>구분</th>
+        <th>질문</th>
+        <th>만족여부</th>
+      </tr>
+      @foreach (Rule rule in Model.Rest.Item1)
+      {
+        <tr>
+          <td>@rule.type</td>
+          <td>@rule.question</td>
+          <td>@if (Convert.ToInt32(@rule.number) > 5) @rule.check().ToString()</td>
+          </tr>
       }
     </table>
   }
