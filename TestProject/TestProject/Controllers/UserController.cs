@@ -26,6 +26,8 @@ namespace ReadExcel.Controllers
         public IActionResult Index()
         {
             List<Rule> rules = new List<Rule>(); // rule list
+            List<List<Class>> resultList = new List<List<Class>>();
+
             List<UserModel> userModels = new List<UserModel>();
             // TODO 0: 사용자 이수교과목 데이터 파싱 및 저장(파일?)해서 룰에 대입할수있게
             // TODO 1: 실제 Sheet 에 맞게 모델 추가, 수정(컬럼 개수; 설계학점 등) 디비 정보 반영 및 순서 변경 
@@ -47,11 +49,13 @@ namespace ReadExcel.Controllers
             {
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    // 占쎈퓡占쏙옙占� sheet 甕곕뜇�깈
+                    // sheet 
                     int currentSheetNum = 1;
-                    // 筌뤴뫖以� List sheet
+                    int multiInputRuleSequence = 0;
+                    //  List sheet
                     int sheetNum = 1;
                     string entireRule = "";
+
                     string entireUserModel = "";
                     string mathTable = "";
                     string artTable = "";
@@ -61,6 +65,8 @@ namespace ReadExcel.Controllers
                     string majorTable = "";
                     
                     string ruleType = "";
+                    // will be passed to View
+
                     reader.Read();
                     while(reader.Read())
                     {
@@ -158,184 +164,232 @@ namespace ReadExcel.Controllers
                             "Sheet"+currentSheetNum.ToString()+".txt"),
                           entireUserModel, System.Text.Encoding.GetEncoding("UTF-8"));
 
-                    currentSheetNum++;
-                    // Art  (공교)
-                    reader.NextResult(); // 공교
-                    // 엑셀 첫 두줄 패스 (컬럼명, 예시)
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        BasicLiberalArts newArts = new BasicLiberalArts
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        liberalarts.Add(newArts);
-                        artTable += newArts.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          artTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    
-                    // art
-                    currentSheetNum++;
-                    reader.NextResult();
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        Models.Math newMath = new Models.Math
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        classList.Add(newMath);
-                        mathTable += newMath.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          mathTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    
-                    // basick knowledge 기본소양
-                    currentSheetNum++;
-                    reader.NextResult();
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        BasicKnowledge newBasicKnowledge = new BasicKnowledge
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        basic_knowldege.Add(newBasicKnowledge);
-                        basicKnowledgeTable += newBasicKnowledge.ToString(); 
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          basicKnowledgeTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    // science experiment
-                    currentSheetNum++;
-                    reader.NextResult(); // 과학실험
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        ScienceExperiment newScienceExperiment = new ScienceExperiment{
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        science_experiment.Add(newScienceExperiment);
-                        scienceExperimentTable += newScienceExperiment.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          scienceExperimentTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    // currentSheetNum++;
+                    // ---- Rule End ------------------------
 
-                    // MSC
-                    currentSheetNum++;
-                    reader.NextResult();//MSC
+                    while(reader.NextResult()) // next sheet
+                    {
+                      string classTable = "";
+                      List<Class> newClasses = new List<Class>();
+                      currentSheetNum++;
+                      reader.Read();reader.Read();
+                      while(reader.Read())
+                      {
+                        // 전공 or 설계과목 : cols = 5
+                        int cols = reader.FieldCount;
+                        string[] value_arr = new string[cols];
+                        for(int i = 0 ; i < cols ; i++)
+                        {
+                            if (reader.GetValue(i) == null)
+                                value_arr[i] = "";
+                            else
+                                value_arr[i] = reader.GetValue(i).ToString();
+                        }
+                        if (String.IsNullOrEmpty(value_arr[1])) break;
+                        if(!(value_arr[0].Contains("예시"))) // 대체인정 시트가 아닌경우만
+                        {
+                            Class newClass = new Class{
+                              classCode = value_arr[1],
+                              className = value_arr[2],
+                              credit = Convert.ToInt32(value_arr[3].Trim()),
+                              design = -1,
+                              year = Convert.ToInt32(value_arr[4].Trim())
+                            };
+                            if(cols == 6) // 설계과목일 경우
+                            {
+                              newClass.design = Convert.ToInt32(value_arr[cols-2]);
+                              newClass.year = Convert.ToInt32(value_arr[cols-1]);
+                            }
+                            newClasses.Add(newClass);
+                            classTable += newClass.ToString();
+                        }
+                        else
+                          break;
+                      }
+                      resultList.Add(newClasses);
+                      System.IO.File.WriteAllText(
+                          Path.Combine(this.environment.WebRootPath, "sheet",
+                          "Sheet"+currentSheetNum.ToString()+".txt"),
+                          classTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    }
+                    // // Art  (공교)
+                    // reader.NextResult(); // 공교
+                    // // 엑셀 첫 두줄 패스 (컬럼명, 예시)
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[5];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     BasicLiberalArts newArts = new BasicLiberalArts
+                    //     {
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4]
+                    //     };
+                    //     liberalarts.Add(newArts);
+                    //     artTable += newArts.ToString();
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       artTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    
+                    // // math
+                    // currentSheetNum++;
+                    // reader.NextResult();
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[5];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     Models.Math newMath = new Models.Math
+                    //     {
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4]
+                    //     };
+                    //     classList.Add(newMath);
+                    //     mathTable += newMath.ToString();
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       mathTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    
+                    // // basick knowledge 기본소양
+                    // currentSheetNum++;
+                    // reader.NextResult();
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[5];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     BasicKnowledge newBasicKnowledge = new BasicKnowledge
+                    //     {
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4]
+                    //     };
+                    //     basic_knowldege.Add(newBasicKnowledge);
+                    //     basicKnowledgeTable += newBasicKnowledge.ToString(); 
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       basicKnowledgeTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    // // science experiment
+                    // currentSheetNum++;
+                    // reader.NextResult(); // 과학실험
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[5];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     ScienceExperiment newScienceExperiment = new ScienceExperiment{
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4]
+                    //     };
+                    //     science_experiment.Add(newScienceExperiment);
+                    //     scienceExperimentTable += newScienceExperiment.ToString();
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       scienceExperimentTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
 
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[5];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        MSC newMSC = new MSC
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4]
-                        };
-                        msc.Add(newMSC);
-                        mscTable += newMSC.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          mscTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
-                    // major
-                    currentSheetNum++;
-                    reader.NextResult();
-                    reader.Read();reader.Read();
-                    while (reader.Read())
-                    {
-                        string[] value_arr = new string[6];
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
-                            else
-                                value_arr[i] = reader.GetValue(i).ToString();
-                        }
-                        MajorRequired newMajorReq = new MajorRequired
-                        {
-                            classCode = value_arr[1],
-                            className = value_arr[2],
-                            credit = value_arr[3],
-                            year = value_arr[4],
-                            project = value_arr[5]
-                        };
-                        major_required.Add(newMajorReq);
-                        majorTable += newMajorReq.ToString();
-                    }
-                    System.IO.File.WriteAllText(
-                          Path.Combine(this.environment.WebRootPath, "sheet",
-                          "Sheet"+currentSheetNum.ToString()+".txt"),
-                          majorTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    // // MSC
+                    // currentSheetNum++;
+                    // reader.NextResult();//MSC
+
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[5];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     MSC newMSC = new MSC
+                    //     {
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4]
+                    //     };
+                    //     msc.Add(newMSC);
+                    //     mscTable += newMSC.ToString();
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       mscTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
+                    // // major
+                    // currentSheetNum++;
+                    // reader.NextResult();
+                    // reader.Read();reader.Read();
+                    // while (reader.Read())
+                    // {
+                    //     string[] value_arr = new string[6];
+                    //     for (int i = 0; i < 5; i++)
+                    //     {
+                    //         if (reader.GetValue(i) == null)
+                    //             value_arr[i] = "";
+                    //         else
+                    //             value_arr[i] = reader.GetValue(i).ToString();
+                    //     }
+                    //     MajorRequired newMajorReq = new MajorRequired
+                    //     {
+                    //         classCode = value_arr[1],
+                    //         className = value_arr[2],
+                    //         credit = value_arr[3],
+                    //         year = value_arr[4],
+                    //         project = value_arr[5]
+                    //     };
+                    //     major_required.Add(newMajorReq);
+                    //     majorTable += newMajorReq.ToString();
+                    // }
+                    // System.IO.File.WriteAllText(
+                    //       Path.Combine(this.environment.WebRootPath, "sheet",
+                    //       "Sheet"+currentSheetNum.ToString()+".txt"),
+                    //       majorTable.Trim(), System.Text.Encoding.GetEncoding("UTF-8"));
                 }
             }
-            var t = new Tuple<IEnumerable<UserModel>, IEnumerable<Models.Math>, IEnumerable<BasicLiberalArts>,
-                IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>, Tuple<IEnumerable<Rule>>>
-                (userModels, classList,liberalarts, basic_knowldege,science_experiment,msc, major_required, new Tuple<IEnumerable<Rule>>(rules)) { };
+            // var t = new Tuple<IEnumerable<UserModel>, IEnumerable<Models.Math>, IEnumerable<BasicLiberalArts>,
+                // IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>, Tuple<IEnumerable<Rule>>>
+                // (userModels, classList,liberalarts, basic_knowldege,science_experiment,msc, major_required, new Tuple<IEnumerable<Rule>>(rules)) { };
+            var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, rules) {};
             return View(t);
         }
     

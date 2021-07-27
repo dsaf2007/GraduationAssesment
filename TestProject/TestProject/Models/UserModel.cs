@@ -106,10 +106,10 @@ namespace ReadExcel.Models
       public int year { get; set; }
       // (교양)
       public string category { get; set; }
-      // 전공 
+      // 설계학점
       public int design { get; set; }
-      public int essential { get; set; }
-
+      // public int essential { get; set; }
+      public Class() {}
       public Class(string classCode, string className, int credit, int year)
       {
         this.classCode = classCode;
@@ -117,22 +117,27 @@ namespace ReadExcel.Models
         this.credit = credit;
         this.year = year;
       }
-      public Class(string classCode, string className, int credit, int year, string category)
+      public Class(string classCode, string className, int credit, string category, int year)
       {
         this.classCode = classCode;
         this.className = className;
         this.credit = credit;
-        this.year = year;
         this.category = category;
+        this.year = year;
       }
-      public Class(string classCode, string className, int credit, int year, int design, int essential)
+      public Class(string classCode, string className, int credit, int design, int year)
       {
         this.classCode = classCode;
         this.className = className;
         this.credit = credit;
-        this.year = year;
         this.design = design;
-        this.essential = essential;
+        this.year = year;
+        // this.essential = essential;
+      }
+      public override string ToString()
+      {
+        string result = String.Format("{0} {1} {2} {3}\n", this.classCode, this.className, this.credit, this.year);
+        return result;
       }
     }
     
@@ -202,15 +207,21 @@ namespace ReadExcel.Models
           if(this.multiInput == null || this.multiInput.Length <= 0)
             return false;
             
-          for(int i = 0 ; i < this.multiInput.Length; i++)
+          for(int i = 0 ; i < this.multiInput.Length-1; i++)
           {
             string[] classInfo = this.multiInput[i].Split();
-            reqClasses.Add(new Class(
-              classInfo[0],
-              classInfo[1],
-              Convert.ToInt32(classInfo[2]),
-              Convert.ToInt32(classInfo[3])
-            ));
+            Class aClass = new Class{
+                classCode=classInfo[0],
+                className=classInfo[1],
+                credit=Convert.ToInt32(classInfo[2]),
+                year=Convert.ToInt32(classInfo[3])
+            };
+            if(classInfo.Length > 5)
+            {
+              aClass.design = 1;
+              aClass.year = 2021;
+            }
+            reqClasses.Add(aClass);
           }
         }
         switch(flag)
