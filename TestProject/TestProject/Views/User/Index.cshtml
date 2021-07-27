@@ -12,9 +12,9 @@
     <title>Users</title>
 </head>
 <body>
-    @using (Html.BeginForm("Index", "user", FormMethod.Get))
+    @using (Html.BeginForm("start", "user", FormMethod.Get))
     {
-        <input type="submit" value="Get Users" />
+        <input type="submit" value="Go Back" />
     }
     @if (Model.Item1.Count() > 0)
     {

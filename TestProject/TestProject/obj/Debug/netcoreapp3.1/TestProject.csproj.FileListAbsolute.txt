@@ -41,3 +41,5 @@ C:\Users\정동구\Downloads\TestProject\TestProject\bin\Debug\netcoreapp3.1\Sys
 C:\Users\정동구\Downloads\TestProject\TestProject\bin\Debug\netcoreapp3.1\System.Text.Encoding.CodePages.dll
 C:\Users\정동구\Downloads\TestProject\TestProject\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll
 C:\Users\정동구\Downloads\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\User\Index.cshtml.g.cs
+C:\Users\정동구\Downloads\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\User\userview.cshtml.g.cs
+C:\Users\정동구\Downloads\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\User\start.cshtml.g.cs
