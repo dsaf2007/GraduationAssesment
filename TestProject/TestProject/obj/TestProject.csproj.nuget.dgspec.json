@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj": {}
+    "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj": {
+    "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj",
+        "projectUniqueName": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
         "projectName": "TestProject",
-        "projectPath": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\TestProject.csproj",
+        "projectPath": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
         "packagesPath": "C:\\Users\\정동구\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\정동구\\Downloads\\TestProject\\TestProject\\obj\\",
+        "outputPath": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\정동구\\AppData\\Roaming\\NuGet\\NuGet.Config",
