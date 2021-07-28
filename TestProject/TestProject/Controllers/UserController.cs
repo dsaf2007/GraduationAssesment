@@ -250,37 +250,37 @@ namespace ReadExcel.Controllers
                     if(user.engineering_factor_detail == "기초교양(교필)")
                     {
                         public_lib+=Convert.ToInt32(user.credit);
-                        class_list.public_list.Add(user.class_name);
+                        class_list.public_list.Add(user.class_num);
                     }
                     if(user.engineering_factor_detail == "기본소양")
                     {
                         basic_lib += Convert.ToInt32(user.credit);
-                        class_list.basic_list.Add(user.class_name);
+                        class_list.basic_list.Add(user.class_num);
                     }
                     if(user.engineering_factor == "MSC/BSM")
                     {
                         msc += Convert.ToInt32(user.credit);
-                        class_list.msc_list.Add(user.class_name);
+                        class_list.msc_list.Add(user.class_num);
                     }
                     if(user.engineering_factor == "전공")
                     {
                         major += Convert.ToInt32(user.credit);
                         if(user.completion_div == "전필")
                         {
-                            class_list.major_essential_list.Add(user.class_name);
+                            class_list.major_essential_list.Add(user.class_num);
                         }
                         if(user.engineering_factor_detail == "전공설계")
                         {
                             major_arc += Convert.ToInt32(user.credit);
-                            class_list.major_arc_list.Add(user.class_name);
+                            class_list.major_arc_list.Add(user.class_num);
                             continue;
                         }
-                        class_list.major_list.Add(user.class_name);
+                        class_list.major_list.Add(user.class_num);
                     }
                     if(user.english == "영어")
                     {
                         english += Convert.ToInt32(user.credit);
-                        class_list.english_list.Add(user.class_name);
+                        class_list.english_list.Add(user.class_num);
                     }
                 }
                 user_credit.english = english;
