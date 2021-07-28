@@ -136,8 +136,13 @@ namespace ReadExcel.Models
       }
       public override string ToString()
       {
-        string result = String.Format("{0} {1} {2} {3}\n", this.classCode, this.className, this.credit, this.year);
-        return result;
+       string result = String.Format("{0} {1} {2} ", this.classCode, this.className, this.credit);
+       if(this.design != -1)
+       {
+         result += this.design.ToString() + " ";
+       }
+       
+       return result + this.year.ToString() + "\n";
       }
     }
     
@@ -181,7 +186,7 @@ namespace ReadExcel.Models
         bool isRuleSatisfied = false;
         List<Class> reqClasses = new List<Class>();
         
-        // dummy data ----------------
+        // User dummy data ----------------
         int userCredit = 80; // 사용자 학점
         string userOX = "X"; // 사용자 OX
         List<Class> userClasses = new List<Class>();
@@ -189,13 +194,7 @@ namespace ReadExcel.Models
         userClasses.Add(new Class("RGC1001", "자아와명상1", 1, 2021));
         userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
         userClasses.Add(new Class("RGC1003", "나의삶나의비전", 1, 2021));
-        // 기본소양 dummy data
-        userClasses.Add(new Class("ABC1001", "기본소양1",	3,	2021));
-        // 수학 필수
-        userClasses.Add(new Class("PRI4011", "공학수학1", 3,	2021));
-        userClasses.Add(new Class("PRI4012", "공학수학2", 3,	2021));
-
-        userClasses.Add(new Class("PRI4013", "공학수학3", 3,	2021));
+        userClasses.Add(new Class("CSE2016", "창의적공학설계", 3, 3, 2016));
         // -------------------------------- 
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
@@ -204,12 +203,31 @@ namespace ReadExcel.Models
         // 수업 목록 초기화
         if(flag >= 2)
         {
+          // 해당 룰을 만족하기 위해 필요한 과목이 없으므로
           if(this.multiInput == null || this.multiInput.Length <= 0)
-            return false;
-            
-          for(int i = 0 ; i < this.multiInput.Length-1; i++)
+            return true;
+
+          // sheet가 비었을 경우
+          if(multiInput[0].Split().Length <= 1) 
+            return true;
+
+          for(int i = 0 ; i < this.multiInput.Length; i++)
           {
             string[] classInfo = this.multiInput[i].Split();
+            for(int j = 0; j < classInfo.Length; j++)
+            {
+              // 엑셀 row에 빈칸이 있을 경우
+              if(String.IsNullOrEmpty(classInfo[j]))
+              {
+                // 학수번호나 과목명(j= 0, 1)이 비었다 => 에러
+                // 그외 숫자칸이 비었다 => 0 대입
+                // (위에서 걸렀음) 대상 목록이 아예 없는 경우 (정상)
+                  if(j == 0 || j == 1)
+                    return false;
+                  else
+                    classInfo[j] = "0";
+              }
+            }
             Class aClass = new Class{
                 classCode=classInfo[0],
                 className=classInfo[1],
@@ -218,8 +236,8 @@ namespace ReadExcel.Models
             };
             if(classInfo.Length > 5)
             {
-              aClass.design = 1;
-              aClass.year = 2021;
+              aClass.design = Convert.ToInt32(classInfo[3]);
+              aClass.year = Convert.ToInt32(classInfo[4]);
             }
             reqClasses.Add(aClass);
           }
@@ -229,15 +247,18 @@ namespace ReadExcel.Models
           case 0: // 대소비교 (학점, 평균학점 등)
             if(!this.singleInput.Contains("예시"))
             {
-              if(userCredit >= Convert.ToInt32(this.singleInput))
+              if(userCredit >= Convert.ToDouble(this.singleInput))
                 isRuleSatisfied = true;
             }
             break;
           case 1: // OX
-            // TODO: OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등
+            // OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등에 따라
+            // 다른 룰에 영향 미침 (예) 졸업논문 대체가능 ox ?
             if(!this.singleInput.Contains("예시"))
             {
-              if(this.singleInput.Trim() == userOX.Trim())
+              if(!("OXox".Contains(this.singleInput) && "OXox".Contains(userOX)))
+                return false;
+              if(this.singleInput.Trim().ToUpper() == userOX.Trim().ToUpper())
                 isRuleSatisfied = true;
             }
             break;
@@ -248,31 +269,28 @@ namespace ReadExcel.Models
               {
                 if(userClass.classCode == reqClass.classCode)
                 {
-                  isRuleSatisfied = true;
-                  break;
+                  return true;
                 }
               }
-              if(isRuleSatisfied)
-                break;
             }
             break;
-          case 3:
+        case 3: // 전체 만족
             int count = 0;
-            foreach(Class userClass in userClasses)
+            foreach (Class userClass in userClasses)
             {
-              foreach(Class reqClass in reqClasses)
+              foreach (Class reqClass in reqClasses)
               {
-                if(userClass.classCode == reqClass.classCode)
+                if (userClass.classCode == reqClass.classCode)
                 {
-                  count += 1;
-                  break;
+                    count += 1;
+                    break;
                 }
               }
             }
-            if(count == reqClasses.Count)
-              isRuleSatisfied = true;
+            if (count == reqClasses.Count)
+                isRuleSatisfied = true;
             break;
-          default:
+        default:
             break;
         }
         return isRuleSatisfied;
