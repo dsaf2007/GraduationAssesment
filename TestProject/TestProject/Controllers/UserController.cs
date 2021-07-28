@@ -187,7 +187,7 @@ namespace ReadExcel.Controllers
             List<UserSubject> user_subject = new List<UserSubject>();
             UserCredit user_credit = new UserCredit();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
+            ClassList class_list = new ClassList();
             using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -244,31 +244,43 @@ namespace ReadExcel.Controllers
                     }
                 }
                 int public_lib = 0; int basic_lib = 0; int major = 0; int major_arc = 0; int msc = 0;int english = 0;
+                
                 foreach (UserSubject user in user_subject)
                 {
                     if(user.engineering_factor_detail == "기초교양(교필)")
                     {
                         public_lib+=Convert.ToInt32(user.credit);
+                        class_list.public_list.Add(user.class_name);
                     }
                     if(user.engineering_factor_detail == "기본소양")
                     {
                         basic_lib += Convert.ToInt32(user.credit);
+                        class_list.basic_list.Add(user.class_name);
                     }
                     if(user.engineering_factor == "MSC/BSM")
                     {
                         msc += Convert.ToInt32(user.credit);
+                        class_list.msc_list.Add(user.class_name);
                     }
                     if(user.engineering_factor == "전공")
                     {
                         major += Convert.ToInt32(user.credit);
+                        if(user.completion_div == "전필")
+                        {
+                            class_list.major_essential_list.Add(user.class_name);
+                        }
                         if(user.engineering_factor_detail == "전공설계")
                         {
                             major_arc += Convert.ToInt32(user.credit);
+                            class_list.major_arc_list.Add(user.class_name);
+                            continue;
                         }
+                        class_list.major_list.Add(user.class_name);
                     }
                     if(user.english == "영어")
                     {
                         english += Convert.ToInt32(user.credit);
+                        class_list.english_list.Add(user.class_name);
                     }
                 }
                 user_credit.english = english;
@@ -278,7 +290,7 @@ namespace ReadExcel.Controllers
                 user_credit.msc = msc;
                 user_credit.public_lib = public_lib;
             }
-                        var t =new Tuple<IEnumerable<UserSubject>, UserCredit>(user_subject, user_credit){ };
+                        var t =new Tuple<IEnumerable<UserSubject>, UserCredit,ClassList>(user_subject, user_credit, class_list) { };
                         return View(t);
         }
     }

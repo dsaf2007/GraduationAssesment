@@ -173,19 +173,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\정동구\\.nuget\\packages\\": {}
+    "C:\\Users\\dsaf2\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
+      "projectUniqueName": "S:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
       "projectName": "TestProject",
-      "projectPath": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
-      "packagesPath": "C:\\Users\\정동구\\.nuget\\packages\\",
-      "outputPath": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\obj\\",
+      "projectPath": "S:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
+      "packagesPath": "C:\\Users\\dsaf2\\.nuget\\packages\\",
+      "outputPath": "S:\\repos\\GraduationAssesment\\TestProject\\TestProject\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\정동구\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\dsaf2\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -238,7 +242,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }
