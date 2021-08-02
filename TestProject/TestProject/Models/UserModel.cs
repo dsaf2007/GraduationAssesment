@@ -1,6 +1,8 @@
-﻿using System.Linq;
-using System;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
+
 namespace ReadExcel.Models
 {
     public class UserModel
@@ -26,74 +28,6 @@ namespace ReadExcel.Models
         }
     }
 
-    public class Math
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
-        }
-    }
-    public class BasicLiberalArts
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
-        }
-    }
-
-    public class BasicKnowledge
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
-        }
-    }
-    public class ScienceExperiment
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
-        }
-    }
-    public class MSC
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + "\n";
-        }
-    }
-    public class MajorRequired
-    {
-        public string classCode { get; set; }
-        public string className { get; set; }
-        public string credit { get; set; }
-        public string year { get; set; }
-        public string project { get; set; }
-        public override string ToString()
-        {
-            return this.classCode + " " + this.className + " " + this.credit + " " + this.year + " " + this.project + "\n";
-        }
-    }
     public class Class
     {
       // 학수번호
@@ -157,6 +91,7 @@ namespace ReadExcel.Models
       // 엑셀 입력 데이터
       public string singleInput { get; set; }
       public string[] multiInput { get; set; }
+      public List<Class> requiredClasses {get; set;}
       // 응답유형
         /* 
         0: 대소비교
@@ -199,49 +134,6 @@ namespace ReadExcel.Models
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
         int flag = this.flag;
-        // int flag = 3;
-        // 수업 목록 초기화
-        if(flag >= 2)
-        {
-          // 해당 룰을 만족하기 위해 필요한 과목이 없으므로
-          if(this.multiInput == null || this.multiInput.Length <= 0)
-            return true;
-
-          // sheet가 비었을 경우
-          if(multiInput[0].Split().Length <= 1) 
-            return true;
-
-          for(int i = 0 ; i < this.multiInput.Length; i++)
-          {
-            string[] classInfo = this.multiInput[i].Split();
-            for(int j = 0; j < classInfo.Length; j++)
-            {
-              // 엑셀 row에 빈칸이 있을 경우
-              if(String.IsNullOrEmpty(classInfo[j]))
-              {
-                // 학수번호나 과목명(j= 0, 1)이 비었다 => 에러
-                // 그외 숫자칸이 비었다 => 0 대입
-                // (위에서 걸렀음) 대상 목록이 아예 없는 경우 (정상)
-                  if(j == 0 || j == 1)
-                    return false;
-                  else
-                    classInfo[j] = "0";
-              }
-            }
-            Class aClass = new Class{
-                classCode=classInfo[0],
-                className=classInfo[1],
-                credit=Convert.ToInt32(classInfo[2]),
-                year=Convert.ToInt32(classInfo[3])
-            };
-            if(classInfo.Length > 5)
-            {
-              aClass.design = Convert.ToInt32(classInfo[3]);
-              aClass.year = Convert.ToInt32(classInfo[4]);
-            }
-            reqClasses.Add(aClass);
-          }
-        }
         switch(flag)
         {
           case 0: // 대소비교 (학점, 평균학점 등)
@@ -265,7 +157,7 @@ namespace ReadExcel.Models
           case 2: // 최소한 하나 만족
             foreach(Class userClass in userClasses)
             {
-              foreach(Class reqClass in reqClasses)
+              foreach(Class reqClass in this.requiredClasses)
               {
                 if(userClass.classCode == reqClass.classCode)
                 {
@@ -278,7 +170,7 @@ namespace ReadExcel.Models
             int count = 0;
             foreach (Class userClass in userClasses)
             {
-              foreach (Class reqClass in reqClasses)
+              foreach (Class reqClass in this.requiredClasses)
               {
                 if (userClass.classCode == reqClass.classCode)
                 {
@@ -295,62 +187,40 @@ namespace ReadExcel.Models
         }
         return isRuleSatisfied;
       }
+    }
+    public class UserSubject
+    {
+        public string year { get; set; }
+        public string semester { get; set; }
 
-    //   public bool check()
-    //   {
-    //     // User's dummy data
-    //     // Rule 만족 여부
-    //     bool isSatisfied = false;
-    //     int flag = this.flag;
-    //     // 사용자가 수강한 과목
-    //     // TODO: 과목의 성격(전공, 공교 등) 구분
-    //     Class c1 = new Class("PRI2021", "미적분학1", 3, 2019);
-    //     Class c2 = new Class("PRI2022", "확률및통계학", 3, 2020);
-    //     List<Class> tempUserClasses = new List<Class>();
-    //     tempUserClasses.Add(c1);
-    //     tempUserClasses.Add(c2);
-    //     int tempUserCredit = 0;
-    //     for(int i = 0 ; i < tempUserClasses.Count; i++)
-    //     {
-    //       tempUserCredit += tempUserClasses[i].credit;
-    //     }
-    //     int count = 0;
-    //     // switch(this.flag)
-    //     switch(flag)
-    //     {
-    //       case 0:
-    //         if(tempUserCredit >= this.requiredCredit)
-    //           isSatisfied = true;
-    //         break;
-    //       case 1:
-    //         // 선택 포함
-    //         foreach(Class tempClass in requiredClasses)
-    //         {
-    //           // 하나라도 만족
-    //           if(tempClass.classCode == tempUserClasses[0].classCode)
-    //             isSatisfied = true;
-    //         }
-    //         break;
-    //       case 2:
-    //         // 모두 포함
-    //         foreach(Class tempClass in requiredClasses)
-    //         {
-    //           foreach(Class tempUserClass in tempUserClasses)
-    //           {
-    //             if(tempClass.classCode == tempUserClass.classCode)
-    //             {
-    //               count += 1;
-    //               break;
-    //             }
-    //           }
-    //         }
-    //         if(count == requiredClasses.Count)
-    //           isSatisfied = true;
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //     return isSatisfied;
-    //   }
+        public string completionDiv { get; set; }
+        public string completionDivField { get; set; }
+
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string credit { get; set; }
+
+        public string engineeringFactor { get; set; }
+        public string engineeringFactorDetail { get; set; }
+        public string english { get; set; }
+    }
+    public class UserCredit
+    {
+        public int publicLibCredit { get; set; }
+        public int basicLibCredit { get; set; }
+        public int majorCredit { get; set; }
+        public int majorDesignCredit { get; set; }
+        public int mscCredit { get; set; }
+        public int englishCredit { get; set; }
+    }
+    public class ClassList
+    {
+        public List<string> publicClasses = new List<string>();//기초교양 수강 목록
+        public List<string> basicClasses = new List<string>();//기본소양 수강 목록
+        public List<string> mscClasses = new List<string>();//MSC 수강 목록
+        public List<string> majorClasses = new List<string>();//전공 수강 목록
+        public List<string> majorEssentialList = new List<string>();//전공필수 수강 목록
+        public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
+        public List<string> englishList = new List<string>();//영어강의 수강 목록
     }
 }
