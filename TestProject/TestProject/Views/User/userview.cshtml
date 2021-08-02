@@ -1,72 +1,87 @@
 ﻿@using ReadExcel.Models
-@model Tuple<IEnumerable<UserSubject>, UserCredit>
+@model Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>
 @{
-    Layout = null;
+  Layout = null;
 }
 
 <!DOCTYPE html>
 <html>
-<head>
-       <meta name="viewport" content="width=device-width" />
-    <title>UserView</title>
-</head>
-<body>
-    @using (Html.BeginForm("start", "User", FormMethod.Get))
-    {
-        <input type="submit" value="Go Back" />
-    }
-    @if (Model.Item1.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>년도</th>
-                <th>학기</th>
-                <th>이수구분</th>
-                <th>이수구분영역</th>
-                <th>학수번호</th>
-                <th>교과목명</th>
-                <th>학점</th>
-                <th>공학요소</th>
-                <th>공학세부요소</th>
-                <th>원어강의종류</th>
-            </tr>
-            @foreach (UserSubject user in Model.Item1)
-            {
-                <tr>
-                    <td>@user.year</td>
-                    <td>@user.semester</td>
-                    <td>@user.completion_div</td>
-                    <td>@user.completion_div_feild</td>
-                    <td>@user.class_num</td>
-                    <td>@user.class_name</td>
-                    <td>@user.credit</td>
-                    <td>@user.engineering_factor</td>
-                    <td>@user.engineering_factor_detail</td>
-                    <td>@user.english</td>
 
-                </tr>
-            }
-        </table>
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <title>UserView</title>
+</head>
+
+<body>
+  @using (Html.BeginForm("start", "User", FormMethod.Get))
+  {
+    <input type="submit" value="Go Back" />
+  }
+  @if (Model.Item1.Count() > 0)
+  {
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>년도</th>
+        <th>학기</th>
+        <th>이수구분</th>
+        <th>이수구분영역</th>
+        <th>학수번호</th>
+        <th>교과목명</th>
+        <th>학점</th>
+        <th>공학요소</th>
+        <th>공학세부요소</th>
+        <th>원어강의종류</th>
+      </tr>
+      @foreach (UserSubject user in Model.Item1)
+      {
+        <tr>
+          <td>@user.year</td>
+          <td>@user.semester</td>
+          <td>@user.completionDiv</td>
+          <td>@user.completionDivField</td>
+          <td>@user.classCode</td>
+          <td>@user.className</td>
+          <td>@user.credit</td>
+          <td>@user.engineeringFactor</td>
+          <td>@user.engineeringFactorDetail</td>
+          <td>@user.english</td>
+
+        </tr>
+      }
+    </table>
+  }
+  <hr />
+  <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+      <th>공통교양</th>
+      <th>기본소양</th>
+      <th>msc</th>
+      <th>전공</th>
+      <th>전공설계</th>
+      <th>영어</th>
+    </tr>
+    <tr>
+      <td>@Model.Item2.publicLibCredit</td>
+      <td>@Model.Item2.basicLibCredit</td>
+      <td>@Model.Item2.mscCredit</td>
+      <td>@Model.Item2.majorCredit</td>
+      <td>@Model.Item2.majorDesignCredit</td>
+      <td>@Model.Item2.englishCredit</td>
+    </tr>
+  </table>
+  <hr />
+  @* <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+    <th>학수번호</th>
+    </tr>
+    @foreach (string list in Model.Item3.basic_list)
+    {
+    <tr>
+    <td>@list</td>
+    </tr>
     }
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>공통교양</th>
-                <th>기본소양</th>
-                <th>msc</th>
-                <th>전공</th>
-                <th>전공설계</th>
-                <th>영어</th>
-            </tr>
-            <tr>
-                <td>@Model.Item2.public_lib</td>
-                <td>@Model.Item2.basic_lib</td>
-                <td>@Model.Item2.msc</td>
-                <td>@Model.Item2.major</td>
-                <td>@Model.Item2.major_arc</td>
-                <td>@Model.Item2.english</td>
-            </tr>
-        </table>
+    </table> *@
 </body>
+
 </html>

@@ -1,171 +1,135 @@
 ﻿@using ReadExcel.Models
-@model Tuple<IEnumerable<UserModel>, IEnumerable<ReadExcel.Models.Math>, IEnumerable<BasicLiberalArts>,
-                IEnumerable<BasicKnowledge>, IEnumerable<ScienceExperiment>, IEnumerable<MSC>, IEnumerable<MajorRequired>>
-@{ 
-    Layout = null;
+@model Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>>
+@{
+  Layout = null;
 }
 
 <!DOCTYPE html>
 <html>
+
 <head>
-       <meta name="viewport" content="width=device-width" />
-    <title>Users</title>
+  <meta name="viewport" content="width=device-width" />
+  <title>Users</title>
 </head>
+
 <body>
-    @using (Html.BeginForm("start", "user", FormMethod.Get))
+  @using (Html.BeginForm("Index", "user", FormMethod.Get))
+  {
+    <input type="submit" value="Get Users" />
+  }
+  @* @if (Model.Item1.Count() > 0)
     {
-        <input type="submit" value="Go Back" />
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+    <th>구분</th>
+    <th>일련번호</th>
+    <th>질문</th>
+    <th>입력</th>
+    <th>응답유형</th>
+    <th>비고</th>
+    </tr>
+    @foreach (UserModel user in Model.Item1)
+    {
+    <tr>
+    <td>@user.type</td>
+    <td>@user.number</td>
+    <td>@user.question</td>
+    <td>@user.input</td>
+    <td>@user.flag</td>-
+    <td>@user.reference</td>-
+    </tr>
     }
-    @if (Model.Item1.Count() > 0)
+    </table>
+    } *@
+  @* @if (Model.Item2.Count() > 0)
     {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>구분</th>
-                <th>일련번호</th>
-                <th>질문</th>
-                <th>응답유형</th>
-                <th>비고</th>
-            </tr>
-            @foreach (UserModel user in Model.Item1)
+    @foreach (List<Class> classList in Model.Item2)
+    {
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+    <th>학수번호</th>
+    <th>과목명</th>
+    <th>학점</th>
+    <th>설계학점</th>
+    <th>연도</th>
+    </tr>
+    @foreach (Class c in classList)
+    {
+    <tr>
+    <td>@c.classCode</td>
+    <td>@c.className</td>
+    <td>@c.credit</td>
+    <td>@c.design</td>
+    <td>@c.year</td>
+    </tr>
+    }
+    </table>
+    }
+    } *@
+
+  @if (Model.Item3.Count() > 0)
+  {
+    int passedRule = 0;
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>번호</th>
+        <th>구분</th>
+        <th>질문</th>
+        <th>만족여부</th>
+      </tr>
+      @foreach (Rule rule in Model.Item3)
+      {
+        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        {
+          <tr>
+            <td>@rule.number</td>
+            <td>@rule.type</td>
+            <td>@rule.question</td>
+            <td>
+              @if (Convert.ToInt32(@rule.number) > 5)
+              {
+                if (@rule.check())
+                {
+                  <center>O</center>
+                  passedRule += 1;
+                }
+                else
+                {
+                  <center><b>X</b></center>
+                }
+              }
+            </td>
+          </tr>
+        }
+      }
+    </table>
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>졸업가능여부</th>
+        <th>만족조건/전체조건</th>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            @if (passedRule < 27)
             {
-                <tr>
-                    <td>@user.A</td>
-                    <td>@user.B</td>
-                    <td>@user.C</td>
-                    <td>@user.D</td>
-                    <td>@user.E</td>-
-                </tr>
+              <b>Fail</b>
             }
-        </table>
-    }
-    @if (Model.Item2.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-            </tr>
-            @foreach (ReadExcel.Models.Math class_ in Model.Item2)
+            else
             {
-                <tr>
-                    <td>@class_.class_num</td>
-                    <td>@class_.class_name</td>
-                    <td>@class_.credit</td>
-                    <td>@class_.year</td>
-                </tr>
+              <b>Pass</b>
             }
-        </table>
-    }
-    @if (Model.Item3.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-            </tr>
-            @foreach (BasicLiberalArts basicLiberal in Model.Item3)
-            {
-                <tr>
-                    <td>@basicLiberal.class_num</td>
-                    <td>@basicLiberal.class_name</td>
-                    <td>@basicLiberal.credit</td>
-                    <td>@basicLiberal.year</td>
-                </tr>
-            }
-        </table>
-    }
-    @if (Model.Item4.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-            </tr>
-            @foreach (BasicKnowledge basicKnowledge in Model.Item4)
-            {
-                <tr>
-                    <td>@basicKnowledge.class_num</td>
-                    <td>@basicKnowledge.class_name</td>
-                    <td>@basicKnowledge.credit</td>
-                    <td>@basicKnowledge.year</td>
-                </tr>
-            }
-        </table>
-    }
-    @if (Model.Item5.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-            </tr>
-            @foreach (ScienceExperiment scienceExperiment in Model.Item5)
-            {
-                <tr>
-                    <td>@scienceExperiment.class_num</td>
-                    <td>@scienceExperiment.class_name</td>
-                    <td>@scienceExperiment.credit</td>
-                    <td>@scienceExperiment.year</td>
-                </tr>
-            }
-        </table>
-    }
-    @if (Model.Item6.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-            </tr>
-            @foreach (MSC msc in Model.Item6)
-            {
-                <tr>
-                    <td>@msc.class_num</td>
-                    <td>@msc.class_name</td>
-                    <td>@msc.credit</td>
-                    <td>@msc.year</td>
-                </tr>
-            }
-        </table>
-    }
-    @if (Model.Item7.Count() > 0)
-    {
-        <hr />
-        <table cellpadding="0" cellspacing="0" border="1">
-            <tr>
-                <th>학수번호</th>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>연도</th>
-                <th>설계학점여부</th>
-            </tr>
-            @foreach (MajorRequired majorRequired in Model.Item7)
-            {
-                <tr>
-                    <td>@majorRequired.class_num</td>
-                    <td>@majorRequired.class_name</td>
-                    <td>@majorRequired.credit</td>
-                    <td>@majorRequired.year</td>
-                    <td>@majorRequired.project</td>
-                </tr>
-            }
-        </table>
-    }
+          </center>
+        </td>
+
+        <td>@passedRule / 27</td>
+      </tr>
+    </table>
+  }
 </body>
+
 </html>

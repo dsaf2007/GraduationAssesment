@@ -1,21 +1,24 @@
 ﻿@{
-Layout = null;
+  Layout = null;
 }
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Users</title>
+  <meta name="viewport" content="width=device-width" />
+  <title>Users</title>
 </head>
+
 <body>
-    @using (Html.BeginForm("Index", "User", FormMethod.Get))
-    {
+  @using (Html.BeginForm("Index", "User", FormMethod.Get))
+  {
     <input type="submit" value="Get Form" />
-    } 
-    @using (Html.BeginForm("userview", "User", FormMethod.Get))
-    {
+  }
+  @using (Html.BeginForm("userview", "User", FormMethod.Get))
+  {
     <input type="submit" value="Get Users" />
-    }
+  }
 
 </body>
+
 </html>
