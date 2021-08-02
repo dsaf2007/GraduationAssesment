@@ -1,5 +1,5 @@
 ﻿@using ReadExcel.Models
-@model Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>
+@model Tuple<IEnumerable<UserSubject>, UserCredit, ClassList, List<Rule>>
 @{
   Layout = null;
 }
@@ -82,6 +82,68 @@
     </tr>
     }
     </table> *@
+  <p>@(Model.Item4.Count())</p>
+  @if (Model.Item4.Count() > 0)
+  {
+    int passedRule = 0;
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>번호</th>
+        <th>구분</th>
+        <th>질문</th>
+        <th>만족여부</th>
+      </tr>
+      @foreach (Rule rule in Model.Item4)
+      {
+        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        {
+          <tr>
+            <td>@rule.number</td>
+            <td>@rule.type</td>
+            <td>@rule.question</td>
+            <td>
+              @if (Convert.ToInt32(@rule.number) > 5)
+              {
+                if (@rule.check())
+                {
+                  <center>O</center>
+                  passedRule += 1;
+                }
+                else
+                {
+                  <center><b>X</b></center>
+                }
+              }
+            </td>
+          </tr>
+        }
+      }
+    </table>
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>졸업가능여부</th>
+        <th>만족조건/전체조건</th>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            @if (passedRule < 27)
+            {
+              <b>Fail</b>
+            }
+            else
+            {
+              <b>Pass</b>
+            }
+          </center>
+        </td>
+
+        <td>@passedRule / 27</td>
+      </tr>
+    </table>
+  }
 </body>
 
 </html>

@@ -17,8 +17,8 @@ namespace ReadExcel.Controllers
 {
     public class UserController : Controller
     {
-        List<Rule> rules = new List<Rule>();
-        List<UserSubject> userSubjects = new List<UserSubject>();
+        public static List<Rule> _rules = new List<Rule>();
+        // public static List<UserSubject> _userSubjects = new List<UserSubject>();
         public IActionResult start()
         {
             return View();
@@ -32,7 +32,7 @@ namespace ReadExcel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // List<Rule> rules = new List<Rule>(); // rule list
+            // List<Rule> _rules = new List<Rule>(); // rule list
             List<List<Class>> resultList = new List<List<Class>>();
             List<UserModel> userModels = new List<UserModel>();
             // TODO 0: 사용자 이수교과목 데이터 파싱 및 저장(파일?)해서 룰에 대입할수있게
@@ -129,7 +129,7 @@ namespace ReadExcel.Controllers
                         userModels.Add(newUserModel);
                         entireUserModel += newUserModel.ToString();
                         // 실제 Rule 저장
-                        rules.Add(newRule);
+                        _rules.Add(newRule);
                     }
 
                     while(reader.NextResult()) // next sheet
@@ -178,12 +178,13 @@ namespace ReadExcel.Controllers
                       // sheet rule: 1부터 시작하므로 -1
 
                       // todo: 과목 List간 대입으로 변경할것
-                      this.rules[multiInputRuleNumber[currentSheetNum-2]-1].multiInput = classTable.Trim().Split("\n");
-                      this.rules[multiInputRuleNumber[currentSheetNum-2]-1].requiredClasses = newClasses;
+                      int ruleIdx = multiInputRuleNumber[currentSheetNum-2]-1;
+                      _rules[ruleIdx].multiInput = classTable.Trim().Split("\n");
+                      _rules[ruleIdx].requiredClasses = newClasses;
                     }
                 }
             }
-            List<Rule> resultRules = this.rules;
+            List<Rule> resultRules = _rules;
             var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, resultRules) {};
             return View(t);
         }
@@ -303,8 +304,13 @@ namespace ReadExcel.Controllers
                 userCredit.mscCredit = mscCredit;
                 userCredit.publicLibCredit = publicLibCredt;
             }
-            this.userSubjects = userSubjects;
-            var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>(userSubjects, userCredit, classList) { };
+            // _userSubjects = userSubjects;
+            for(int i = 0 ; i < _rules.Count; i++)
+            {
+              _rules[i].userClasses = userSubjects;
+              // _rules[i].isChecked = _rules[i].check();
+            }
+            var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList, List<Rule>>(userSubjects, userCredit, classList, _rules) { };
             return View(t);
         }
     }
