@@ -1,14 +1,8 @@
 ﻿using System;
-<<<<<<< HEAD
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-=======
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
->>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
 namespace ReadExcel.Models
 {
     public class UserModel
@@ -228,15 +222,5 @@ namespace ReadExcel.Models
         public List<string> majorEssentialList = new List<string>();//전공필수 수강 목록
         public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
         public List<string> englishList = new List<string>();//영어강의 수강 목록
-    }
-    public class ClassList
-    {
-        public List<string> public_list = new List<string>();//기초교양 수강 목록
-        public List<string> basic_list = new List<string>();//기본소양 수강 목록
-        public List<string> msc_list = new List<string>();//MSC 수강 목록
-        public List<string> major_list = new List<string>();//전공 수강 목록
-        public List<string> major_essential_list = new List<string>();//전공필수 수강 목록
-        public List<string> major_arc_list = new List<string>();//전공설계 수강 목록
-        public List<string> english_list = new List<string>();//영어강의 수강 목록
     }
 }
