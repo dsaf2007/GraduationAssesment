@@ -198,10 +198,15 @@ namespace ReadExcel.Controllers
             // List<Class> userClasess = new List<Class>;
             
             UserCredit user_credit = new UserCredit();
+<<<<<<< HEAD
             ClassList class_list = new ClassList();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // 이수과목확인표
+=======
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            ClassList class_list = new ClassList();
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
             using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -256,27 +261,49 @@ namespace ReadExcel.Controllers
 
                     }
                 }
+<<<<<<< HEAD
                 int public_lib = 0; int basic_lib = 0; int majorCredit= 0; int majorDesignCredit = 0; int msc = 0;int english = 0;
                 
                 foreach (UserSubject userSubject in userSubjects)
+=======
+                int public_lib = 0; int basic_lib = 0; int major = 0; int major_arc = 0; int msc = 0;int english = 0;
+                
+                foreach (UserSubject user in user_subject)
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                 {
                     if(userSubject.engineeringFactorDetail == "기초교양(교필)")
                     {
+<<<<<<< HEAD
                         public_lib += Convert.ToInt32(userSubject.credit);
                         class_list.publicClasses.Add(userSubject.classCode);
+=======
+                        public_lib+=Convert.ToInt32(user.credit);
+                        class_list.public_list.Add(user.class_num);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                     }
                     if(userSubject.engineeringFactorDetail == "기본소양")
                     {
+<<<<<<< HEAD
                         basic_lib += Convert.ToInt32(userSubject.credit);
                         class_list.basicClasses.Add(userSubject.classCode);
+=======
+                        basic_lib += Convert.ToInt32(user.credit);
+                        class_list.basic_list.Add(user.class_num);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                     }
                     if(userSubject.engineeringFactor == "MSC/BSM")
                     {
+<<<<<<< HEAD
                         msc += Convert.ToInt32(userSubject.credit);
                         class_list.mscClasses.Add(userSubject.classCode);
+=======
+                        msc += Convert.ToInt32(user.credit);
+                        class_list.msc_list.Add(user.class_num);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                     }
                     if(userSubject.engineeringFactor == "전공")
                     {
+<<<<<<< HEAD
                         majorCredit+= Convert.ToInt32(userSubject.credit);
                         if(userSubject.completionDiv == "전필")
                         {
@@ -289,11 +316,30 @@ namespace ReadExcel.Controllers
                             continue;
                         }
                         class_list.majorClasses.Add(userSubject.classCode);
+=======
+                        major += Convert.ToInt32(user.credit);
+                        if(user.completion_div == "����")
+                        {
+                            class_list.major_essential_list.Add(user.class_num);
+                        }
+                        if(user.engineering_factor_detail == "��������")
+                        {
+                            major_arc += Convert.ToInt32(user.credit);
+                            class_list.major_arc_list.Add(user.class_num);
+                            continue;
+                        }
+                        class_list.major_list.Add(user.class_num);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                     }
                     if(userSubject.english == "영어")
                     {
+<<<<<<< HEAD
                         english += Convert.ToInt32(userSubject.credit);
                         class_list.englishList.Add(userSubject.classCode);
+=======
+                        english += Convert.ToInt32(user.credit);
+                        class_list.english_list.Add(user.class_num);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
                     }
                 }
                 user_credit.englishCredit = english; // 영어
@@ -303,9 +349,14 @@ namespace ReadExcel.Controllers
                 user_credit.mscCredit = msc;
                 user_credit.publicLibCredit = public_lib;
             }
+<<<<<<< HEAD
             this.userSubjects = userSubjects;
             var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>(userSubjects, user_credit, class_list) { };
             return View(t);
+=======
+                        var t =new Tuple<IEnumerable<UserSubject>, UserCredit,ClassList>(user_subject, user_credit, class_list) { };
+                        return View(t);
+>>>>>>> a8472c88ffde4e19d2598f08656a6d6a40777f98
         }
     }
 }
