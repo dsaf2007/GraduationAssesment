@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Net.Cache;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace ReadExcel.Models
         public string input { get; set; }
         public string flag { get; set; }
         public string reference { get; set; }
+
 
         public override string ToString()
         {
@@ -92,6 +94,7 @@ namespace ReadExcel.Models
       public string singleInput { get; set; }
       public string[] multiInput { get; set; }
       public List<Class> requiredClasses {get; set;}
+      public List<UserSubject> userClasses {get; set;}
       // 응답유형
         /* 
         0: 대소비교
@@ -114,22 +117,23 @@ namespace ReadExcel.Models
         return result;
       }
       // TODO 사용자 데이터가 필요함
-      public bool check()
+      public bool isChecked()
       {
         // if(Convert.ToInt32(this.number) < 6)
         //   return;
         bool isRuleSatisfied = false;
-        List<Class> reqClasses = new List<Class>();
+        List<Class> reqClasses = this.requiredClasses;
         
-        // User dummy data ----------------
-        int userCredit = 80; // 사용자 학점
+        // 전체학점
+        int userCredit = 0;
+        foreach(UserSubject userClass in this.userClasses)
+        {
+          userCredit += Convert.ToInt32(userClass.credit);
+        }
+
+        // todo 전산학 예외
+
         string userOX = "X"; // 사용자 OX
-        List<Class> userClasses = new List<Class>();
-        // 공통교양 dummy data
-        userClasses.Add(new Class("RGC1001", "자아와명상1", 1, 2021));
-        userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
-        userClasses.Add(new Class("RGC1003", "나의삶나의비전", 1, 2021));
-        userClasses.Add(new Class("CSE2016", "창의적공학설계", 3, 3, 2016));
         // -------------------------------- 
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
@@ -155,7 +159,7 @@ namespace ReadExcel.Models
             }
             break;
           case 2: // 최소한 하나 만족
-            foreach(Class userClass in userClasses)
+            foreach(UserSubject userClass in this.userClasses)
             {
               foreach(Class reqClass in this.requiredClasses)
               {
@@ -168,7 +172,7 @@ namespace ReadExcel.Models
             break;
         case 3: // 전체 만족
             int count = 0;
-            foreach (Class userClass in userClasses)
+            foreach (UserSubject userClass in this.userClasses)
             {
               foreach (Class reqClass in this.requiredClasses)
               {
@@ -179,7 +183,7 @@ namespace ReadExcel.Models
                 }
               }
             }
-            if (count == reqClasses.Count)
+            if (count >= reqClasses.Count)
                 isRuleSatisfied = true;
             break;
         default:
@@ -206,6 +210,20 @@ namespace ReadExcel.Models
     }
     public class UserInfo
     {
+        public int publicLibCredit { get; set; }
+        public int basicLibCredit { get; set; }
+        public int majorCredit { get; set; }
+        public int majorDesignCredit { get; set; }
+        public int mscCredit { get; set; }
+        public int englishCredit { get; set; }
+        
+        public List<string> publicClasses = new List<string>();//기초교양 수강 목록
+        public List<string> basicClasses = new List<string>();//기본소양 수강 목록
+        public List<string> mscClasses = new List<string>();//MSC 수강 목록
+        public List<string> majorClasses = new List<string>();//전공 수강 목록
+        public List<string> majorEssentialList = new List<string>();//전공필수 수강 목록
+        public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
+        public List<string> englishList = new List<string>();//영어강의 수강 목록
 
         public void GetUserInfo(List<UserSubject> userSubject_)
         {
@@ -250,19 +268,5 @@ namespace ReadExcel.Models
                 }
             }
         }
-        public int publicLibCredit { get; set; }
-        public int basicLibCredit { get; set; }
-        public int majorCredit { get; set; }
-        public int majorDesignCredit { get; set; }
-        public int mscCredit { get; set; }
-        public int englishCredit { get; set; }
-        public List<string> publicClasses = new List<string>();//기초교양 수강 목록
-        public List<string> basicClasses = new List<string>();//기본소양 수강 목록
-        public List<string> mscClasses = new List<string>();//MSC 수강 목록
-        public List<string> majorClasses = new List<string>();//전공 수강 목록
-        public List<string> majorEssentialList = new List<string>();//전공필수 수강 목록
-        public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
-        public List<string> englishList = new List<string>();//영어강의 수강 목록
     }
-
 }

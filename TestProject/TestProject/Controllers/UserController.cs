@@ -17,8 +17,8 @@ namespace ReadExcel.Controllers
 {
     public class UserController : Controller
     {
-        List<Rule> rules = new List<Rule>();
-        List<UserSubject> userSubjects = new List<UserSubject>();
+        public static List<Rule> _rules = new List<Rule>();
+        public static List<UserSubject> userSubjects = new List<UserSubject>();
         public IActionResult start()
         {
             return View();
@@ -32,7 +32,7 @@ namespace ReadExcel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // List<Rule> rules = new List<Rule>(); // rule list
+            // List<Rule> _rules = new List<Rule>(); // rule list
             List<List<Class>> resultList = new List<List<Class>>();
             List<UserModel> userModels = new List<UserModel>();
             // TODO 0: 사용자 이수교과목 데이터 파싱 및 저장(파일?)해서 룰에 대입할수있게
@@ -129,7 +129,7 @@ namespace ReadExcel.Controllers
                         userModels.Add(newUserModel);
                         entireUserModel += newUserModel.ToString();
                         // 실제 Rule 저장
-                        rules.Add(newRule);
+                        _rules.Add(newRule);
                     }
 
                     while(reader.NextResult()) // next sheet
@@ -178,47 +178,48 @@ namespace ReadExcel.Controllers
                       // sheet rule: 1부터 시작하므로 -1
 
                       // todo: 과목 List간 대입으로 변경할것
-                      this.rules[multiInputRuleNumber[currentSheetNum-2]-1].multiInput = classTable.Trim().Split("\n");
-                      this.rules[multiInputRuleNumber[currentSheetNum-2]-1].requiredClasses = newClasses;
+                      int ruleIdx = multiInputRuleNumber[currentSheetNum-2]-1;
+                      _rules[ruleIdx].multiInput = classTable.Trim().Split("\n");
+                      _rules[ruleIdx].requiredClasses = newClasses;
                     }
                 }
             }
-            List<Rule> resultRules = this.rules;
+            List<Rule> resultRules = _rules;
             var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, resultRules) {};
             return View(t);
         }
         // User Data Read
         [HttpGet]
-        public IActionResult userview()
+         public IActionResult userview()
         {
             var filename = "./wwwroot/upload/input.xls";
             var gradeFile = "./wwwroot/upload/user_score.xlsx";
 
-            //List<UserSubject> userSubjects = new List<UserSubject>();
-            // List<Class> userClasess = new List<Class>;
-            
             UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // 이수과목확인표
-            using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    for(int i = 0; i < 8; i++)
-                    {
-                        reader.Read();
-                    }
-                    while (reader.Read()) 
-                    { }
-                }
-            }
+            //using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
+            //    {
+            //        for(int i = 0; i < 8; i++)
+            //        {
+            //            reader.Read();
+            //        }
+            //        while (reader.Read()) 
+            //        { }
+            //    }
+            //}
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
-            
+            for(int i = 0 ; i < _rules.Count; i++)
+            {
+              _rules[i].userClasses = userSubjects;
+            }
 
-            var t = new Tuple<IEnumerable<UserSubject>, UserInfo>(userSubjects, userInfo) { };
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
             return View(t);
         }
 
@@ -272,7 +273,5 @@ namespace ReadExcel.Controllers
             }
             return temp;
         }
-
-       
     }
 }
