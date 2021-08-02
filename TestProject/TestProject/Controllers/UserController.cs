@@ -18,7 +18,7 @@ namespace ReadExcel.Controllers
     public class UserController : Controller
     {
         public static List<Rule> _rules = new List<Rule>();
-        // public static List<UserSubject> _userSubjects = new List<UserSubject>();
+        public static List<UserSubject> userSubjects = new List<UserSubject>();
         public IActionResult start()
         {
             return View();
@@ -190,40 +190,52 @@ namespace ReadExcel.Controllers
         }
         // User Data Read
         [HttpGet]
-        public IActionResult userview()
+         public IActionResult userview()
         {
             var filename = "./wwwroot/upload/input.xls";
             var gradeFile = "./wwwroot/upload/user_score.xlsx";
 
-            List<UserSubject> userSubjects = new List<UserSubject>();
-            // List<Class> userClasess = new List<Class>;
-            
-            UserCredit userCredit = new UserCredit();
-            ClassList classList = new ClassList();
+            UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // 이수과목확인표
-            using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            //{
+            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
+            //    {
+            //        for(int i = 0; i < 8; i++)
+            //        {
+            //            reader.Read();
+            //        }
+            //        while (reader.Read()) 
+            //        { }
+            //    }
+            //}
+
+            userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
+            userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
+            for(int i = 0 ; i < _rules.Count; i++)
             {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    for(int i = 0; i < 8; i++)
-                    {
-                        reader.Read();
-                    }
-                    while (reader.Read()) 
-                    { }
-                }
+              _rules[i].userClasses = userSubjects;
             }
+
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
+            return View(t);
+        }
+
+        public List<UserSubject> ReadUserSubject(string filename_)
+        {
+            List<UserSubject> temp = new List<UserSubject>();
+
             // 전체성적조회파일
-            using (var gradeStream = System.IO.File.Open(gradeFile,System.IO.FileMode.Open,System.IO.FileAccess.Read))
+            using (var gradeStream = System.IO.File.Open(filename_, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 using (var gradeReader = ExcelReaderFactory.CreateReader(gradeStream))
                 {
                     gradeReader.Read();
                     string tempYear = "";
                     string tempSemester = "";
-                    while(gradeReader.Read())
+                    while (gradeReader.Read())
                     {
                         string[] valueArray = new string[19];
                         for (int i = 0; i < 19; i++)
@@ -233,20 +245,20 @@ namespace ReadExcel.Controllers
                             else
                                 valueArray[i] = Regex.Replace(gradeReader.GetValue(i).ToString(), @"\s", "");
                         }
-                        if(valueArray[2] != "")
+                        if (valueArray[2] != "")
                         {
                             tempYear = valueArray[2];
                         }
-                        if(valueArray[3] != "")
+                        if (valueArray[3] != "")
                         {
                             tempSemester = valueArray[3];
                         }
-                        userSubjects.Add(new UserSubject
+                        temp.Add(new UserSubject
                         {
                             year = tempYear, // 연도
                             semester = tempSemester, // 학기
                             completionDiv = valueArray[4], // 이수구분 : 전공, 전필, 학기, 공교 등
-                            completionDivField =valueArray[5], // 이수구분영역 : 기초, 전문, 자연과학 등
+                            completionDivField = valueArray[5], // 이수구분영역 : 기초, 전문, 자연과학 등
                             classCode = valueArray[6], // 학수번호
                             className = valueArray[8], // 과목명
                             credit = valueArray[10], // 학점
@@ -257,61 +269,9 @@ namespace ReadExcel.Controllers
 
                     }
                 }
-                int publicLibCredt = 0; int basicLibCredit = 0; int majorCredit= 0; int majorDesignCredit = 0; int mscCredit = 0;int englishCredit = 0;
-                
-                foreach (UserSubject userSubject in userSubjects)
-                {
-                    if(userSubject.engineeringFactorDetail == "기초교양(교필)")
-                    {
-                        publicLibCredt += Convert.ToInt32(userSubject.credit);
-                        classList.publicClasses.Add(userSubject.classCode);
-                    }
-                    if(userSubject.engineeringFactorDetail == "기본소양")
-                    {
-                        basicLibCredit += Convert.ToInt32(userSubject.credit);
-                        classList.basicClasses.Add(userSubject.classCode);
-                    }
-                    if(userSubject.engineeringFactor == "MSC/BSM")
-                    {
-                        mscCredit += Convert.ToInt32(userSubject.credit);
-                        classList.mscClasses.Add(userSubject.classCode);
-                    }
-                    if(userSubject.engineeringFactor == "전공")
-                    {
-                        majorCredit+= Convert.ToInt32(userSubject.credit);
-                        if(userSubject.completionDiv == "전필")
-                        {
-                            classList.majorEssentialList.Add(userSubject.classCode);
-                        }
-                        if(userSubject.engineeringFactorDetail == "전공설계")
-                        {
-                            majorDesignCredit += Convert.ToInt32(userSubject.credit);
-                            classList.majorClasses.Add(userSubject.classCode);
-                            continue;
-                        }
-                        classList.majorClasses.Add(userSubject.classCode);
-                    }
-                    if(userSubject.english == "영어")
-                    {
-                        englishCredit += Convert.ToInt32(userSubject.credit);
-                        classList.englishList.Add(userSubject.classCode);
-                    }
-                }
-                userCredit.englishCredit = englishCredit; // 영어
-                userCredit.basicLibCredit = basicLibCredit;
-                userCredit.majorCredit= majorCredit;
-                userCredit.majorDesignCredit = majorDesignCredit; // 전공설계
-                userCredit.mscCredit = mscCredit;
-                userCredit.publicLibCredit = publicLibCredt;
+
             }
-            // _userSubjects = userSubjects;
-            for(int i = 0 ; i < _rules.Count; i++)
-            {
-              _rules[i].userClasses = userSubjects;
-              // _rules[i].isChecked = _rules[i].check();
-            }
-            var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList, List<Rule>>(userSubjects, userCredit, classList, _rules) { };
-            return View(t);
+            return temp;
         }
     }
 }

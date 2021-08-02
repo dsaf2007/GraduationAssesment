@@ -1,5 +1,5 @@
 ﻿@using ReadExcel.Models
-@model Tuple<IEnumerable<UserSubject>, UserCredit, ClassList, List<Rule>>
+@model Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>
 @{
   Layout = null;
 }
@@ -82,8 +82,8 @@
     </tr>
     }
     </table> *@
-  <p>@(Model.Item4.Count())</p>
-  @if (Model.Item4.Count() > 0)
+  <p>@(Model.Item3.Count())</p>
+  @if (Model.Item3.Count() > 0)
   {
     int passedRule = 0;
     <hr />
@@ -94,7 +94,7 @@
         <th>질문</th>
         <th>만족여부</th>
       </tr>
-      @foreach (Rule rule in Model.Item4)
+      @foreach (Rule rule in Model.Item3)
       {
         if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
         {
@@ -105,7 +105,7 @@
             <td>
               @if (Convert.ToInt32(@rule.number) > 5)
               {
-                if (@rule.check())
+                if (@rule.isChecked())
                 {
                   <center>O</center>
                   passedRule += 1;

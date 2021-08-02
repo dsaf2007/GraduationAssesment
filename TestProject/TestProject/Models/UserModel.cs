@@ -95,7 +95,6 @@ namespace ReadExcel.Models
       public string[] multiInput { get; set; }
       public List<Class> requiredClasses {get; set;}
       public List<UserSubject> userClasses {get; set;}
-      public bool isChecked {get; set;}
       // 응답유형
         /* 
         0: 대소비교
@@ -118,7 +117,7 @@ namespace ReadExcel.Models
         return result;
       }
       // TODO 사용자 데이터가 필요함
-      public bool check()
+      public bool isChecked()
       {
         // if(Convert.ToInt32(this.number) < 6)
         //   return;
@@ -135,12 +134,6 @@ namespace ReadExcel.Models
         // todo 전산학 예외
 
         string userOX = "X"; // 사용자 OX
-        // List<Class> userClasses = new List<Class>();
-        // 공통교양 dummy data
-        // userClasses.Add(new Class("RGC1001", "자아와명상1", 1, 2021));
-        // userClasses.Add(new Class("RGC1002", "자아와명상2", 1, 2021));
-        // userClasses.Add(new Class("RGC1003", "나의삶나의비전", 1, 2021));
-        // userClasses.Add(new Class("CSE2016", "창의적공학설계", 3, 3, 2016));
         // -------------------------------- 
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
@@ -215,7 +208,7 @@ namespace ReadExcel.Models
         public string engineeringFactorDetail { get; set; }
         public string english { get; set; }
     }
-    public class UserCredit
+    public class UserInfo
     {
         public int publicLibCredit { get; set; }
         public int basicLibCredit { get; set; }
@@ -223,9 +216,7 @@ namespace ReadExcel.Models
         public int majorDesignCredit { get; set; }
         public int mscCredit { get; set; }
         public int englishCredit { get; set; }
-    }
-    public class ClassList
-    {
+        
         public List<string> publicClasses = new List<string>();//기초교양 수강 목록
         public List<string> basicClasses = new List<string>();//기본소양 수강 목록
         public List<string> mscClasses = new List<string>();//MSC 수강 목록
@@ -233,5 +224,49 @@ namespace ReadExcel.Models
         public List<string> majorEssentialList = new List<string>();//전공필수 수강 목록
         public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
         public List<string> englishList = new List<string>();//영어강의 수강 목록
+
+        public void GetUserInfo(List<UserSubject> userSubject_)
+        {
+            this.publicLibCredit = 0; this.basicLibCredit = 0; this.majorCredit = 0; this.majorDesignCredit = 0; this.mscCredit = 0; this.englishCredit = 0;
+
+            foreach (UserSubject userSubject in userSubject_)
+            {
+                if (userSubject.engineeringFactorDetail == "기초교양(교필)")
+                {
+                    publicLibCredit += Convert.ToInt32(userSubject.credit);
+                    this.publicClasses.Add(userSubject.classCode);
+                }
+                if (userSubject.engineeringFactorDetail == "기본소양")
+                {
+                    basicLibCredit += Convert.ToInt32(userSubject.credit);
+                    this.basicClasses.Add(userSubject.classCode);
+                }
+                if (userSubject.engineeringFactor == "MSC/BSM")
+                {
+                    mscCredit += Convert.ToInt32(userSubject.credit);
+                    this.mscClasses.Add(userSubject.classCode);
+                }
+                if (userSubject.engineeringFactor == "전공")
+                {
+                    majorCredit += Convert.ToInt32(userSubject.credit);
+                    if (userSubject.completionDiv == "전필")
+                    {
+                        this.majorEssentialList.Add(userSubject.classCode);
+                    }
+                    if (userSubject.engineeringFactorDetail == "전공설계")
+                    {
+                        majorDesignCredit += Convert.ToInt32(userSubject.credit);
+                        this.majorClasses.Add(userSubject.classCode);
+                        continue;
+                    }
+                    this.majorClasses.Add(userSubject.classCode);
+                }
+                if (userSubject.english == "영어")
+                {
+                    englishCredit += Convert.ToInt32(userSubject.credit);
+                    this.englishList.Add(userSubject.classCode);
+                }
+            }
+        }
     }
 }
