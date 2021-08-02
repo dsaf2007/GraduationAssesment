@@ -65,59 +65,59 @@ namespace ReadExcel.Controllers
                         // string[] multiInput;
                         int ruleFlag = -1;
 
-                        string[] value_arr = new string[6]; // 모두 string임에 주의
+                        string[] valueArray = new string[6]; // 모두 string임에 주의
                         
                         for(int i = 0; i < 6; i++)
                         {
                             if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
+                                valueArray[i] = "";
                             else
-                                value_arr[i] = reader.GetValue(i).ToString();
+                                valueArray[i] = reader.GetValue(i).ToString();
                         }
-                        if(value_arr[0] == "" || value_arr[0] == null)
-                          value_arr[0] = ruleType;
+                        if(valueArray[0] == "" || valueArray[0] == null)
+                          valueArray[0] = ruleType;
                         else
-                          ruleType = value_arr[0];
+                          ruleType = valueArray[0];
                         
                         UserModel newUserModel = new UserModel{
                             type = ruleType, // 구분
-                            number = value_arr[1], // 일련번호
-                            question = value_arr[2], // 질문
-                            input = ((value_arr[5] == "목록")? "[List]" : value_arr[3]), // 입력
+                            number = valueArray[1], // 일련번호
+                            question = valueArray[2], // 질문
+                            input = ((valueArray[5] == "목록")? "[List]" : valueArray[3]), // 입력
                             flag = ruleFlag.ToString(), // 응답유형
-                            reference = value_arr[5] // 비고
+                            reference = valueArray[5] // 비고
                         };
                         // -----------------------------------------------
                         // Rule Generator
                         Rule newRule = new Rule{
                             type = ruleType, // 구분
-                            number = value_arr[1], // 일련번호
-                            question = value_arr[2], // 질문
+                            number = valueArray[1], // 일련번호
+                            question = valueArray[2], // 질문
                             singleInput = null,
                             multiInput = null,
                             flag = ruleFlag, // 응답유형
-                            reference = value_arr[5] // 비고
+                            reference = valueArray[5] // 비고
                         };
                         // flag setting
                         // 0: 대소비교
                         // 1: OX
                         // 2: 목록 중 선택
                         // 3: 목록 전체 필수
-                        if(value_arr[5] != "" || value_arr[5] != null) // 기본정보: 비고 란 비어있음
+                        if(valueArray[5] != "" || valueArray[5] != null) // 기본정보: 비고 란 비어있음
                         {
-                          if(value_arr[5] == "단수" || value_arr[5] == "OX") 
+                          if(valueArray[5] == "단수" || valueArray[5] == "OX") 
                           {
-                            singleInput = value_arr[3];
+                            singleInput = valueArray[3];
                             newRule.singleInput = singleInput.ToUpper();
-                            ruleFlag = (value_arr[5] == "단수" 
+                            ruleFlag = (valueArray[5] == "단수" 
                                           && !("OX".Contains(singleInput.ToUpper()))) 
                                         ? 0 : 1;
                           }
-                          if(value_arr[5] == "목록") 
+                          if(valueArray[5] == "목록") 
                           {
-                            ruleFlag = (value_arr[2].Contains("필수") 
-                              || value_arr[2].Contains("기초설계") 
-                              || value_arr[2].Contains("종합설계")) 
+                            ruleFlag = (valueArray[2].Contains("필수") 
+                              || valueArray[2].Contains("기초설계") 
+                              || valueArray[2].Contains("종합설계")) 
                               ? 3 : 2;
                             multiInputRuleNumber.Add(Convert.ToInt32(newRule.number));
                           }
@@ -142,29 +142,29 @@ namespace ReadExcel.Controllers
                       {
                         // 전공 or 설계과목 : cols = 5
                         int cols = reader.FieldCount;
-                        string[] value_arr = new string[cols];
+                        string[] valueArray = new string[cols];
                         for(int i = 0 ; i < cols ; i++)
                         {
                             if (reader.GetValue(i) == null)
-                                value_arr[i] = "";
+                                valueArray[i] = "";
                             else
-                                value_arr[i] = Regex.Replace(reader.GetValue(i).ToString(), @"\s", ""); // 과목명 내 띄어쓰기 제거
+                                valueArray[i] = Regex.Replace(reader.GetValue(i).ToString(), @"\s", ""); // 과목명 내 띄어쓰기 제거
                         }
-                        if (String.IsNullOrEmpty(value_arr[1])) break;
+                        if (String.IsNullOrEmpty(valueArray[1])) break;
                         
-                        if(!(value_arr[0].Contains("예시"))) // 대체인정 시트가 아닌경우만
+                        if(!(valueArray[0].Contains("예시"))) // 대체인정 시트가 아닌경우만
                         {
                             Class newClass = new Class{
-                              classCode = value_arr[1],
-                              className = value_arr[2],
-                              credit = Convert.ToInt32(value_arr[3].Trim()),
+                              classCode = valueArray[1],
+                              className = valueArray[2],
+                              credit = Convert.ToInt32(valueArray[3].Trim()),
                               design = -1,
-                              year = Convert.ToInt32(value_arr[4].Trim())
+                              year = Convert.ToInt32(valueArray[4].Trim())
                             };
                             if(cols == 6) // 설계과목일 경우
                             {
-                              newClass.design = Convert.ToInt32(value_arr[cols-2]);
-                              newClass.year = Convert.ToInt32(value_arr[cols-1]);
+                              newClass.design = Convert.ToInt32(valueArray[cols-2]);
+                              newClass.year = Convert.ToInt32(valueArray[cols-1]);
                             }
                             newClasses.Add(newClass);
                             classTable += newClass.ToString();
@@ -192,13 +192,13 @@ namespace ReadExcel.Controllers
         public IActionResult userview()
         {
             var filename = "./wwwroot/upload/input.xls";
-            var grade_file = "./wwwroot/upload/user_score.xlsx";
+            var gradeFile = "./wwwroot/upload/user_score.xlsx";
 
             List<UserSubject> userSubjects = new List<UserSubject>();
             // List<Class> userClasess = new List<Class>;
             
-            UserCredit user_credit = new UserCredit();
-            ClassList class_list = new ClassList();
+            UserCredit userCredit = new UserCredit();
+            ClassList classList = new ClassList();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // 이수과목확인표
@@ -215,96 +215,96 @@ namespace ReadExcel.Controllers
                 }
             }
             // 전체성적조회파일
-            using (var grade_stream = System.IO.File.Open(grade_file,System.IO.FileMode.Open,System.IO.FileAccess.Read))
+            using (var gradeStream = System.IO.File.Open(gradeFile,System.IO.FileMode.Open,System.IO.FileAccess.Read))
             {
-                using (var grade_reader = ExcelReaderFactory.CreateReader(grade_stream))
+                using (var gradeReader = ExcelReaderFactory.CreateReader(gradeStream))
                 {
-                    grade_reader.Read();
-                    string temp_year = "";
-                    string temp_sem = "";
-                    while(grade_reader.Read())
+                    gradeReader.Read();
+                    string tempYear = "";
+                    string tempSemester = "";
+                    while(gradeReader.Read())
                     {
-                        string[] value_arr = new string[19];
+                        string[] valueArray = new string[19];
                         for (int i = 0; i < 19; i++)
                         {
-                            if (grade_reader.GetValue(i) == null)
-                                value_arr[i] = "";
+                            if (gradeReader.GetValue(i) == null)
+                                valueArray[i] = "";
                             else
-                                value_arr[i] = Regex.Replace(grade_reader.GetValue(i).ToString(), @"\s", "");
+                                valueArray[i] = Regex.Replace(gradeReader.GetValue(i).ToString(), @"\s", "");
                         }
-                        if(value_arr[2] != "")
+                        if(valueArray[2] != "")
                         {
-                            temp_year = value_arr[2];
+                            tempYear = valueArray[2];
                         }
-                        if(value_arr[3] != "")
+                        if(valueArray[3] != "")
                         {
-                            temp_sem = value_arr[3];
+                            tempSemester = valueArray[3];
                         }
                         userSubjects.Add(new UserSubject
                         {
-                            year = temp_year, // 연도
-                            semester = temp_sem, // 학기
-                            completionDiv = value_arr[4], // 이수구분 : 전공, 전필, 학기, 공교 등
-                            completionDivField =value_arr[5], // 이수구분영역 : 기초, 전문, 자연과학 등
-                            classCode = value_arr[6], // 학수번호
-                            className = value_arr[8], // 과목명
-                            credit = value_arr[10], // 학점
-                            engineeringFactor = value_arr[16], // 공학요소 : 전공, MSC, 전문교양
-                            engineeringFactorDetail = value_arr[17], // 공학세부요소 : 전공설계, 수학, 과학 등
-                            english = value_arr[18] // 원어강의 종류
+                            year = tempYear, // 연도
+                            semester = tempSemester, // 학기
+                            completionDiv = valueArray[4], // 이수구분 : 전공, 전필, 학기, 공교 등
+                            completionDivField =valueArray[5], // 이수구분영역 : 기초, 전문, 자연과학 등
+                            classCode = valueArray[6], // 학수번호
+                            className = valueArray[8], // 과목명
+                            credit = valueArray[10], // 학점
+                            engineeringFactor = valueArray[16], // 공학요소 : 전공, MSC, 전문교양
+                            engineeringFactorDetail = valueArray[17], // 공학세부요소 : 전공설계, 수학, 과학 등
+                            english = valueArray[18] // 원어강의 종류
                         });
 
                     }
                 }
-                int public_lib = 0; int basic_lib = 0; int majorCredit= 0; int majorDesignCredit = 0; int msc = 0;int english = 0;
+                int publicLibCredt = 0; int basicLibCredit = 0; int majorCredit= 0; int majorDesignCredit = 0; int mscCredit = 0;int englishCredit = 0;
                 
                 foreach (UserSubject userSubject in userSubjects)
                 {
                     if(userSubject.engineeringFactorDetail == "기초교양(교필)")
                     {
-                        public_lib += Convert.ToInt32(userSubject.credit);
-                        class_list.publicClasses.Add(userSubject.classCode);
+                        publicLibCredt += Convert.ToInt32(userSubject.credit);
+                        classList.publicClasses.Add(userSubject.classCode);
                     }
                     if(userSubject.engineeringFactorDetail == "기본소양")
                     {
-                        basic_lib += Convert.ToInt32(userSubject.credit);
-                        class_list.basicClasses.Add(userSubject.classCode);
+                        basicLibCredit += Convert.ToInt32(userSubject.credit);
+                        classList.basicClasses.Add(userSubject.classCode);
                     }
                     if(userSubject.engineeringFactor == "MSC/BSM")
                     {
-                        msc += Convert.ToInt32(userSubject.credit);
-                        class_list.mscClasses.Add(userSubject.classCode);
+                        mscCredit += Convert.ToInt32(userSubject.credit);
+                        classList.mscClasses.Add(userSubject.classCode);
                     }
                     if(userSubject.engineeringFactor == "전공")
                     {
                         majorCredit+= Convert.ToInt32(userSubject.credit);
                         if(userSubject.completionDiv == "전필")
                         {
-                            class_list.majorEssentialList.Add(userSubject.classCode);
+                            classList.majorEssentialList.Add(userSubject.classCode);
                         }
                         if(userSubject.engineeringFactorDetail == "전공설계")
                         {
                             majorDesignCredit += Convert.ToInt32(userSubject.credit);
-                            class_list.majorClasses.Add(userSubject.classCode);
+                            classList.majorClasses.Add(userSubject.classCode);
                             continue;
                         }
-                        class_list.majorClasses.Add(userSubject.classCode);
+                        classList.majorClasses.Add(userSubject.classCode);
                     }
                     if(userSubject.english == "영어")
                     {
-                        english += Convert.ToInt32(userSubject.credit);
-                        class_list.englishList.Add(userSubject.classCode);
+                        englishCredit += Convert.ToInt32(userSubject.credit);
+                        classList.englishList.Add(userSubject.classCode);
                     }
                 }
-                user_credit.englishCredit = english; // 영어
-                user_credit.basicLibCredit = basic_lib;
-                user_credit.majorCredit= majorCredit;
-                user_credit.majorDesignCredit = majorDesignCredit; // 전공설계
-                user_credit.mscCredit = msc;
-                user_credit.publicLibCredit = public_lib;
+                userCredit.englishCredit = englishCredit; // 영어
+                userCredit.basicLibCredit = basicLibCredit;
+                userCredit.majorCredit= majorCredit;
+                userCredit.majorDesignCredit = majorDesignCredit; // 전공설계
+                userCredit.mscCredit = mscCredit;
+                userCredit.publicLibCredit = publicLibCredt;
             }
             this.userSubjects = userSubjects;
-            var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>(userSubjects, user_credit, class_list) { };
+            var t = new Tuple<IEnumerable<UserSubject>, UserCredit, ClassList>(userSubjects, userCredit, classList) { };
             return View(t);
         }
     }
