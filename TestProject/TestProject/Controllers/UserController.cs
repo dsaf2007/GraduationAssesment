@@ -198,31 +198,17 @@ namespace ReadExcel.Controllers
             UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            // 이수과목확인표
-            //using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            //{
-            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
-            //    {
-            //        for(int i = 0; i < 8; i++)
-            //        {
-            //            reader.Read();
-            //        }
-            //        while (reader.Read()) 
-            //        { }
-            //    }
-            //}
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
+            userInfo.getUserInfo(filename);
             for(int i = 0 ; i < _rules.Count; i++)
             {
               _rules[i].userClasses = userSubjects;
             }
-
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
             return View(t);
         }
-
         public List<UserSubject> ReadUserSubject(string filename_)
         {
             List<UserSubject> temp = new List<UserSubject>();
@@ -266,10 +252,8 @@ namespace ReadExcel.Controllers
                             engineeringFactorDetail = valueArray[17], // 공학세부요소 : 전공설계, 수학, 과학 등
                             english = valueArray[18] // 원어강의 종류
                         });
-
                     }
                 }
-
             }
             return temp;
         }
