@@ -170,7 +170,7 @@ namespace ReadExcel.Models
               }
             }
             break;
-        case 3: // 전체 만족
+          case 3: // 전체 만족
             int count = 0;
             foreach (UserSubject userClass in this.userClasses)
             {
@@ -216,7 +216,7 @@ namespace ReadExcel.Models
         public int majorDesignCredit { get; set; }
         public int mscCredit { get; set; }
         public int englishCredit { get; set; }
-        
+
         public List<string> publicClasses = new List<string>();//기초교양 수강 목록
         public List<string> basicClasses = new List<string>();//기본소양 수강 목록
         public List<string> mscClasses = new List<string>();//MSC 수강 목록
