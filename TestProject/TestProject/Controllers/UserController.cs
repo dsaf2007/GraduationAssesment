@@ -19,6 +19,7 @@ namespace ReadExcel.Controllers
     {
         public static List<Rule> _rules = new List<Rule>();
         public static List<UserSubject> userSubjects = new List<UserSubject>();
+        public static List<string> fileNames = new List<string>();
         public IActionResult start()
         {
             return View();
@@ -28,6 +29,39 @@ namespace ReadExcel.Controllers
         {
             this.environment = environment;
         }
+        [HttpGet]
+        public IActionResult Upload()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)
+        {
+            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload" + Path.DirectorySeparatorChar);
+
+            fileNames.Clear();
+
+            foreach (IFormFile formFile in fileCollection)
+            {
+                if (formFile.Length > 0)
+                {
+                    string fileName = Path.GetFileName
+                    (
+                        ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Value
+                    );
+
+                    fileNames.Add(fileName);
+
+                    using (FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+            }
+            return View();
+        }
+
         //Default GET method
         [HttpGet]
         public IActionResult Index()
@@ -41,6 +75,8 @@ namespace ReadExcel.Controllers
             // TODO 3: 예외처리용 동일,대체교과목 설계
 
             const string filename = "./wwwroot/upload/template_test.xlsx";
+
+
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -192,8 +228,12 @@ namespace ReadExcel.Controllers
         [HttpGet]
          public IActionResult userview()
         {
-            var filename = "./wwwroot/upload/input.xls";
-            var gradeFile = "./wwwroot/upload/user_score.xlsx";
+            //var filename = "./wwwroot/upload/input.xls";
+            //var gradeFile = "./wwwroot/upload/user_score.xlsx";
+            string filePath = "./wwwroot/upload/";
+            Console.WriteLine(fileNames[0]);
+            string filename = filePath + fileNames[0];
+            string gradeFile = filePath + fileNames[1];
 
             UserInfo userInfo = new UserInfo();
 

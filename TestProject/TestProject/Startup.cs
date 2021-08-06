@@ -89,7 +89,7 @@ namespace TestProject
                     endpoints.MapControllerRoute
                     (
                         name    : "default",
-                        pattern : "{controller=Test}/{action=upload}/{id?}"
+                        pattern : "{controller=User}/{action=upload}/{id?}"
                     );
                 }
             );

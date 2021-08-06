@@ -130,3 +130,4 @@ D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\Tes
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\TestProject.dll
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\TestProject.pdb
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\TestProject.genruntimeconfig.cache
+D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\User\Upload.cshtml.g.cs

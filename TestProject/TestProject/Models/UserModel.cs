@@ -16,7 +16,6 @@ namespace ReadExcel.Models
         public string flag { get; set; }
         public string reference { get; set; }
 
-
         public override string ToString()
         {
             return this.type + "_" + this.number + "_" + this.question + "_" 
@@ -30,7 +29,6 @@ namespace ReadExcel.Models
           return 0;
         }
     }
-
     public class Class
     {
       // 학수번호
@@ -286,7 +284,6 @@ namespace ReadExcel.Models
                 }
             }
         }
-
         public void getUserInfo(string filename_)
         {
             using (var infoStream = System.IO.File.Open(filename_, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -344,11 +341,8 @@ namespace ReadExcel.Models
                     infoReader.Read();
                     split = infoReader.GetValue(13).ToString().Split(":");
                     this.teaching = split[1];
-
                 }
             }
         }
-    }
-
-   
+    }  
 }
