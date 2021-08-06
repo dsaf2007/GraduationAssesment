@@ -19,6 +19,7 @@ namespace ReadExcel.Controllers
     {
         public static List<Rule> _rules = new List<Rule>();
         public static List<UserSubject> userSubjects = new List<UserSubject>();
+        public static List<string> fileNames = new List<string>();
         public IActionResult start()
         {
             return View();
@@ -29,6 +30,34 @@ namespace ReadExcel.Controllers
             this.environment = environment;
         }
         //Default GET method
+        [HttpGet]
+        public IActionResult Upload()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)
+        {
+            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
+            fileNames.Clear();
+            foreach(IFormFile formFile in fileCollection)
+            {
+                if(formFile.Length > 0)
+                {
+                    string fileName = Path.GetFileName
+                    (
+                        ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Value
+                    );
+                    fileNames.Add(fileName);
+                    using(FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+            }
+            return View();
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -173,27 +202,18 @@ namespace ReadExcel.Controllers
                 }
             }
             // var filename = "./wwwroot/upload/input.xls";
-            var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
+            //var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
+            string filePath = this.environment.WebRootPath;
+
+            string inputFile = Path.Combine(filePath,"upload",fileNames[0]);
+            string gradeFile = Path.Combine(filePath,"upload",fileNames[1]);
 
             UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            // 이수과목확인표
-            //using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            //{
-            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
-            //    {
-            //        for(int i = 0; i < 8; i++)
-            //        {
-            //            reader.Read();
-            //        }
-            //        while (reader.Read()) 
-            //        { }
-            //    }
-            //}
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
-            userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
+            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             for(int i = 0 ; i < _rules.Count; i++)
             {
               _rules[i].userInfo = userInfo;
@@ -215,22 +235,9 @@ namespace ReadExcel.Controllers
             UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            // 이수과목확인표
-            //using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            //{
-            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
-            //    {
-            //        for(int i = 0; i < 8; i++)
-            //        {
-            //            reader.Read();
-            //        }
-            //        while (reader.Read()) 
-            //        { }
-            //    }
-            //}
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
-            userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
+            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             for(int i = 0 ; i < _rules.Count; i++)
             {
               _rules[i].userClasses = userSubjects;

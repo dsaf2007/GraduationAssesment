@@ -85,3 +85,4 @@ C:/Users/정동구/Downloads/TestProject/TestProject/obj/Debug/netcoreapp3.1/Raz
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/TestProject.genruntimeconfig.cache
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Razor/Views/User/start.cshtml.g.cs
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Razor/Views/User/userview.cshtml.g.cs
+/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Razor/Views/User/Upload.cshtml.g.cs

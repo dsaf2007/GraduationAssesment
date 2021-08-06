@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using ExcelDataReader;
 
 namespace ReadExcel.Models
 {
@@ -235,13 +236,30 @@ namespace ReadExcel.Models
     }
     public class UserInfo
     {
+        public string applicationYear { get; set; }//교육과정 적용년도
+        public string advancedStatus { get; set; }//심화대상 여부
+        public string englishTrack { get; set; }//영어트랙 여부
+        public string university { get; set; }//단과대
+        public string major { get; set; }//학과
+
+        public string previousMajor { get; set; }//전과
+        public string studentId { get; set; }//학번
+
+        public string sudentName { get; set; }//이름
+        public string minor1 { get; set; }//부전공1
+        public string minor2 { get; set; }//부전공2
+        public string doubleMajor1 { get; set; }//복수전공1
+        public string doubleMajor2 { get; set; }//복수전공2
+        public string[] englishPass { get; set; }//영어 패스 대상, 패스여부
+        public string teaching { get; set; }//교직인적성 대상 여부
+
         public int publicLibCredit { get; set; }
         public int basicLibCredit { get; set; }
         public int majorCredit { get; set; }
         public int majorDesignCredit { get; set; }
         public int mscCredit { get; set; }
         public int englishCredit { get; set; }
-
+        
         public List<string> publicClasses = new List<string>();//기초교양 수강 목록
         public List<string> basicClasses = new List<string>();//기본소양 수강 목록
         public List<string> mscClasses = new List<string>();//MSC 수강 목록
@@ -250,7 +268,7 @@ namespace ReadExcel.Models
         public List<string> majorDesignList = new List<string>();//전공설계 수강 목록
         public List<string> englishList = new List<string>();//영어강의 수강 목록
 
-        public void GetUserInfo(List<UserSubject> userSubject_)
+        public void GetUserSubjects(List<UserSubject> userSubject_)
         {
             this.publicLibCredit = 0; 
             this.basicLibCredit = 0; 
@@ -295,6 +313,67 @@ namespace ReadExcel.Models
                 {
                     englishCredit += Convert.ToInt32(userSubject.credit);
                     this.englishList.Add(userSubject.classCode);
+                }
+            }
+        }
+
+        public void GetUserInfo(string filename_)
+        {
+            using (var infoStream = System.IO.File.Open(filename_, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                using (var infoReader = ExcelReaderFactory.CreateReader(infoStream))
+                {
+                    for (int i = 0; i < 3; i++)
+                    { infoReader.Read(); }
+                    infoReader.Read();
+                    string[] split = new string[2];
+                    split = infoReader.GetValue(2).ToString().Split(":");
+                    this.applicationYear = split[1];//교육과정 적용 년도
+
+                    split = infoReader.GetValue(18).ToString().Split(":");
+                    this.advancedStatus = split[1];//심화과정 여부
+
+                    split = infoReader.GetValue(28).ToString().Split(":");
+                    this.englishTrack = split[1];//영어트랙 여부
+
+                    infoReader.Read();
+                    this.university = infoReader.GetValue(4).ToString();//대학
+
+                    split = infoReader.GetValue(26).ToString().Split(":");
+                    this.previousMajor = split[1];//전과
+
+                    infoReader.Read();
+                    this.major = infoReader.GetValue(4).ToString();//학과
+
+                    split = infoReader.GetValue(8).ToString().Split(":");
+                    this.studentId = split[1];//학번
+
+                    split = infoReader.GetValue(14).ToString().Split(":");
+                    this.sudentName = split[1];//이름
+
+                    split = infoReader.GetValue(18).ToString().Split(":");
+                    this.minor1 = split[1];//부전공1
+
+                    split = infoReader.GetValue(20).ToString().Split(":");
+                    this.minor2 = split[1];//부전공2
+
+                    split = infoReader.GetValue(26).ToString().Split(":");
+                    this.doubleMajor1 = split[1];//복수1
+
+                    split = infoReader.GetValue(28).ToString().Split(":");
+                    this.doubleMajor2 = split[1];//복수2
+
+                    for(int i = 0; i<15;i++)
+                    {
+                        infoReader.Read();
+                    }
+                    split = infoReader.GetValue(13).ToString().Split(":");
+                    this.englishPass = split[1].Split(",");//영어패스제 대상,패스
+                    englishPass[0].Trim(); englishPass[1].Trim();
+
+                    infoReader.Read();
+                    split = infoReader.GetValue(13).ToString().Split(":");
+                    this.teaching = split[1];
                 }
             }
         }

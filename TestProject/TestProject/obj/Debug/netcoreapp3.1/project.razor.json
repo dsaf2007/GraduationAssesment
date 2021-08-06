@@ -14442,6 +14442,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/Upload.cshtml",
+      "TargetPath": "Views\\User\\Upload.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/start.cshtml",
       "TargetPath": "Views\\User\\start.cshtml",
       "FileKind": "mvc"
