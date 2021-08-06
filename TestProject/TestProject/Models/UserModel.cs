@@ -95,6 +95,7 @@ namespace ReadExcel.Models
       public string[] multiInput { get; set; }
       public List<Class> requiredClasses {get; set;}
       public List<UserSubject> userClasses {get; set;}
+      public UserInfo userInfo {get; set;}
       // 응답유형
         /* 
         0: 대소비교
@@ -111,13 +112,11 @@ namespace ReadExcel.Models
         string result = this.type + " "
             + this.number + " " 
             + this.question + " " 
-            + this.singleInput + " "
-            + this.flag + " " 
             + this.reference + "\n";
         return result;
       }
       // TODO 사용자 데이터가 필요함
-      public bool isChecked()
+      public bool GetRuleChecked()
       {
         // if(Convert.ToInt32(this.number) < 6)
         //   return;
@@ -125,12 +124,12 @@ namespace ReadExcel.Models
         List<Class> reqClasses = this.requiredClasses;
         
         // 전체학점
-        int userCredit = 0;
+        int totalCredit = 0;
         foreach(UserSubject userClass in this.userClasses)
         {
-          userCredit += Convert.ToInt32(userClass.credit);
+          totalCredit += Convert.ToInt32(userClass.credit);
         }
-
+        UserInfo userInfo = this.userInfo;
         // todo 전산학 예외
 
         string userOX = "X"; // 사용자 OX
@@ -138,12 +137,38 @@ namespace ReadExcel.Models
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
         int flag = this.flag;
+        int userCredit = 0;
         switch(flag)
         {
           case 0: // 대소비교 (학점, 평균학점 등)
             if(!this.singleInput.Contains("예시"))
             {
-              if(userCredit >= Convert.ToDouble(this.singleInput))
+              if(this.question.Contains("공통교양")) 
+                userCredit = userInfo.publicLibCredit;
+              if(this.question.Contains("기본소양")) 
+                userCredit = userInfo.basicLibCredit;
+              // TODO: 수학,과학,전산학 세부구분
+              if(this.question.Contains("MSC") || this.question.Contains("BSM"))
+                userCredit = userInfo.mscCredit;
+
+              // 전공과목 기준
+              // TODO: 전필, 전공전문 세분화, 공과대공통과목, 개별연구 예외처리 등
+              if(this.question.Contains("전공"))
+              {
+                userCredit = userInfo.majorCredit;
+                Console.WriteLine(userCredit);
+                Console.WriteLine(this.userInfo.majorCredit);
+              }
+              if(this.question.Contains("설계"))
+              {
+                // 종합설계 이수를 위한 설계과목 학점
+                if(this.question.Contains("종합")) 
+                  userCredit = this.userInfo.majorDesignCredit; // TODO 종합설계 과목 학점 빼야함
+                else // 설계 이수학점 기준
+                  userCredit = this.userInfo.majorDesignCredit;
+              }
+
+              if(userCredit >= Convert.ToInt32(this.singleInput))
                 isRuleSatisfied = true;
             }
             break;
@@ -227,7 +252,12 @@ namespace ReadExcel.Models
 
         public void GetUserInfo(List<UserSubject> userSubject_)
         {
-            this.publicLibCredit = 0; this.basicLibCredit = 0; this.majorCredit = 0; this.majorDesignCredit = 0; this.mscCredit = 0; this.englishCredit = 0;
+            this.publicLibCredit = 0; 
+            this.basicLibCredit = 0; 
+            this.majorCredit = 0; 
+            this.majorDesignCredit = 0; 
+            this.mscCredit = 0; 
+            this.englishCredit = 0;
 
             foreach (UserSubject userSubject in userSubject_)
             {

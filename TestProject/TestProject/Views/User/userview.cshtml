@@ -105,7 +105,7 @@
             <td>
               @if (Convert.ToInt32(@rule.number) > 5)
               {
-                if (@rule.isChecked())
+                if (@rule.GetRuleChecked())
                 {
                   <center>O</center>
                   passedRule += 1;
