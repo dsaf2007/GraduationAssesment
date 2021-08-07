@@ -323,57 +323,173 @@ namespace ReadExcel.Models
             {
                 using (var infoReader = ExcelReaderFactory.CreateReader(infoStream))
                 {
+                    int colNum = infoReader.FieldCount;
                     for (int i = 0; i < 3; i++)
                     { infoReader.Read(); }
                     infoReader.Read();
                     string[] split = new string[2];
-                    split = infoReader.GetValue(2).ToString().Split(":");
-                    this.applicationYear = split[1];//교육과정 적용 년도
-
-                    split = infoReader.GetValue(18).ToString().Split(":");
-                    this.advancedStatus = split[1];//심화과정 여부
-
-                    split = infoReader.GetValue(28).ToString().Split(":");
-                    this.englishTrack = split[1];//영어트랙 여부
-
-                    infoReader.Read();
-                    this.university = infoReader.GetValue(4).ToString();//대학
-
-                    split = infoReader.GetValue(26).ToString().Split(":");
-                    this.previousMajor = split[1];//전과
-
-                    infoReader.Read();
-                    this.major = infoReader.GetValue(4).ToString();//학과
-
-                    split = infoReader.GetValue(8).ToString().Split(":");
-                    this.studentId = split[1];//학번
-
-                    split = infoReader.GetValue(14).ToString().Split(":");
-                    this.sudentName = split[1];//이름
-
-                    split = infoReader.GetValue(18).ToString().Split(":");
-                    this.minor1 = split[1];//부전공1
-
-                    split = infoReader.GetValue(20).ToString().Split(":");
-                    this.minor2 = split[1];//부전공2
-
-                    split = infoReader.GetValue(26).ToString().Split(":");
-                    this.doubleMajor1 = split[1];//복수1
-
-                    split = infoReader.GetValue(28).ToString().Split(":");
-                    this.doubleMajor2 = split[1];//복수2
-
-                    for(int i = 0; i<15;i++)
+                    string readCell = "";
+                    for (int i =0;i<colNum;i++)
                     {
-                        infoReader.Read();
+                        if (infoReader.GetValue(i) != null)
+                            readCell = infoReader.GetValue(i).ToString();
+
+                        if(readCell.Contains("교육과정 적용년도"))
+                        {
+                            split = readCell.Split(":");
+                            this.applicationYear = split[1].Trim();
+                        }
+                        if(readCell.Contains("공학인증심화대상"))
+                        {
+                            split = readCell.Split(":");
+                            this.advancedStatus = split[1].Trim();
+                        }
+                        if (readCell.Contains("영어트랙여부"))
+                        {
+                            split = readCell.Split(":");
+                            this.englishTrack = split[1].Trim();
+                        }
+                        if (readCell.Contains("심화과정 여부"))
+                        {
+                            split = readCell.Split(":");
+                            this.advancedStatus = split[1].Trim();
+                        }
                     }
-                    split = infoReader.GetValue(13).ToString().Split(":");
-                    this.englishPass = split[1].Split(",");//영어패스제 대상,패스
-                    englishPass[0].Trim(); englishPass[1].Trim();
+                    infoReader.Read();
+                    for(int i = 0;i<colNum; i++)
+                    {
+                        if (readCell.Contains("대학"))
+                        {
+                            //split = readCell.Split(":");
+                            this.university = infoReader.GetValue(i + 1).ToString().Trim();
+                        }
+                        if (readCell.Contains("전과"))
+                        {
+                            split = readCell.Split(":");
+                            this.previousMajor = split[1].Trim();
+                        }
+                    }
 
                     infoReader.Read();
-                    split = infoReader.GetValue(13).ToString().Split(":");
-                    this.teaching = split[1];
+                    for (int i = 0; i < colNum; i++)
+                    {
+                        if (readCell.Contains("학과"))
+                        {
+                            //split = readCell.Split(":");
+                            this.major = infoReader.GetValue(i + 1).ToString().Trim();
+                        }
+                        if (readCell.Contains("학번"))
+                        {
+                            split = readCell.Split(":");
+                            this.previousMajor = split[1].Trim();
+                        }
+                        if (readCell.Contains("성명"))
+                        {
+                            split = readCell.Split(":");
+                            this.previousMajor = split[1].Trim();
+                        }
+                        if (readCell.Contains("부전공1"))
+                        {
+                            split = readCell.Split(":");
+                            this.minor1 = split[1].Trim();
+                        }
+                        if (readCell.Contains("부전공2"))
+                        {
+                            split = readCell.Split(":");
+                            this.minor2 = split[1].Trim();
+                        }
+                        if (readCell.Contains("복수1"))
+                        {
+                            split = readCell.Split(":");
+                            this.doubleMajor1 = split[1].Trim();
+                        }
+                        if (readCell.Contains("복수2"))
+                        {
+                            split = readCell.Split(":");
+                            this.doubleMajor2 = split[1].Trim();
+                        }
+                    }
+                    //split = infoReader.GetValue(2).ToString().Split(":");
+                    //this.applicationYear = split[1];//교육과정 적용 년도
+
+                    //split = infoReader.GetValue(18).ToString().Split(":");
+                    //this.advancedStatus = split[1];//심화과정 여부
+
+                    //split = infoReader.GetValue(28).ToString().Split(":");
+                    //this.englishTrack = split[1];//영어트랙 여부
+
+                    //infoReader.Read();
+                    //this.university = infoReader.GetValue(4).ToString();//대학
+
+                    //split = infoReader.GetValue(26).ToString().Split(":");
+                    //this.previousMajor = split[1];//전과
+
+                    //infoReader.Read();
+                    //this.major = infoReader.GetValue(4).ToString();//학과
+
+                    //split = infoReader.GetValue(8).ToString().Split(":");
+                    //this.studentId = split[1];//학번
+
+                    //split = infoReader.GetValue(14).ToString().Split(":");
+                    //this.sudentName = split[1];//이름
+
+                    //split = infoReader.GetValue(18).ToString().Split(":");
+                    //this.minor1 = split[1];//부전공1
+
+                    //split = infoReader.GetValue(20).ToString().Split(":");
+                    //this.minor2 = split[1];//부전공2
+
+                    //split = infoReader.GetValue(26).ToString().Split(":");
+                    //this.doubleMajor1 = split[1];//복수1
+
+                    //split = infoReader.GetValue(28).ToString().Split(":");
+                    //this.doubleMajor2 = split[1];//복수2
+
+                    while (infoReader.Read())
+                    {
+                        for(int i = 0; i< colNum;i++)
+                        {
+                            readCell = "";
+                            //if (infoReader.GetValue(i) == null)
+                            //    readCell = "";
+                            //else
+                            if(infoReader.GetValue(i)!=null)
+                                readCell = infoReader.GetValue(i).ToString();
+
+
+                            if(readCell.Contains("영어패스제"))
+                            {
+                                split = infoReader.GetValue(i).ToString().Split(":");
+                                this.englishPass = split[1].Split(",");
+                                englishPass[0] = englishPass[0].Trim();
+                                Console.WriteLine(englishPass[0]);
+                                if (englishPass[0] == "대상")
+                                    englishPass[1] = englishPass[1].Trim();
+                                else
+                                    englishPass[1] = "";
+                                Console.WriteLine(englishPass[1]);
+                            }
+                            if(readCell.Contains("교직"))
+                            {
+                                split = infoReader.GetValue(i).ToString().Split(":");
+                                this.teaching = split[1];
+                                this.teaching = teaching.Trim();
+                            }
+                        }
+                    }
+                    
+
+                    //for(int i = 0; i<15;i++)
+                    //{
+                    //    infoReader.Read();
+                    //}
+                    //split = infoReader.GetValue(13).ToString().Split(":");
+                    //this.englishPass = split[1].Split(",");//영어패스제 대상,패스
+                    //englishPass[0].Trim(); englishPass[1].Trim();
+
+                    //infoReader.Read();
+                    //split = infoReader.GetValue(13).ToString().Split(":");
+                    //this.teaching = split[1];
                 }
             }
         }

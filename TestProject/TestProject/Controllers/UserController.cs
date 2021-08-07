@@ -36,7 +36,7 @@ namespace ReadExcel.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)
+        public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
             var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
             fileNames.Clear();
@@ -48,7 +48,7 @@ namespace ReadExcel.Controllers
                     (
                         ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Value
                     );
-                    fileNames.Add(fileName);
+                    fileNames.Add(fileName);// 업로드 파일리스트 추가.
                     using(FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
@@ -198,6 +198,8 @@ namespace ReadExcel.Controllers
                       // todo: 과목 List간 대입으로 변경할것
                       int ruleIdx = multiInputRuleNumber[currentSheetNum-2]-1;
                       _rules[ruleIdx].requiredClasses = newClasses;
+
+
                     }
                 }
             }
@@ -214,6 +216,7 @@ namespace ReadExcel.Controllers
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
+            userInfo.GetUserInfo(inputFile);
             for(int i = 0 ; i < _rules.Count; i++)
             {
               _rules[i].userInfo = userInfo;
