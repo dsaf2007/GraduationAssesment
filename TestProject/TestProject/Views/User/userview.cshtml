@@ -62,14 +62,12 @@
       <th>영어</th>
     </tr>
     <tr>
-        <td>@Model.Item2.publicLibCredit</td>
-        <td>@Model.Item2.basicLibCredit</td>
-        <td>@Model.Item2.mscCredit</td>
-        <td>@Model.Item2.majorCredit</td>
-        <td>@Model.Item2.majorDesignCredit</td>
-        <td>@Model.Item2.englishCredit</td>
-        <td>@Model.Item2.applicationYear</td>
-        <td>@Model.Item2.major</td>
+      <td>@Model.Item2.publicLibCredit</td>
+      <td>@Model.Item2.basicLibCredit</td>
+      <td>@Model.Item2.mscCredit</td>
+      <td>@Model.Item2.majorCredit</td>
+      <td>@Model.Item2.majorDesignCredit</td>
+      <td>@Model.Item2.englishCredit</td>
     </tr>
   </table>
   <hr />
@@ -107,7 +105,7 @@
             <td>
               @if (Convert.ToInt32(@rule.number) > 5)
               {
-                if (@rule.isChecked())
+                if (@rule.GetRuleChecked())
                 {
                   <center>O</center>
                   passedRule += 1;

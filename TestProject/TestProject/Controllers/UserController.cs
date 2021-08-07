@@ -29,31 +29,27 @@ namespace ReadExcel.Controllers
         {
             this.environment = environment;
         }
+        //Default GET method
         [HttpGet]
         public IActionResult Upload()
         {
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)
         {
-            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload" + Path.DirectorySeparatorChar);
-
+            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
             fileNames.Clear();
-
-            foreach (IFormFile formFile in fileCollection)
+            foreach(IFormFile formFile in fileCollection)
             {
-                if (formFile.Length > 0)
+                if(formFile.Length > 0)
                 {
                     string fileName = Path.GetFileName
                     (
                         ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Value
                     );
-
                     fileNames.Add(fileName);
-
-                    using (FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
+                    using(FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
                     }
@@ -62,7 +58,6 @@ namespace ReadExcel.Controllers
             return View();
         }
 
-        //Default GET method
         [HttpGet]
         public IActionResult Index()
         {
@@ -76,8 +71,6 @@ namespace ReadExcel.Controllers
 
             const string filename = "./wwwroot/upload/template_test.xlsx";
 
-
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -87,13 +80,8 @@ namespace ReadExcel.Controllers
                     // sheet 
                     int currentSheetNum = 1;
                     List<int> multiInputRuleNumber = new List<int>();
-                    //  List sheet
-                    // int sheetNum = 1;
-                    // string entireRule = "";
-                    string entireUserModel = "";
                     string ruleType = "";
                     // will be passed to View
-
                     reader.Read();
                     while(reader.Read())
                     {
@@ -152,8 +140,7 @@ namespace ReadExcel.Controllers
                           if(valueArray[5] == "목록") 
                           {
                             ruleFlag = (valueArray[2].Contains("필수") 
-                              || valueArray[2].Contains("기초설계") 
-                              || valueArray[2].Contains("종합설계")) 
+                              || valueArray[2].Contains("설계")) 
                               ? 3 : 2;
                             multiInputRuleNumber.Add(Convert.ToInt32(newRule.number));
                           }
@@ -163,14 +150,12 @@ namespace ReadExcel.Controllers
                         newRule.flag = ruleFlag;
                         // Web에 전체 출력
                         userModels.Add(newUserModel);
-                        entireUserModel += newUserModel.ToString();
                         // 실제 Rule 저장
                         _rules.Add(newRule);
                     }
 
                     while(reader.NextResult()) // next sheet
                     {
-                      string classTable = "";
                       List<Class> newClasses = new List<Class>();
                       currentSheetNum++;
                       reader.Read();reader.Read();
@@ -203,11 +188,8 @@ namespace ReadExcel.Controllers
                               newClass.year = Convert.ToInt32(valueArray[cols-1]);
                             }
                             newClasses.Add(newClass);
-                            classTable += newClass.ToString();
                         }
                       }
-                      if(String.IsNullOrEmpty(classTable))
-                        classTable = "empty";
                         
                       resultList.Add(newClasses);
                       // 응답유형이 목록인 룰의 input : Sheet2에 저장
@@ -215,11 +197,29 @@ namespace ReadExcel.Controllers
 
                       // todo: 과목 List간 대입으로 변경할것
                       int ruleIdx = multiInputRuleNumber[currentSheetNum-2]-1;
-                      _rules[ruleIdx].multiInput = classTable.Trim().Split("\n");
                       _rules[ruleIdx].requiredClasses = newClasses;
                     }
                 }
             }
+            // var filename = "./wwwroot/upload/input.xls";
+            //var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
+            string filePath = this.environment.WebRootPath;
+
+            string inputFile = Path.Combine(filePath,"upload",fileNames[0]);
+            string gradeFile = Path.Combine(filePath,"upload",fileNames[1]);
+
+            UserInfo userInfo = new UserInfo();
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
+            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
+            for(int i = 0 ; i < _rules.Count; i++)
+            {
+              _rules[i].userInfo = userInfo;
+              _rules[i].userClasses = userSubjects;
+            }
+
             List<Rule> resultRules = _rules;
             var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, resultRules) {};
             return View(t);
@@ -228,27 +228,26 @@ namespace ReadExcel.Controllers
         [HttpGet]
          public IActionResult userview()
         {
-            //var filename = "./wwwroot/upload/input.xls";
-            //var gradeFile = "./wwwroot/upload/user_score.xlsx";
-            string filePath = "./wwwroot/upload/";
-            Console.WriteLine(fileNames[0]);
-            string filename = filePath + fileNames[0];
-            string gradeFile = filePath + fileNames[1];
+            var filename = "./wwwroot/upload/input.xls";
+            // var gradeFile = "./wwwroot/upload/user_score.xlsx";
+            var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
 
             UserInfo userInfo = new UserInfo();
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
-            userInfo.GetUserInfo(userSubjects);//수강 과목 리스트 및 이수 학점
-            userInfo.getUserInfo(filename);
+            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             for(int i = 0 ; i < _rules.Count; i++)
             {
               _rules[i].userClasses = userSubjects;
+              _rules[i].userInfo = userInfo;
             }
+
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
             return View(t);
         }
+
         public List<UserSubject> ReadUserSubject(string filename_)
         {
             List<UserSubject> temp = new List<UserSubject>();
@@ -292,8 +291,10 @@ namespace ReadExcel.Controllers
                             engineeringFactorDetail = valueArray[17], // 공학세부요소 : 전공설계, 수학, 과학 등
                             english = valueArray[18] // 원어강의 종류
                         });
+
                     }
                 }
+
             }
             return temp;
         }
