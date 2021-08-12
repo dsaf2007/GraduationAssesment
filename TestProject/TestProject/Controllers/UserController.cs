@@ -304,8 +304,9 @@ namespace ReadExcel.Controllers
                             credit = valueArray[10], // 학점
                             engineeringFactor = valueArray[16], // 공학요소 : 전공, MSC, 전문교양
                             engineeringFactorDetail = valueArray[17], // 공학세부요소 : 전공설계, 수학, 과학 등
-                            english = valueArray[18] // 원어강의 종류
-                        });
+                            english = valueArray[18], // 원어강의 종류
+                            retake = valueArray[13] //재수강 여부
+                        }); ;
 
                     }
                 }
@@ -315,3 +316,6 @@ namespace ReadExcel.Controllers
         }
     }
 }
+
+
+

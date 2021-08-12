@@ -231,6 +231,13 @@ namespace ReadExcel.Models
         }
     }
 
+    public class Pair
+    {
+        public string year { get; set; }
+        public string classCode { get; set; }
+
+    }
+
     public class UserSubject
     {
         public string year { get; set; }
@@ -246,6 +253,8 @@ namespace ReadExcel.Models
         public string engineeringFactor { get; set; }
         public string engineeringFactorDetail { get; set; }
         public string english { get; set; }
+
+        public string retake { get; set; }
     }
     public class UserInfo
     {
@@ -295,6 +304,8 @@ namespace ReadExcel.Models
         public List<string> englishList = new List<string>();//영어강의 수강 목록
         public List<string> englishMajorList = new List<string>();//영어 전공강의 수강 목록
 
+        public List<Pair> basicClassesPair = new List<Pair>();
+
 
         public void GetUserSubjects(List<UserSubject> userSubject_)
         {
@@ -331,6 +342,12 @@ namespace ReadExcel.Models
                 {
                     this.basicLibCredit += subjectCredit;
                     this.basicClasses.Add(userSubject.classCode);
+                    this.basicClassesPair.Add(new Pair
+                    {
+                        year = userSubject.year,
+                        classCode = userSubject.classCode
+                    }
+                        );
                 }
                 if (userSubject.engineeringFactor == "MSC/BSM")
                 {
@@ -553,4 +570,6 @@ namespace ReadExcel.Models
             }
         }
     }
+
+
 }
