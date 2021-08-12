@@ -66,7 +66,7 @@ namespace TestProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)
         {
-            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload\\");
+            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
 
             foreach(IFormFile formFile in fileCollection)
             {
@@ -83,7 +83,6 @@ namespace TestProject.Controllers
                     }
                 }
             }
-
             return View();
         }
 
