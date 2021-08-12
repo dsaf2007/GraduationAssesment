@@ -236,6 +236,8 @@ namespace ReadExcel.Models
         public string year { get; set; }
         public string classCode { get; set; }
 
+        public string retake { get; set; }
+
     }
 
     public class UserSubject
@@ -345,9 +347,9 @@ namespace ReadExcel.Models
                     this.basicClassesPair.Add(new Pair
                     {
                         year = userSubject.year,
-                        classCode = userSubject.classCode
-                    }
-                        );
+                        classCode = userSubject.classCode,
+                        retake = userSubject.retake
+                    });
                 }
                 if (userSubject.engineeringFactor == "MSC/BSM")
                 {
@@ -402,6 +404,8 @@ namespace ReadExcel.Models
                     this.englishList.Add(userSubject.classCode);
                 }
             }
+            CheckException();
+            Console.WriteLine(this.basicLibCredit);
         }
 
         public void GetUserInfo(string filename_)
@@ -497,41 +501,6 @@ namespace ReadExcel.Models
                             this.doubleMajor2 = split[1].Trim();
                         }
                     }
-                    //split = infoReader.GetValue(2).ToString().Split(":");
-                    //this.applicationYear = split[1];//교육과정 적용 년도
-
-                    //split = infoReader.GetValue(18).ToString().Split(":");
-                    //this.advancedStatus = split[1];//심화과정 여부
-
-                    //split = infoReader.GetValue(28).ToString().Split(":");
-                    //this.englishTrack = split[1];//영어트랙 여부
-
-                    //infoReader.Read();
-                    //this.university = infoReader.GetValue(4).ToString();//대학
-
-                    //split = infoReader.GetValue(26).ToString().Split(":");
-                    //this.previousMajor = split[1];//전과
-
-                    //infoReader.Read();
-                    //this.major = infoReader.GetValue(4).ToString();//학과
-
-                    //split = infoReader.GetValue(8).ToString().Split(":");
-                    //this.studentId = split[1];//학번
-
-                    //split = infoReader.GetValue(14).ToString().Split(":");
-                    //this.sudentName = split[1];//이름
-
-                    //split = infoReader.GetValue(18).ToString().Split(":");
-                    //this.minor1 = split[1];//부전공1
-
-                    //split = infoReader.GetValue(20).ToString().Split(":");
-                    //this.minor2 = split[1];//부전공2
-
-                    //split = infoReader.GetValue(26).ToString().Split(":");
-                    //this.doubleMajor1 = split[1];//복수1
-
-                    //split = infoReader.GetValue(28).ToString().Split(":");
-                    //this.doubleMajor2 = split[1];//복수2
 
                     while (infoReader.Read())
                     {
@@ -569,7 +538,28 @@ namespace ReadExcel.Models
                 }
             }
         }
-    }
 
+        public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
+        public void CheckException()
+        {
+            foreach(string basicArray_ in basicArray)
+            {
+                foreach(Pair basicClassesPair_ in basicClassesPair)
+                {
+                    if(basicArray_ == basicClassesPair_.classCode)//예외 처리할 과목명 일치시
+                    {
+                        if(Convert.ToInt32(basicClassesPair_.year) >=2021)// 수강년도가 2021년 이후
+                        {
+                            if(basicClassesPair_.retake != "NEW재수강")//재수강이 아닐경우
+                            {
+                                this.basicClasses.Remove(basicClassesPair_.classCode);
+                                this.basicLibCredit -= 3;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }
