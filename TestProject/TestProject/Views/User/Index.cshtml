@@ -17,6 +17,119 @@
   {
     <input type="submit" value="Get Users" />
   }
+  @* @if (Model.Item1.Count() > 0)
+    {
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+    <th>구분</th>
+    <th>일련번호</th>
+    <th>질문</th>
+    <th>입력</th>
+    <th>응답유형</th>
+    <th>비고</th>
+    </tr>
+    @foreach (UserModel user in Model.Item1)
+    {
+    <tr>
+    <td>@user.type</td>
+    <td>@user.number</td>
+    <td>@user.question</td>
+    <td>@user.input</td>
+    <td>@user.flag</td>-
+    <td>@user.reference</td>-
+    </tr>
+    }
+    </table>
+    } *@
+  @* @if (Model.Item2.Count() > 0)
+    {
+    @foreach (List<Class> classList in Model.Item2)
+    {
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+    <th>학수번호</th>
+    <th>과목명</th>
+    <th>학점</th>
+    <th>설계학점</th>
+    <th>연도</th>
+    </tr>
+    @foreach (Class c in classList)
+    {
+    <tr>
+    <td>@c.classCode</td>
+    <td>@c.className</td>
+    <td>@c.credit</td>
+    <td>@c.design</td>
+    <td>@c.year</td>
+    </tr>
+    }
+    </table>
+    }
+    } *@
+  <p>@(Model.Item3.Count())</p>
+  @if (Model.Item3.Count() > 0)
+  {
+    int passedRule = 0;
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>번호</th>
+        <th>구분</th>
+        <th>질문</th>
+        <th>만족여부</th>
+      </tr>
+      @foreach (Rule rule in Model.Item3)
+      {
+        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        {
+          <tr>
+            <td>@rule.number</td>
+            <td>@rule.type</td>
+            <td>@rule.question</td>
+            <td>
+              @* @if (Convert.ToInt32(@rule.number) > 5)
+                {
+                if (@rule.check())
+                {
+                <center>O</center>
+                passedRule += 1;
+                }
+                else
+                {
+                <center><b>X</b></center>
+                }
+                } *@
+            </td>
+          </tr>
+        }
+      }
+    </table>
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>졸업가능여부</th>
+        <th>만족조건/전체조건</th>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            @if (passedRule < 27)
+            {
+              <b>Fail</b>
+            }
+            else
+            {
+              <b>Pass</b>
+            }
+          </center>
+        </td>
+
+        <td>@passedRule / 27</td>
+      </tr>
+    </table>
+  }
   <h3>졸업사정결과 확인</h3>
   <form asp-controller="User" asp-action="userview" method="get">
     <p><input type="submit" value="확인" /></p>

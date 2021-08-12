@@ -78,7 +78,6 @@ namespace ReadExcel.Controllers
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     // sheet 
-                    int currentRuleNum = 0;
                     int currentSheetNum = 1;
                     List<int> multiInputRuleNumber = new List<int>();
                     string ruleType = "";
@@ -103,8 +102,7 @@ namespace ReadExcel.Controllers
                           valueArray[0] = ruleType;
                         else
                           ruleType = valueArray[0];
-
-                        // 필요없음
+                        
                         UserModel newUserModel = new UserModel{
                             type = ruleType, // 구분
                             number = valueArray[1], // 일련번호
@@ -134,32 +132,26 @@ namespace ReadExcel.Controllers
                           if(valueArray[5] == "단수" || valueArray[5] == "OX") 
                           {
                             singleInput = valueArray[3];
-                            ruleFlag = 0;
-                            if(valueArray[5] == "OX")
-                            {
-                              singleInput = singleInput.ToUpper();
-                              ruleFlag = 1;
-                            }
-                            newRule.singleInput = singleInput;
+                            newRule.singleInput = singleInput.ToUpper();
+                            ruleFlag = (valueArray[5] == "단수" 
+                                          && !("OX".Contains(singleInput.ToUpper()))) 
+                                        ? 0 : 1;
                           }
                           if(valueArray[5] == "목록") 
                           {
                             ruleFlag = (valueArray[2].Contains("필수") 
-                              || valueArray[2].Contains("기초설계")
-                              || valueArray[2].Contains("종합설계")) 
+                              || valueArray[2].Contains("설계")) 
                               ? 3 : 2;
-                            multiInputRuleNumber.Add(currentRuleNum);
+                            multiInputRuleNumber.Add(Convert.ToInt32(newRule.number));
                           }
                         }
                         
                         newUserModel.flag = ruleFlag.ToString();
-                        // rule flag : int
                         newRule.flag = ruleFlag;
                         // Web에 전체 출력
                         userModels.Add(newUserModel);
                         // 실제 Rule 저장
                         _rules.Add(newRule);
-                        currentRuleNum++;
                     }
 
                     while(reader.NextResult()) // next sheet
@@ -201,10 +193,13 @@ namespace ReadExcel.Controllers
                         
                       resultList.Add(newClasses);
                       // 응답유형이 목록인 룰의 input : Sheet2에 저장
+                      // sheet rule: 1부터 시작하므로 -1
 
                       // todo: 과목 List간 대입으로 변경할것
-                      int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
+                      int ruleIdx = multiInputRuleNumber[currentSheetNum-2]-1;
                       _rules[ruleIdx].requiredClasses = newClasses;
+
+
                     }
                 }
             }
@@ -236,13 +231,9 @@ namespace ReadExcel.Controllers
         [HttpGet]
          public IActionResult userview()
         {
-            // var filename = "./wwwroot/upload/input.xls";
-            // gradeFile = "./wwwroot/upload/user_score.xlsx";
-            // var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
-            string filePath = this.environment.WebRootPath;
-
-            string inputFile = Path.Combine(filePath,"upload",fileNames[0]);
-            string gradeFile = Path.Combine(filePath,"upload",fileNames[1]);
+            var filename = "./wwwroot/upload/input.xls";
+            // var gradeFile = "./wwwroot/upload/user_score.xlsx";
+            var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
 
             UserInfo userInfo = new UserInfo();
 
@@ -250,13 +241,10 @@ namespace ReadExcel.Controllers
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
-            userInfo.GetUserInfo(inputFile);
-            
-
             for(int i = 0 ; i < _rules.Count; i++)
             {
-              _rules[i].userInfo = userInfo;
               _rules[i].userClasses = userSubjects;
+              _rules[i].userInfo = userInfo;
             }
 
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
