@@ -1,4 +1,5 @@
-﻿using System.Net.Cache;
+﻿using System.Runtime.CompilerServices;
+using System.Net.Cache;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -230,6 +231,158 @@ namespace ReadExcel.Models
             return isRuleSatisfied;
         }
     }
+    // 전체 rule & check list
+    public class RuleManager
+    {
+      public List<Rule> rules {get;set;}
+      public List<bool> ruleCheckedList {get;set;}
+
+      public RuleManager()
+      {
+        this.rules = new List<Rule>();
+        this.ruleCheckedList = new List<bool>();
+      }
+      public RuleManager(List<Rule> rules)
+      {
+        this.rules = rules;
+        this.ruleCheckedList = new List<bool>();
+      }
+      public List<bool> GetAllRullChecked()
+      {
+        if(this.rules.Count == 0)
+          return null;
+        
+        List<Rule> rules = this.rules;
+        for(int i = 0 ; i < this.rules.Count; i++)
+        {
+          RuleChecker ruleChecker = new RuleChecker(rules[i]);
+          this.ruleCheckedList[i] = ruleChecker.GetRuleChecked();
+        }
+        return this.ruleCheckedList;
+      }
+    }
+    // 개별 Rule Checker (클래스 분리)
+    // todo: UserInfo, UserClass 등 사용자 정보(+디비?)를
+    // rule이 아닌 ruleChecker 또는 Manager가 가지고 있도록 하기
+    public class RuleChecker
+    {
+      public Rule rule {get;set;}
+      public RuleChecker(Rule rule)
+      {
+        this.rule = rule;
+      }
+
+      public bool GetRuleChecked()
+      {     
+        bool isRuleSatisfied = false;
+        Rule rule = this.rule;
+        List<Class> reqClasses = rule.requiredClasses;
+
+        UserInfo userInfo = rule.userInfo;
+        int totalCredit = userInfo.totalCredit;
+        // todo 전산학 예외
+
+        string userOX = "X"; // 사용자 OX
+                              // -------------------------------- 
+        // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
+        int flag = rule.flag;
+        int userCredit = 0;
+        // 띄어쓰기 제거
+        string question = Regex.Replace(rule.question, @"\s", "");
+        switch (flag)
+        {
+            case 0: // 대소비교 (학점, 평균학점 등)
+                if (!rule.singleInput.Contains("예시"))
+                {
+                    if (question.Contains("공통교양"))
+                        userCredit = userInfo.publicLibCredit;
+                    if (question.Contains("기본소양"))
+                        userCredit = userInfo.basicLibCredit;
+                    // TODO: 수학,과학,전산학 세부구분
+                    if (question.Contains("MSC") || question.Contains("BSM"))
+                        userCredit = userInfo.mscCredit;
+                    if (question.Contains("과학") && question.Contains("실험"))
+                        userCredit = userInfo.mscScienceExperimentCredit;
+                    // 전공과목 기준
+                    // TODO: 전필, 전공전문 세분화, 공과대공통과목, 개별연구 예외처리 등
+                    if (question.Contains("전공"))
+                    {
+                      if(question.Contains("전문"))
+                      {
+                        userCredit = userInfo.majorSpecialCredit;
+                      }
+                      if(question.Contains("필수"))
+                      {
+                        userCredit = userInfo.majorEssentialCredit;
+                      }
+                      userCredit = userInfo.majorCredit;
+                    }
+
+                    if (question.Contains("설계"))
+                    {
+                        userCredit = userInfo.majorDesignCredit;
+                    }
+                    if(question.Contains("총취득학점"))
+                      userCredit = userInfo.totalCredit;
+                    if(question.Contains("영어"))
+                    {
+                      if(question.Contains("전공과목수"))
+                        userCredit = userInfo.englishMajorList.Count;
+                      else if(question.Contains("총과목수"))
+                        userCredit = userInfo.englishList.Count;
+                    }
+                    // Todo: 평점평균, OX 등
+                    if (userCredit >= Convert.ToDouble(rule.singleInput))
+                        isRuleSatisfied = true;
+                }
+                break;
+            case 1: // OX
+                    // OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등에 따라
+                    // 다른 룰에 영향 미침 (예) 졸업논문 대체가능 ox ?
+                if (!rule.singleInput.Contains("예시"))
+                {
+                    if (!("OXox".Contains(rule.singleInput) && "OXox".Contains(userOX)))
+                        return false;
+                    if (rule.singleInput.Trim().ToUpper() == userOX.Trim().ToUpper())
+                        isRuleSatisfied = true;
+                }
+                break;
+            case 2: // 최소한 하나 만족
+                foreach (UserSubject userClass in rule.userClasses)
+                {
+                    foreach (Class reqClass in rule.requiredClasses)
+                    {
+                        if (userClass.classCode == reqClass.classCode)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case 3: // 전체 만족
+                int count = 0;
+                foreach (UserSubject userClass in rule.userClasses)
+                {
+                    foreach (Class reqClass in rule.requiredClasses)
+                    {
+                        if (userClass.classCode == reqClass.classCode)
+                        {
+                            count += 1;
+                            break;
+                        }
+                    }
+                }
+                if (count >= reqClasses.Count)
+                    isRuleSatisfied = true;
+                break;
+            default:
+                break;
+        }
+        return isRuleSatisfied;
+      }
+    }
+
+
 
     public class UserSubject
     {
