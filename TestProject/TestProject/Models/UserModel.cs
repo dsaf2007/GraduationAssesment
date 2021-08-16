@@ -140,7 +140,7 @@ namespace ReadExcel.Models
             // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
 
             int flag = this.flag;
-            int userCredit = 0;
+            double userCredit = 0;
             // 띄어쓰기 제거
             string question = Regex.Replace(this.question, @"\s", "");
             switch (flag)
@@ -178,6 +178,8 @@ namespace ReadExcel.Models
                         }
                         if (question.Contains("총취득학점"))
                             userCredit = userInfo.totalCredit;
+                        if (question.Contains("평점평균"))
+                            userCredit = userInfo.gradeAverage;
                         if (question.Contains("영어"))
                         {
                             if (question.Contains("전공과목수"))
@@ -301,17 +303,22 @@ namespace ReadExcel.Models
             case 0: // 대소비교 (학점, 평균학점 등)
                 if (!rule.singleInput.Contains("예시"))
                 {
+                    // 공통교양, 기본소양
                     if (question.Contains("공통교양"))
                         userCredit = userInfo.publicLibCredit;
                     if (question.Contains("기본소양"))
                         userCredit = userInfo.basicLibCredit;
-                    // TODO: 수학,과학,전산학 세부구분
+                    // MSC
                     if (question.Contains("MSC") || question.Contains("BSM"))
                         userCredit = userInfo.mscCredit;
                     if (question.Contains("과학") && question.Contains("실험"))
                         userCredit = userInfo.mscScienceExperimentCredit;
+                    if (question.Contains("수학"))
+                        userCredit = userInfo.mscMathCredit;
+                    if (question.Contains("전산학"))
+                        userCredit = userInfo.mscComputerCredit;
                     // 전공과목 기준
-                    // TODO: 전필, 전공전문 세분화, 공과대공통과목, 개별연구 예외처리 등
+                    // TODO: 공과대공통과목, 개별연구 예외처리 등
                     if (question.Contains("전공"))
                     {
                       if(question.Contains("전문"))
@@ -462,6 +469,7 @@ namespace ReadExcel.Models
         public int englishMajorCredit { get; set; }
 
         public int totalCredit { get; set; }
+        public double gradeAverage {get; set;}
 
         public List<UserSubject> publicClasses = new List<UserSubject>();//기초교양 수강 목록
         public List<UserSubject> basicClasses = new List<UserSubject>();//기본소양 수강 목록
@@ -473,6 +481,7 @@ namespace ReadExcel.Models
         public List<UserSubject> englishMajorList = new List<UserSubject>();//영어 전공강의 수강 목록
 
         public List<Pair> basicClassesPair = new List<Pair>();
+
         public void GetUserSubjects(List<UserSubject> userSubject_)
         {
             this.publicLibCredit = 0;
@@ -494,6 +503,7 @@ namespace ReadExcel.Models
             this.englishMajorCredit = 0;
 
             this.totalCredit = 0;
+            this.gradeAverage = 0;
 
             foreach (UserSubject userSubject in userSubject_)
             {
@@ -684,12 +694,17 @@ namespace ReadExcel.Models
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishPass = split[1].Split(",");
                                 englishPass[0] = englishPass[0].Trim();
-                                Console.WriteLine(englishPass[0]);
+                                // Console.WriteLine(englishPass[0]);
                                 if (englishPass[0] == "대상")
                                     englishPass[1] = englishPass[1].Trim();
                                 else
                                     englishPass[1] = "";
-                                Console.WriteLine(englishPass[1]);
+                                // Console.WriteLine(englishPass[1]);
+                            }
+                            if(readCell.Contains("평점평균"))
+                            {
+                              split = infoReader.GetValue(i).ToString().Split(":");
+                              this.gradeAverage = Convert.ToDouble(split[1]);
                             }
                             if (readCell.Contains("교직"))
                             {
