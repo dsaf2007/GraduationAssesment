@@ -145,8 +145,7 @@ namespace ReadExcel.Controllers
                           if(valueArray[5] == "목록") 
                           {
                             ruleFlag = (valueArray[2].Contains("필수") 
-                              || valueArray[2].Contains("기초설계")
-                              || valueArray[2].Contains("종합설계")) 
+                              || valueArray[2].Contains("설계"))
                               ? 3 : 2;
                             multiInputRuleNumber.Add(currentRuleNum);
                           }
@@ -240,9 +239,6 @@ namespace ReadExcel.Controllers
         [HttpGet]
          public IActionResult userview()
         {
-            // var filename = "./wwwroot/upload/input.xls";
-            // gradeFile = "./wwwroot/upload/user_score.xlsx";
-            // var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
             string filePath = this.environment.WebRootPath;
 
             string inputFile = Path.Combine(filePath,"upload",fileNames[0]);
