@@ -196,10 +196,14 @@ namespace ReadExcel.Models
                         userCredit = userInfo.basicLibCredit;
                     // MSC
                     if (question.Contains("MSC") || question.Contains("BSM"))
+                    {
                         userCredit = userInfo.mscCredit;
+                        Console.WriteLine("userCredit" + Convert.ToDouble(userCredit).ToString());
+                        Console.WriteLine("singleInput" + Convert.ToDouble(rule.singleInput).ToString());
+                    }
                     if (question.Contains("과학") && question.Contains("실험"))
                         userCredit = userInfo.mscScienceExperimentCredit;
-                    if (question.Contains("수학"))
+                    if (question.Contains("수학이수")) // 그냥 '수학' -> 이'수학'점 에 걸림
                         userCredit = userInfo.mscMathCredit;
                     if (question.Contains("전산학"))
                         userCredit = userInfo.mscComputerCredit;
@@ -235,7 +239,9 @@ namespace ReadExcel.Models
                     }
                     // Todo: 평점평균, OX 등
                     if (userCredit >= Convert.ToDouble(rule.singleInput))
+                    {
                         isRuleSatisfied = true;
+                    }
                 }
                 break;
             case 1: // OX
@@ -599,29 +605,35 @@ namespace ReadExcel.Models
                             if (infoReader.GetValue(i) != null)
                                 readCell = infoReader.GetValue(i).ToString();
 
-
                             if (readCell.Contains("영어패스제"))
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishPass = split[1].Split(",");
-                                englishPass[0] = englishPass[0].Trim();
-                                // Console.WriteLine(englishPass[0]);
-                                if (englishPass[0] == "대상")
-                                    englishPass[1] = englishPass[1].Trim();
-                                else
-                                    englishPass[1] = "";
+                                if(englishPass.Length > 1)
+                                {
+                                  englishPass[0] = englishPass[0].Trim();
+                                  // Console.WriteLine(englishPass[0]);
+                                  if (englishPass[0] == "대상")
+                                      englishPass[1] = englishPass[1].Trim();
+                                  else
+                                      englishPass[1] = "";
+                                }
+
                                 // Console.WriteLine(englishPass[1]);
                             }
-                            if(readCell.Contains("영어강의이수"))
+                            if(readCell.Contains("영어강의이수:")) // :붙이는 이유: 다음에 오는 '영어강의이수결과' 때문
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishClassPass = split[1].Split(",");
-                                englishClassPass[0] = englishClassPass[0].Trim();
-                                // Console.WriteLine(englishPass[0]);
-                                if (englishClassPass[0] == "대상")
-                                    englishClassPass[1] = englishClassPass[1].Trim();
-                                else
-                                    englishClassPass[1] = "";
+                                if(englishClassPass.Length > 1)
+                                {
+                                  englishClassPass[0] = englishClassPass[0].Trim();
+                                  // Console.WriteLine(englishPass[0]);
+                                  if (englishClassPass[0] == "대상")
+                                      englishClassPass[1] = englishClassPass[1].Trim();
+                                  else
+                                      englishClassPass[1] = "";
+                                }
                             }
                             if(readCell.Contains("평점평균"))
                             {
