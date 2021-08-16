@@ -98,6 +98,9 @@ namespace ReadExcel.Models
         // 엑셀 입력 데이터
         public string singleInput { get; set; }
         public string[] multiInput { get; set; }
+
+        // rule passed
+        public bool isPassed {get; set;}
         public List<Class> requiredClasses { get; set; }
         public List<UserSubject> userClasses { get; set; }
         public UserInfo userInfo { get; set; }
@@ -121,13 +124,13 @@ namespace ReadExcel.Models
             return result;
         }
         // TODO 사용자 데이터가 필요함
+        // 아래 함수는 RuleChecker로 이동!!
         public bool GetRuleChecked()
         {
             // if(Convert.ToInt32(this.number) < 6)
             //   return;
             bool isRuleSatisfied = false;
             List<Class> reqClasses = this.requiredClasses;
-
             UserInfo userInfo = this.userInfo;
             int totalCredit = userInfo.totalCredit;
             // todo 전산학 예외
@@ -236,6 +239,10 @@ namespace ReadExcel.Models
     {
       public List<Rule> rules {get;set;}
       public List<bool> ruleCheckedList {get;set;}
+      // todo: 밑에 두개 미구현; 개별Rule에서 여전히 전체 user정보 저장하는중
+      // Manager에서 관리하고 user에서는 가져다쓰도록 해야하지않나
+      public UserInfo userInfo {get;set;}
+      public List<UserSubject> userSubjects {get;set;}
 
       public RuleManager()
       {
@@ -247,18 +254,17 @@ namespace ReadExcel.Models
         this.rules = rules;
         this.ruleCheckedList = new List<bool>();
       }
-      public List<bool> GetAllRullChecked()
+      public void CheckAllRules()
       {
         if(this.rules.Count == 0)
-          return null;
+          return;
         
         List<Rule> rules = this.rules;
         for(int i = 0 ; i < this.rules.Count; i++)
         {
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
-          this.ruleCheckedList[i] = ruleChecker.GetRuleChecked();
+          ruleChecker.CheckRule();
         }
-        return this.ruleCheckedList;
       }
     }
     // 개별 Rule Checker (클래스 분리)
@@ -379,6 +385,12 @@ namespace ReadExcel.Models
                 break;
         }
         return isRuleSatisfied;
+      }
+      public void CheckRule()
+      {
+        if(this.rule == null)
+          return;
+        this.rule.isPassed = GetRuleChecked();
       }
     }
 

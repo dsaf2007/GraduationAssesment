@@ -228,6 +228,10 @@ namespace ReadExcel.Controllers
               _rules[i].userClasses = userSubjects;
             }
 
+            
+            RuleManager ruleManager = new RuleManager(_rules);
+            ruleManager.CheckAllRules();
+            
             List<Rule> resultRules = _rules;
             var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, resultRules) {};
             return View(t);
