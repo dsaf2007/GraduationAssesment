@@ -133,7 +133,7 @@ namespace ReadExcel.Models
 
             string userOX = "X"; // 사용자 OX
                                  // -------------------------------- 
-            // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
+                                 // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
             int flag = this.flag;
             int userCredit = 0;
             // 띄어쓰기 제거
@@ -156,29 +156,29 @@ namespace ReadExcel.Models
                         // TODO: 전필, 전공전문 세분화, 공과대공통과목, 개별연구 예외처리 등
                         if (question.Contains("전공"))
                         {
-                          if(question.Contains("전문"))
-                          {
-                            userCredit = userInfo.majorSpecialCredit;
-                          }
-                          if(question.Contains("필수"))
-                          {
-                            userCredit = userInfo.majorEssentialCredit;
-                          }
-                          userCredit = userInfo.majorCredit;
+                            if (question.Contains("전문"))
+                            {
+                                userCredit = userInfo.majorSpecialCredit;
+                            }
+                            if (question.Contains("필수"))
+                            {
+                                userCredit = userInfo.majorEssentialCredit;
+                            }
+                            userCredit = userInfo.majorCredit;
                         }
 
                         if (question.Contains("설계"))
                         {
                             userCredit = userInfo.majorDesignCredit;
                         }
-                        if(question.Contains("총취득학점"))
-                          userCredit = userInfo.totalCredit;
-                        if(question.Contains("영어"))
+                        if (question.Contains("총취득학점"))
+                            userCredit = userInfo.totalCredit;
+                        if (question.Contains("영어"))
                         {
-                          if(question.Contains("전공과목수"))
-                            userCredit = userInfo.englishMajorList.Count;
-                          else if(question.Contains("총과목수"))
-                            userCredit = userInfo.englishList.Count;
+                            if (question.Contains("전공과목수"))
+                                userCredit = userInfo.englishMajorList.Count;
+                            else if (question.Contains("총과목수"))
+                                userCredit = userInfo.englishList.Count;
                         }
                         // Todo: 평점평균, OX 등
                         if (userCredit >= Convert.ToDouble(this.singleInput))
@@ -283,19 +283,19 @@ namespace ReadExcel.Models
         public int majorCredit { get; set; }
         public int majorDesignCredit { get; set; }
 
-        public int majorEssentialCredit {get; set;}
-        public int majorSpecialCredit {get; set;}
+        public int majorEssentialCredit { get; set; }
+        public int majorSpecialCredit { get; set; }
 
         public int mscCredit { get; set; }
-        public int mscMathCredit {get; set;}
-        public int mscScienceCredit {get; set;}
-        public int mscScienceExperimentCredit {get; set;}
-        public int mscComputerCredit {get; set;}
+        public int mscMathCredit { get; set; }
+        public int mscScienceCredit { get; set; }
+        public int mscScienceExperimentCredit { get; set; }
+        public int mscComputerCredit { get; set; }
 
         public int englishCredit { get; set; }
-        public int englishMajorCredit { get; set;}
+        public int englishMajorCredit { get; set; }
 
-        public int totalCredit {get; set;}
+        public int totalCredit { get; set; }
 
         //public List<string> publicClasses = new List<string>();//기초교양 수강 목록
         //public List<string> basicClasses = new List<string>();//기본소양 수강 목록
@@ -320,15 +320,15 @@ namespace ReadExcel.Models
 
         public void GetUserSubjects(List<UserSubject> userSubject_)
         {
-            this.publicLibCredit = 0; 
-            this.basicLibCredit = 0; 
+            this.publicLibCredit = 0;
+            this.basicLibCredit = 0;
 
-            this.majorCredit = 0; 
+            this.majorCredit = 0;
             this.majorSpecialCredit = 0;
             this.majorEssentialCredit = 0;
-            this.majorDesignCredit = 0; 
+            this.majorDesignCredit = 0;
 
-            this.mscCredit = 0; 
+            this.mscCredit = 0;
             this.mscMathCredit = 0;
             this.mscScienceCredit = 0;
             this.mscScienceExperimentCredit = 0;
@@ -363,21 +363,21 @@ namespace ReadExcel.Models
                 if (userSubject.engineeringFactor == "MSC/BSM")
                 {
                     this.mscCredit += subjectCredit;
-                    switch(userSubject.engineeringFactorDetail)
+                    switch (userSubject.engineeringFactorDetail)
                     {
-                      case "수학":
-                        this.mscMathCredit += subjectCredit;
-                        break;
-                      case "기초과학":
-                        if(userSubject.className.Contains("실험"))
-                          this.mscScienceExperimentCredit += subjectCredit;
-                        this.mscScienceCredit += subjectCredit;
-                        break;
-                      case "전산학":
-                        this.mscComputerCredit += subjectCredit;
-                        break;
-                      default:
-                        break;
+                        case "수학":
+                            this.mscMathCredit += subjectCredit;
+                            break;
+                        case "기초과학":
+                            if (userSubject.className.Contains("실험"))
+                                this.mscScienceExperimentCredit += subjectCredit;
+                            this.mscScienceCredit += subjectCredit;
+                            break;
+                        case "전산학":
+                            this.mscComputerCredit += subjectCredit;
+                            break;
+                        default:
+                            break;
                     }
                     this.mscClasses.Add(userSubject);
                 }
@@ -386,12 +386,12 @@ namespace ReadExcel.Models
                     this.majorCredit += subjectCredit;
                     if (userSubject.completionDiv == "전필")
                     {
-                      this.majorEssentialList.Add(userSubject.classCode);
-                      this.majorEssentialCredit += subjectCredit;
+                        this.majorEssentialList.Add(userSubject);
+                        this.majorEssentialCredit += subjectCredit;
                     }
                     if (userSubject.completionDivField == "전문")
                     {
-                      this.majorSpecialCredit += subjectCredit;
+                        this.majorSpecialCredit += subjectCredit;
                     }
                     if (userSubject.engineeringFactorDetail == "전공설계")
                     {
@@ -430,17 +430,17 @@ namespace ReadExcel.Models
                     infoReader.Read();
                     string[] split = new string[2];
                     string readCell = "";
-                    for (int i =0;i<colNum;i++)
+                    for (int i = 0; i < colNum; i++)
                     {
                         if (infoReader.GetValue(i) != null)
                             readCell = infoReader.GetValue(i).ToString();
 
-                        if(readCell.Contains("교육과정 적용년도"))
+                        if (readCell.Contains("교육과정 적용년도"))
                         {
                             split = readCell.Split(":");
                             this.applicationYear = split[1].Trim();
                         }
-                        if(readCell.Contains("공학인증심화대상"))
+                        if (readCell.Contains("공학인증심화대상"))
                         {
                             split = readCell.Split(":");
                             this.advancedStatus = split[1].Trim();
@@ -457,7 +457,7 @@ namespace ReadExcel.Models
                         }
                     }
                     infoReader.Read();
-                    for(int i = 0;i<colNum; i++)
+                    for (int i = 0; i < colNum; i++)
                     {
                         if (readCell.Contains("대학"))
                         {
@@ -513,17 +513,17 @@ namespace ReadExcel.Models
 
                     while (infoReader.Read())
                     {
-                        for(int i = 0; i< colNum;i++)
+                        for (int i = 0; i < colNum; i++)
                         {
                             readCell = "";
                             //if (infoReader.GetValue(i) == null)
                             //    readCell = "";
                             //else
-                            if(infoReader.GetValue(i)!=null)
+                            if (infoReader.GetValue(i) != null)
                                 readCell = infoReader.GetValue(i).ToString();
 
 
-                            if(readCell.Contains("영어패스제"))
+                            if (readCell.Contains("영어패스제"))
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishPass = split[1].Split(",");
@@ -535,7 +535,7 @@ namespace ReadExcel.Models
                                     englishPass[1] = "";
                                 Console.WriteLine(englishPass[1]);
                             }
-                            if(readCell.Contains("교직"))
+                            if (readCell.Contains("교직"))
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.teaching = split[1];
@@ -543,7 +543,7 @@ namespace ReadExcel.Models
                             }
                         }
                     }
-                    
+
                 }
             }
         }
@@ -551,24 +551,26 @@ namespace ReadExcel.Models
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
         public void CheckException()
         {
-            foreach(string basicArray_ in basicArray)
+            List<UserSubject> temp = basicClasses;
+            foreach (string basicArray_ in basicArray)
             {
-                foreach(Pair basicClassesPair_ in basicClassesPair)
+                foreach (UserSubject basicClassesPair_ in temp)
                 {
-                    if(basicArray_ == basicClassesPair_.classCode)//예외 처리할 과목명 일치시
+                    if (basicArray_ == basicClassesPair_.classCode)//예외 처리할 과목명 일치시
                     {
-                        if(Convert.ToInt32(basicClassesPair_.year) >=2021)// 수강년도가 2021년 이후
+                        if (Convert.ToInt32(basicClassesPair_.year) >= 2021)// 수강년도가 2021년 이후
                         {
-                            if(basicClassesPair_.retake != "NEW재수강")//재수강이 아닐경우
+                            if (basicClassesPair_.retake != "NEW재수강")//재수강이 아닐경우
                             {
-                                this.basicClasses.Remove(basicClassesPair_.classCode);
+                                this.basicClasses.Remove(new UserSubject() { classCode = basicClassesPair_.classCode });
                                 this.basicLibCredit -= 3;
                             }
                         }
                     }
                 }
+
             }
         }
-    }
 
+    }
 }
