@@ -35,3 +35,17 @@ C:\Users\정동구\Downloads\TestProject\TestProject\obj\Release\netcoreapp3.1\T
 C:\Users\정동구\Downloads\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.pdb
 C:\Users\정동구\Downloads\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.genruntimeconfig.cache
 C:\Users\정동구\Downloads\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.csproj.CopyComplete
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.AssemblyInfoInputs.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.AssemblyInfo.cs
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.csproj.CoreCompileInputs.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.MvcApplicationPartsAssemblyInfo.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.RazorAssemblyInfo.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.RazorAssemblyInfo.cs
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\staticwebassets\TestProject.StaticWebAssets.Manifest.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\staticwebassets\TestProject.StaticWebAssets.xml
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\scopedcss\bundle\TestProject.styles.css
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.TagHelpers.input.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.TagHelpers.output.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.RazorCoreGenerate.cache
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.dll
+S:\repos\GraduationAssesment\TestProject\TestProject\obj\Release\netcoreapp3.1\TestProject.pdb
