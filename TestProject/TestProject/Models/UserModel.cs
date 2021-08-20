@@ -655,7 +655,7 @@ namespace ReadExcel.Models
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
         public void CheckException()
         {
-            List<UserSubject> temp = basicClasses;
+            List<UserSubject> temp = basicClasses;//기본소양 교과목 예외
             foreach (string basicArray_ in basicArray)
             {
                 foreach (UserSubject basicClassesPair_ in temp)
@@ -673,6 +673,37 @@ namespace ReadExcel.Models
                     }
                 }
 
+            }
+
+            //이산수학 이산구조 수강
+            if (Convert.ToInt32(this.applicationYear) >= 2017) //https://cse.dongguk.edu/?page_id=799&uid=1480&mod=document
+            {
+                if (this.advancedStatus == "N")//일반과정
+                {
+                    bool CSE2026 = false; bool PRI4027 = false;
+                    UserSubject tempSubject = new UserSubject();
+                    foreach (UserSubject majorEssential in majorEssentialList)
+                    {
+                        if (majorEssential.classCode == "CSE2026")
+                        {
+                            CSE2026 = true;
+                        }
+                    }
+                    foreach (UserSubject msc in mscClasses)
+                    {
+                        if (msc.classCode == "PRI4027")
+                        {
+                            PRI4027 = true;
+                            tempSubject = msc;
+                        }
+                    }
+                    if(CSE2026 == false && PRI4027 ==true)
+                    {
+                        mscClasses.Remove(new UserSubject() { classCode = "PRI4027" });
+                        tempSubject.classCode = "CSE2026"; // 학수번호만 변경. 교과목명 유지
+                        majorEssentialList.Add(tempSubject);
+                    }
+                }
             }
         }
 
