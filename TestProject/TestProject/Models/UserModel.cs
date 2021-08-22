@@ -198,8 +198,6 @@ namespace ReadExcel.Models
                     if (question.Contains("MSC") || question.Contains("BSM"))
                     {
                         userCredit = userInfo.mscCredit;
-                        Console.WriteLine("userCredit" + Convert.ToDouble(userCredit).ToString());
-                        Console.WriteLine("singleInput" + Convert.ToDouble(rule.singleInput).ToString());
                     }
                     if (question.Contains("과학") && question.Contains("실험"))
                         userCredit = userInfo.mscScienceExperimentCredit;
@@ -651,8 +649,9 @@ namespace ReadExcel.Models
                 }
             }
         }
-
+        // 공학경제, 공학법제, 지속가능, 기술과사회
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
+        // 동일교과 추가해야함
         public void CheckException()
         {
             List<UserSubject> temp = basicClasses;
@@ -667,7 +666,7 @@ namespace ReadExcel.Models
                             if (basicClassesPair_.retake != "NEW재수강")//재수강이 아닐경우
                             {
                                 this.basicClasses.Remove(new UserSubject() { classCode = basicClassesPair_.classCode });
-                                this.basicLibCredit -= 3;
+                                this.basicLibCredit -= Convert.ToInt32(basicClassesPair_.credit);
                             }
                         }
                     }

@@ -1,5 +1,5 @@
 ﻿@using ReadExcel.Models
-@model Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>>
+@model Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>
 @{
   Layout = null;
 }
@@ -9,18 +9,104 @@
 
 <head>
   <meta name="viewport" content="width=device-width" />
-  <title>Users</title>
+  <title>UserView</title>
 </head>
 
 <body>
-  @using (Html.BeginForm("Index", "user", FormMethod.Get))
+  <table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+      <th>총이수학점</th>
+      <th>공통교양</th>
+      <th>기본소양</th>
+      <th>msc</th>
+      <th>수학</th>
+      <th>과학</th>
+      <th>전산학</th>
+      <th>전공</th>
+      <th>전필</th>
+      <th>전문</th>
+      <th>전공설계</th>
+      <th>영어</th>
+      <th>전공영어</th>
+    </tr>
+    <tr>
+      <td>@Model.Item2.totalCredit</td>
+      <td>@Model.Item2.publicLibCredit</td>
+      <td>@Model.Item2.basicLibCredit</td>
+      <td>@Model.Item2.mscCredit</td>
+      <td>@Model.Item2.mscMathCredit</td>
+      <td>@Model.Item2.mscScienceCredit</td>
+      <td>@Model.Item2.mscComputerCredit</td>
+      <td>@Model.Item2.majorCredit</td>
+      <td>@Model.Item2.majorEssentialCredit</td>
+      <td>@Model.Item2.majorSpecialCredit</td>
+      <td>@Model.Item2.majorDesignCredit</td>
+      <td>@Model.Item2.englishCredit</td>
+      <td>@Model.Item2.englishMajorCredit</td>
+    </tr>
+  </table>
+  <hr />
+  @if (Model.Item3.Count() > 0)
   {
-    <input type="submit" value="Get Users" />
+    int passedRule = 0;
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>번호</th>
+        <th>구분</th>
+        <th>질문</th>
+        <th>만족여부</th>
+      </tr>
+      @foreach (Rule rule in Model.Item3)
+      {
+        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        {
+          <tr>
+            <td>@rule.number</td>
+            <td>@rule.type</td>
+            <td>@rule.question</td>
+            <td>
+              @if (Convert.ToInt32(@rule.number) > 5)
+              {
+                if (@rule.isPassed)
+                {
+                  <center>O</center>
+                  passedRule += 1;
+                }
+                else
+                {
+                  <center><b>X</b></center>
+                }
+              }
+            </td>
+          </tr>
+        }
+      }
+    </table>
+    <hr />
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>졸업가능여부</th>
+        <th>만족조건/전체조건</th>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            @if (passedRule < 26)
+            {
+              <b>Fail</b>
+            }
+            else
+            {
+              <b>Pass</b>
+            }
+          </center>
+        </td>
+
+        <td>@passedRule / 26</td>
+      </tr>
+    </table>
   }
-  <h3>졸업사정결과 확인</h3>
-  <form asp-controller="User" asp-action="userview" method="get">
-    <p><input type="submit" value="확인" /></p>
-  </form>
 </body>
 
 </html>
