@@ -129,19 +129,19 @@ namespace ReadExcel.Models
       public List<Rule> rules {get;set;}
       public List<bool> ruleCheckedList {get;set;}
 
-      public UserInfo userInfo {get;set;}
-      public List<UserSubject> userSubjects {get;set;}
+      public static UserInfo userInfo {get;set;}
+      public static List<UserSubject> userSubjects {get;set;}
 
       public RuleManager()
       {
         this.rules = new List<Rule>();
         this.ruleCheckedList = new List<bool>();
       }
-      public RuleManager(List<Rule> rules, UserInfo userInfo, List<UserSubject> userSubjects)
+      public RuleManager(List<Rule> rules, UserInfo _userInfo, List<UserSubject> _userSubjects)
       {
         this.rules = rules;
-        this.userInfo = userInfo;
-        this.userSubjects = userSubjects;
+        userInfo = _userInfo;
+        userSubjects = _userSubjects;
         this.ruleCheckedList = new List<bool>();
       }
       public void CheckAllRules()
@@ -153,7 +153,7 @@ namespace ReadExcel.Models
         for(int i = 0 ; i < this.rules.Count; i++)
         {
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
-          ruleChecker.CheckRule(this.userInfo, this.userSubjects);
+          ruleChecker.CheckRule(userInfo, userSubjects);
         }
       }
     }
