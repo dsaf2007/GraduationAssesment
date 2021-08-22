@@ -97,8 +97,6 @@ namespace ReadExcel.Models
         public string question { get; set; }
         // 엑셀 입력 데이터
         public string singleInput { get; set; }
-        public string[] multiInput { get; set; }
-
         // rule passed
         public bool isPassed {get; set;}
         public List<Class> requiredClasses { get; set; }
@@ -178,7 +176,6 @@ namespace ReadExcel.Models
         UserInfo userInfo = rule.userInfo;
         int totalCredit = userInfo.totalCredit;
 
-        string userOX = "X"; // todo 사용자 OX
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
         int flag = rule.flag;
         double userCredit = 0;
@@ -245,27 +242,31 @@ namespace ReadExcel.Models
             case 1: // OX
                     // OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등에 따라
                     // 다른 룰에 영향 미침 (예) 졸업논문 대체가능 ox ?
-                if(question.Contains("패스제"))
+                if(question.Contains("패스제")) // 외국어패스제 대상
                 {
                   if(userInfo.englishPass[0] == "대상" && userInfo.englishPass[1].ToUpper() == "PASS")
                     return true;
                   else
                     return false;
                 }
-                if(question.Contains("영어강의"))
+                if(question.Contains("영어강의")) // 영어강의 대상
                 {
                   if(userInfo.englishClassPass[0] == "대상" && userInfo.englishClassPass[1].ToUpper() == "PASS")
                     return true;
                   else
                     return false;
                 }
-                if (!rule.singleInput.Contains("예시"))
+                if(question.Contains("졸업논문") || question.Contains("졸업시험"))
                 {
-                    if (!("OXox".Contains(rule.singleInput) && "OXox".Contains(userOX)))
-                        isRuleSatisfied = false;
-                    if (rule.singleInput.Trim().ToUpper() == "X" ||
-                        (rule.singleInput.Trim().ToUpper() == userOX.Trim().ToUpper()))
-                        isRuleSatisfied = true;
+                  // 졸업시험, 논문 여부 미구현 -> 종설 들었거나 IPP 패스했다면 룰 PASS로 우회
+                  // if(userInfo.graduationPaper == "O" || userInfo.graduationTest == "O")
+                  IEnumerable<UserSubject> matches = userInfo.majorClasses.Where(
+                                                      subject => subject.className.Contains("종합설계") 
+                                                              || subject.className.Contains("현장실습"));
+                  if(matches.Count() > 0)
+                    return true;
+                  else
+                    return false;
                 }
                 break;
             case 2: // 최소한 하나 만족

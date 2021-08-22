@@ -104,7 +104,6 @@ namespace ReadExcel.Controllers
                             number = valueArray[1], // 일련번호
                             question = valueArray[2], // 질문
                             singleInput = null,
-                            multiInput = null,
                             flag = ruleFlag, // 응답유형
                             reference = valueArray[5] // 비고
                         };
