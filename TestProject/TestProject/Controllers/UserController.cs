@@ -176,11 +176,8 @@ namespace ReadExcel.Controllers
                             newClasses.Add(newClass);
                         }
                       }
-                        
+                  
                       resultList.Add(newClasses);
-                      // 응답유형이 목록인 룰의 input : Sheet2에 저장
-
-                      // todo: 과목 List간 대입으로 변경할것
                       int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
                       _rules[ruleIdx].requiredClasses = newClasses;
                     }
@@ -200,12 +197,8 @@ namespace ReadExcel.Controllers
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             userInfo.GetUserInfo(inputFile);
-            for(int i = 0 ; i < _rules.Count; i++)
-            {
-              _rules[i].userInfo = userInfo;
-              _rules[i].userClasses = userSubjects;
-            }
-            RuleManager ruleManager = new RuleManager(_rules);
+            
+            RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
             ruleManager.CheckAllRules();
             
             List<Rule> resultRules = _rules;

@@ -61,21 +61,21 @@
       @foreach (Rule rule in Model.Item3)
       {
         int ruleNumber = Convert.ToInt32(@rule.number);
-        if (5 < ruleNumber && ruleNumber < 32)
+        @if (5 < ruleNumber && ruleNumber < 32)
         {
           <tr>
             <td>@(ruleNumber-5)</td>
             <td>@rule.type</td>
             <td>@rule.question</td>
             <td>
-              if (@rule.isPassed)
+              @if (@rule.isPassed)
               {
-              <center>O</center>
-              passedRule += 1;
+                <center>O</center>
+                passedRule += 1;
               }
               else
               {
-              <center><b>X</b></center>
+                <center><b>X</b></center>
               }
             </td>
           </tr>

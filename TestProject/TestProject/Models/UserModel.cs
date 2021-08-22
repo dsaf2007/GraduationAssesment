@@ -128,8 +128,7 @@ namespace ReadExcel.Models
     {
       public List<Rule> rules {get;set;}
       public List<bool> ruleCheckedList {get;set;}
-      // todo: 밑에 두개 미구현; 개별Rule에서 여전히 전체 user정보 저장하는중
-      // Manager에서 관리하고 user에서는 가져다쓰도록 해야하지않나
+
       public UserInfo userInfo {get;set;}
       public List<UserSubject> userSubjects {get;set;}
 
@@ -138,9 +137,11 @@ namespace ReadExcel.Models
         this.rules = new List<Rule>();
         this.ruleCheckedList = new List<bool>();
       }
-      public RuleManager(List<Rule> rules)
+      public RuleManager(List<Rule> rules, UserInfo userInfo, List<UserSubject> userSubjects)
       {
         this.rules = rules;
+        this.userInfo = userInfo;
+        this.userSubjects = userSubjects;
         this.ruleCheckedList = new List<bool>();
       }
       public void CheckAllRules()
@@ -152,7 +153,7 @@ namespace ReadExcel.Models
         for(int i = 0 ; i < this.rules.Count; i++)
         {
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
-          ruleChecker.CheckRule();
+          ruleChecker.CheckRule(this.userInfo, this.userSubjects);
         }
       }
     }
@@ -167,13 +168,16 @@ namespace ReadExcel.Models
         this.rule = rule;
       }
 
-      public bool GetRuleChecked()
+      public bool GetRuleChecked(UserInfo _userInfo, List<UserSubject> _userSubjects)
       {     
         bool isRuleSatisfied = false;
         Rule rule = this.rule;
         List<Class> reqClasses = rule.requiredClasses;
 
-        UserInfo userInfo = rule.userInfo;
+        // 사용자 
+        UserInfo userInfo = _userInfo;
+        List<UserSubject> userSubjects = _userSubjects;
+
         int totalCredit = userInfo.totalCredit;
 
         // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
@@ -270,11 +274,11 @@ namespace ReadExcel.Models
                 }
                 break;
             case 2: // 최소한 하나 만족
-                foreach (UserSubject userClass in rule.userClasses)
+                foreach (UserSubject userSubject in userSubjects)
                 {
                     foreach (Class reqClass in rule.requiredClasses)
                     {
-                        if (userClass.classCode == reqClass.classCode)
+                        if (userSubject.classCode == reqClass.classCode)
                         {
                             return true;
                         }
@@ -283,11 +287,11 @@ namespace ReadExcel.Models
                 break;
             case 3: // 전체 만족
                 int count = 0;
-                foreach (UserSubject userClass in rule.userClasses)
+                foreach (UserSubject userSubject in userSubjects)
                 {
                     foreach (Class reqClass in rule.requiredClasses)
                     {
-                        if (userClass.classCode == reqClass.classCode)
+                        if (userSubject.classCode == reqClass.classCode)
                         {
                             count += 1;
                             break;
@@ -303,11 +307,11 @@ namespace ReadExcel.Models
         return isRuleSatisfied;
       }
 
-      public void CheckRule()
+      public void CheckRule(UserInfo userInfo, List<UserSubject> userSubjects)
       {
         if(this.rule == null)
           return;
-        this.rule.isPassed = GetRuleChecked();
+        this.rule.isPassed = GetRuleChecked(userInfo, userSubjects);
       }
     }
 
