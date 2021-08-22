@@ -13,6 +13,7 @@
 </head>
 
 <body>
+  <h3>수강 학점 정보</h3>
   <table cellpadding="0" cellspacing="0" border="1">
     <tr>
       <th>총이수학점</th>
@@ -46,10 +47,10 @@
     </tr>
   </table>
   <hr />
+  <h3>졸업요건 체크리스트</h3>
   @if (Model.Item3.Count() > 0)
   {
     int passedRule = 0;
-    <hr />
     <table cellpadding="0" cellspacing="0" border="1">
       <tr>
         <th>번호</th>
