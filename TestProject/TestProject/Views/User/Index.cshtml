@@ -60,24 +60,22 @@
       </tr>
       @foreach (Rule rule in Model.Item3)
       {
-        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        int ruleNumber = Convert.ToInt32(@rule.number);
+        if (5 < ruleNumber && ruleNumber < 32)
         {
           <tr>
-            <td>@rule.number</td>
+            <td>@(ruleNumber-5)</td>
             <td>@rule.type</td>
             <td>@rule.question</td>
             <td>
-              @if (Convert.ToInt32(@rule.number) > 5)
+              if (@rule.isPassed)
               {
-                if (@rule.isPassed)
-                {
-                  <center>O</center>
-                  passedRule += 1;
-                }
-                else
-                {
-                  <center><b>X</b></center>
-                }
+              <center>O</center>
+              passedRule += 1;
+              }
+              else
+              {
+              <center><b>X</b></center>
               }
             </td>
           </tr>
@@ -103,8 +101,9 @@
             }
           </center>
         </td>
-
-        <td>@passedRule / 26</td>
+        <td>
+          <center>@passedRule / 26</center>
+        </td>
       </tr>
     </table>
   }
