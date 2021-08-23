@@ -711,7 +711,7 @@ namespace ReadExcel.Models
                     }
                 }
             }
-            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();
+            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();//종합설계 순차 이수.
             foreach (UserSubject majorClassList in majorEssentialList)
             {
                 Console.WriteLine(majorClassList.className);
