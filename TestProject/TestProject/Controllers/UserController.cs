@@ -61,8 +61,6 @@ namespace ReadExcel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<List<Class>> resultList = new List<List<Class>>();
-
             const string filename = "./wwwroot/upload/template_test.xlsx";
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -80,9 +78,7 @@ namespace ReadExcel.Controllers
                     reader.Read();
                     while(reader.Read())
                     {
-                        string singleInput = "";
                         int ruleFlag = -1;
-
                         string[] valueArray = new string[6]; // 모두 string임에 주의
                         
                         for(int i = 0; i < 6; i++)
@@ -96,45 +92,21 @@ namespace ReadExcel.Controllers
                           valueArray[0] = ruleType;
                         else
                           ruleType = valueArray[0];
-                        
-                        // -----------------------------------------------
-                        // Rule Generator
-                        Rule newRule = new Rule{
-                            type = ruleType, // 구분
-                            number = valueArray[1], // 일련번호
-                            question = valueArray[2], // 질문
-                            singleInput = null,
-                            flag = ruleFlag, // 응답유형
-                            reference = valueArray[5] // 비고
-                        };
-                        // flag setting
-                        // 0: 대소비교
-                        // 1: OX
-                        // 2: 목록 중 선택
-                        // 3: 목록 전체 필수
-                        if(valueArray[5] != "" || valueArray[5] != null) // 기본정보: 비고 란 비어있음
+
+                        // -- Rule Generator --
+                        RuleBuilder ruleBuilder = new RuleBuilder();
+                        Rule newRule = ruleBuilder.SetType(ruleType)
+                                                  .SetSequenceNumber(valueArray[1])
+                                                  .SetQuestion(valueArray[2])
+                                                  .SetSingleInput(valueArray[3])
+                                                  .SetFlag(ruleFlag)
+                                                  .SetReference(valueArray[5])
+                                                  .Build();
+                                            
+                        if(valueArray[5] == "목록")
                         {
-                          if(valueArray[5] == "단수" || valueArray[5] == "OX") 
-                          {
-                            singleInput = valueArray[3];
-                            ruleFlag = 0;
-                            if(valueArray[5] == "OX")
-                            {
-                              singleInput = singleInput.ToUpper();
-                              ruleFlag = 1;
-                            }
-                            newRule.singleInput = singleInput;
-                          }
-                          if(valueArray[5] == "목록") 
-                          {
-                            ruleFlag = (valueArray[2].Contains("필수") 
-                              || valueArray[2].Contains("설계"))
-                              ? 3 : 2;
                             multiInputRuleNumber.Add(currentRuleNum);
-                          }
                         }
-                        // rule flag : int
-                        newRule.flag = ruleFlag;
                         // 실제 Rule 저장
                         _rules.Add(newRule);
                         currentRuleNum++;
@@ -177,7 +149,6 @@ namespace ReadExcel.Controllers
                         }
                       }
                   
-                      resultList.Add(newClasses);
                       int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
                       _rules[ruleIdx].requiredClasses = newClasses;
                     }
@@ -198,11 +169,12 @@ namespace ReadExcel.Controllers
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             userInfo.GetUserInfo(inputFile);
             
+            // 전체 rule 체크
             RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
             ruleManager.CheckAllRules();
             
             List<Rule> resultRules = _rules;
-            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules,userInfo.exceptionList) {};
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
             return View(t);
         }
 
@@ -249,11 +221,9 @@ namespace ReadExcel.Controllers
                             engineeringFactorDetail = valueArray[17], // 공학세부요소 : 전공설계, 수학, 과학 등
                             english = valueArray[18], // 원어강의 종류
                             retake = valueArray[13] //재수강 여부
-                        }); ;
-
+                        }); 
                     }
                 }
-
             }
             return temp;
         }

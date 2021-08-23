@@ -88,11 +88,10 @@ namespace ReadExcel.Models
 
     public class Rule
     {
-
         // 구분 (교양, 전공, 졸업요건, 예외)
         public string type { get; set; }
         // 일련번호
-        public string number { get; set; }
+        public string sequenceNumber { get; set; }
         // 질문
         public string question { get; set; }
         // 엑셀 입력 데이터
@@ -100,8 +99,6 @@ namespace ReadExcel.Models
         // rule passed
         public bool isPassed {get; set;}
         public List<Class> requiredClasses { get; set; }
-        public List<UserSubject> userClasses { get; set; }
-        public UserInfo userInfo { get; set; }
         // 응답유형
         /* 
         0: 대소비교
@@ -112,11 +109,23 @@ namespace ReadExcel.Models
         public int flag { get; set; }
         // 비고
         public string reference { get; set; }
+        public Rule() {}
+        public Rule(string type, string sequenceNumber, string question, string singleInput, int flag, string reference)
+        {
+          this.type = type;
+          this.sequenceNumber = sequenceNumber;
+          this.question = question;
+          this.singleInput = singleInput;
+          this.flag = flag;
+          this.reference = reference;
 
+          this.isPassed = false;
+          this.requiredClasses = null;
+        }
         public override string ToString()
         {
             string result = this.type + " "
-                + this.number + " "
+                + this.sequenceNumber + " "
                 + this.question + " "
                 + this.reference + "\n";
             return result;
@@ -154,6 +163,86 @@ namespace ReadExcel.Models
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
           ruleChecker.CheckRule(userInfo, userSubjects);
         }
+      }
+    }
+
+    public class RuleBuilder
+    {
+        public string type = "";
+        // 일련번호
+        public string sequenceNumber = "";
+        // 질문
+        public string question = "";
+        // 엑셀 입력 데이터
+        public string singleInput = "";
+
+        public int flag = -1;
+        // 비고
+        public string reference = "";
+      
+      public RuleBuilder () {}
+
+      public RuleBuilder SetType(string type)
+      {
+        this.type = type;
+        return this;
+      }
+      public RuleBuilder SetSequenceNumber(string sequenceNumber)
+      {
+        this.sequenceNumber = sequenceNumber;
+        return this;
+      }
+      public RuleBuilder SetQuestion(string question)
+      {
+        this.question = question;
+        return this;
+      }
+      public RuleBuilder SetSingleInput(string singleInput)
+      {
+        this.singleInput = singleInput;
+        return this;
+      }
+      public RuleBuilder SetFlag(int flag)
+      {
+        this.flag = flag;
+        return this;
+      }
+      public RuleBuilder SetReference(string reference)
+      {
+        this.reference = reference;
+        return this;
+      }
+
+      public Rule Build()
+      {
+        int ruleFlag = -1;
+        
+        // 기본정보 룰인지 체크. 비고란 비어있지 않을때
+        if(type == "기본정보")
+        {
+          singleInput = null;
+        }
+        else
+        {
+          if(reference == "단수" || reference == "OX") 
+          {
+            ruleFlag = 0;
+            if(reference == "OX")
+            {
+              singleInput = singleInput.ToUpper();
+              ruleFlag = 1;
+            }
+          }
+          if(reference == "목록") 
+          {
+            ruleFlag = (question.Contains("필수") 
+              || question.Contains("설계"))
+              ? 3 : 2;
+          }
+        }
+        Rule newRule = new Rule(type, sequenceNumber, question, singleInput, ruleFlag, reference);
+
+        return newRule;
       }
     }
     // 개별 Rule Checker (클래스 분리)
@@ -500,7 +589,6 @@ namespace ReadExcel.Models
                 }
             }
             CheckException();
-            Console.WriteLine(this.basicLibCredit);
         }
 
         public void GetUserInfo(string filename_)
@@ -616,14 +704,12 @@ namespace ReadExcel.Models
                                 if(englishPass.Length > 1)
                                 {
                                   englishPass[0] = englishPass[0].Trim();
-                                  // Console.WriteLine(englishPass[0]);
                                   if (englishPass[0] == "대상")
                                       englishPass[1] = englishPass[1].Trim();
                                   else
                                       englishPass[1] = "";
                                 }
 
-                                // Console.WriteLine(englishPass[1]);
                             }
                             if(readCell.Contains("영어강의이수:")) // :붙이는 이유: 다음에 오는 '영어강의이수결과' 때문
                             {
@@ -632,7 +718,6 @@ namespace ReadExcel.Models
                                 if(englishClassPass.Length > 1)
                                 {
                                   englishClassPass[0] = englishClassPass[0].Trim();
-                                  // Console.WriteLine(englishPass[0]);
                                   if (englishClassPass[0] == "대상")
                                       englishClassPass[1] = englishClassPass[1].Trim();
                                   else
@@ -713,7 +798,6 @@ namespace ReadExcel.Models
             UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();
             foreach (UserSubject majorClassList in majorEssentialList)
             {
-                Console.WriteLine(majorClassList.className);
                 if (majorClassList.classCode == "CSE4066")//예외 처리할 과목명 일치시
                 {
                     design1 = majorClassList;
@@ -726,7 +810,6 @@ namespace ReadExcel.Models
             if(Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year))
             {
                 exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
-                Console.WriteLine(design1.year + design2.year);
             }
             else if(Convert.ToInt32(design1.year) == Convert.ToInt32(design2.year))
             {
