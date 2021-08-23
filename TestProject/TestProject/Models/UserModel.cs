@@ -795,7 +795,7 @@ namespace ReadExcel.Models
                     }
                 }
             }
-            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();
+            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();//종합설계 순차 이수.
             foreach (UserSubject majorClassList in majorEssentialList)
             {
                 if (majorClassList.classCode == "CSE4066")//예외 처리할 과목명 일치시
