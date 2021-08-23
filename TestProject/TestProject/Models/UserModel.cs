@@ -399,6 +399,8 @@ namespace ReadExcel.Models
         public List<UserSubject> englishList = new List<UserSubject>();//영어강의 수강 목록
         public List<UserSubject> englishMajorList = new List<UserSubject>();//영어 전공강의 수강 목록
 
+        public List<string> exceptionList = new List<string>();//예외 항목
+
         public List<Pair> basicClassesPair = new List<Pair>();
 
         public void GetUserSubjects(List<UserSubject> userSubject_)
@@ -672,13 +674,13 @@ namespace ReadExcel.Models
                             {
                                 this.basicClasses.Remove(new UserSubject() { classCode = basicClassesPair_.classCode });
                                 this.basicLibCredit -= Convert.ToInt32(basicClassesPair_.credit);
+                                exceptionList.Add("미 인정 기본 소양 교과목 수강(" + basicClassesPair_.className + ")");
                             }
                         }
                     }
                 }
 
             }
-
             //이산수학 이산구조 수강
             if (Convert.ToInt32(this.applicationYear) >= 2017) //https://cse.dongguk.edu/?page_id=799&uid=1480&mod=document
             {
@@ -709,7 +711,39 @@ namespace ReadExcel.Models
                     }
                 }
             }
+            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();
+            foreach (UserSubject majorClassList in majorEssentialList)
+            {
+                Console.WriteLine(majorClassList.className);
+                if (majorClassList.classCode == "CSE4066")//예외 처리할 과목명 일치시
+                {
+                    design1 = majorClassList;
+                }
+                if(majorClassList.classCode == "CSE4067")
+                {
+                design2 = majorClassList;
+                }
+            }
+            if(Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year))
+            {
+                exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
+                Console.WriteLine(design1.year + design2.year);
+            }
+            else if(Convert.ToInt32(design1.year) == Convert.ToInt32(design2.year))
+            {
+                if(design1.semester == "2학기" && design2.semester == "1학기")
+                {
+                    exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
+                }
+                //같은 학기에 동시에 이수 한 경우 ??
+            }
+
+            foreach (string exceptionList_ in exceptionList)
+            {
+                Console.WriteLine(exceptionList_);
+            }
         }
+
 
     }
 }

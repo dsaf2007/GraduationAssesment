@@ -202,7 +202,7 @@ namespace ReadExcel.Controllers
             ruleManager.CheckAllRules();
             
             List<Rule> resultRules = _rules;
-            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) {};
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules,userInfo.exceptionList) {};
             return View(t);
         }
 
