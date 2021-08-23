@@ -121,7 +121,6 @@ namespace ReadExcel.Models
                 + this.reference + "\n";
             return result;
         }
-        // check 함수는 RuleChecker로 이동!!
     }
     // 전체 rule & check list
     public class RuleManager
@@ -150,7 +149,7 @@ namespace ReadExcel.Models
           return;
         
         List<Rule> rules = this.rules;
-        for(int i = 0 ; i < this.rules.Count; i++)
+        for(int i = 0 ; i < rules.Count; i++)
         {
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
           ruleChecker.CheckRule(userInfo, userSubjects);
