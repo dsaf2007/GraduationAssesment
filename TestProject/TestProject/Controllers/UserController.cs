@@ -61,13 +61,7 @@ namespace ReadExcel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // List<Rule> _rules = new List<Rule>(); // rule list
             List<List<Class>> resultList = new List<List<Class>>();
-            List<UserModel> userModels = new List<UserModel>();
-            // TODO 0: 사용자 이수교과목 데이터 파싱 및 저장(파일?)해서 룰에 대입할수있게
-            // TODO 1: 실제 Sheet 에 맞게 모델 추가, 수정(컬럼 개수; 설계학점 등) 디비 정보 반영 및 순서 변경 
-            // TODO 2: 하드코딩 되어있는것 반복문&클래스설계로 바꿔야할듯..?
-            // TODO 3: 예외처리용 동일,대체교과목 설계
 
             const string filename = "./wwwroot/upload/template_test.xlsx";
 
@@ -87,7 +81,6 @@ namespace ReadExcel.Controllers
                     while(reader.Read())
                     {
                         string singleInput = "";
-                        // string[] multiInput;
                         int ruleFlag = -1;
 
                         string[] valueArray = new string[6]; // 모두 string임에 주의
@@ -103,16 +96,7 @@ namespace ReadExcel.Controllers
                           valueArray[0] = ruleType;
                         else
                           ruleType = valueArray[0];
-
-                        // 필요없음
-                        UserModel newUserModel = new UserModel{
-                            type = ruleType, // 구분
-                            number = valueArray[1], // 일련번호
-                            question = valueArray[2], // 질문
-                            input = ((valueArray[5] == "목록")? "[List]" : valueArray[3]), // 입력
-                            flag = ruleFlag.ToString(), // 응답유형
-                            reference = valueArray[5] // 비고
-                        };
+                        
                         // -----------------------------------------------
                         // Rule Generator
                         Rule newRule = new Rule{
@@ -120,7 +104,6 @@ namespace ReadExcel.Controllers
                             number = valueArray[1], // 일련번호
                             question = valueArray[2], // 질문
                             singleInput = null,
-                            multiInput = null,
                             flag = ruleFlag, // 응답유형
                             reference = valueArray[5] // 비고
                         };
@@ -150,12 +133,8 @@ namespace ReadExcel.Controllers
                             multiInputRuleNumber.Add(currentRuleNum);
                           }
                         }
-                        
-                        newUserModel.flag = ruleFlag.ToString();
                         // rule flag : int
                         newRule.flag = ruleFlag;
-                        // Web에 전체 출력
-                        userModels.Add(newUserModel);
                         // 실제 Rule 저장
                         _rules.Add(newRule);
                         currentRuleNum++;
@@ -197,11 +176,8 @@ namespace ReadExcel.Controllers
                             newClasses.Add(newClass);
                         }
                       }
-                        
+                  
                       resultList.Add(newClasses);
-                      // 응답유형이 목록인 룰의 input : Sheet2에 저장
-
-                      // todo: 과목 List간 대입으로 변경할것
                       int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
                       _rules[ruleIdx].requiredClasses = newClasses;
                     }
@@ -221,45 +197,12 @@ namespace ReadExcel.Controllers
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             userInfo.GetUserInfo(inputFile);
-            for(int i = 0 ; i < _rules.Count; i++)
-            {
-              _rules[i].userInfo = userInfo;
-              _rules[i].userClasses = userSubjects;
-            }
-
             
-            RuleManager ruleManager = new RuleManager(_rules);
+            RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
             ruleManager.CheckAllRules();
             
             List<Rule> resultRules = _rules;
-            var t = new Tuple<IEnumerable<UserModel>, List<List<Class>>, List<Rule>> (userModels, resultList, resultRules) {};
-            return View(t);
-        }
-        // User Data Read
-        [HttpGet]
-         public IActionResult userview()
-        {
-            string filePath = this.environment.WebRootPath;
-
-            string inputFile = Path.Combine(filePath,"upload",fileNames[0]);
-            string gradeFile = Path.Combine(filePath,"upload",fileNames[1]);
-
-            UserInfo userInfo = new UserInfo();
-
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
-            userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
-            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
-            userInfo.GetUserInfo(inputFile);
-            
-
-            for(int i = 0 ; i < _rules.Count; i++)
-            {
-              _rules[i].userInfo = userInfo;
-              _rules[i].userClasses = userSubjects;
-            }
-
-            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) { };
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>>(userSubjects, userInfo, _rules) {};
             return View(t);
         }
 
