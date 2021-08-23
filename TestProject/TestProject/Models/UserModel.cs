@@ -770,7 +770,8 @@ namespace ReadExcel.Models
             {
                 if (this.advancedStatus == "N")//일반과정
                 {
-                    bool CSE2026 = false; bool PRI4027 = false;
+                    bool CSE2026 = false; 
+                    bool PRI4027 = false;
                     UserSubject tempSubject = new UserSubject();
                     foreach (UserSubject majorEssential in majorEssentialList)
                     {
@@ -787,7 +788,7 @@ namespace ReadExcel.Models
                             tempSubject = msc;
                         }
                     }
-                    if(CSE2026 == false && PRI4027 ==true)
+                    if(CSE2026 == false && PRI4027 == true)
                     {
                         mscClasses.Remove(new UserSubject() { classCode = "PRI4027" });
                         tempSubject.classCode = "CSE2026"; // 학수번호만 변경. 교과목명 유지
