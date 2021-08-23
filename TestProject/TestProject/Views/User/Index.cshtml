@@ -60,7 +60,7 @@
             </tr>
             @foreach (Rule rule in Model.Item3)
             {
-                int ruleNumber = Convert.ToInt32(@rule.number);
+                int ruleNumber = Convert.ToInt32(@rule.sequenceNumber);
                 @if (5 < ruleNumber && ruleNumber < 32)
                 {
                     <tr>

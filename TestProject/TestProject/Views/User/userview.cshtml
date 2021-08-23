@@ -109,14 +109,14 @@
       </tr>
       @foreach (Rule rule in Model.Item3)
       {
-        if (5 < Convert.ToInt32(@rule.number) && Convert.ToInt32(@rule.number) < 32)
+        if (5 < Convert.ToInt32(@rule.sequenceNumber) && Convert.ToInt32(@rule.sequenceNumber) < 32)
         {
           <tr>
-            <td>@rule.number</td>
+            <td>@rule.sequenceNumber</td>
             <td>@rule.type</td>
             <td>@rule.question</td>
             <td>
-              @if (Convert.ToInt32(@rule.number) > 5)
+              @if (Convert.ToInt32(@rule.sequenceNumber) > 5)
               {
                 if (@rule.isPassed)
                 {
