@@ -10,30 +10,6 @@ using ExcelDataReader;
 
 namespace ReadExcel.Models
 {
-    public class UserModel
-    {
-        public string type { get; set; }
-        public string number { get; set; }
-        public string question { get; set; }
-        public string input { get; set; }
-        public string flag { get; set; }
-        public string reference { get; set; }
-
-
-        public override string ToString()
-        {
-            return this.type + "_" + this.number + "_" + this.question + "_"
-              + this.input + "_" + this.flag + (this.reference == "" ? "" : "_") + this.reference + "\n";
-        }
-        public int getQuestionType()
-        {
-            if (this.question.Length <= 0)
-                return -1;
-
-            return 0;
-        }
-    }
-
     public class Class
     {
         // 학수번호
@@ -131,40 +107,6 @@ namespace ReadExcel.Models
             return result;
         }
     }
-    // 전체 rule & check list
-    public class RuleManager
-    {
-      public List<Rule> rules {get;set;}
-      public List<bool> ruleCheckedList {get;set;}
-
-      public static UserInfo userInfo {get;set;}
-      public static List<UserSubject> userSubjects {get;set;}
-
-      public RuleManager()
-      {
-        this.rules = new List<Rule>();
-        this.ruleCheckedList = new List<bool>();
-      }
-      public RuleManager(List<Rule> rules, UserInfo _userInfo, List<UserSubject> _userSubjects)
-      {
-        this.rules = rules;
-        userInfo = _userInfo;
-        userSubjects = _userSubjects;
-        this.ruleCheckedList = new List<bool>();
-      }
-      public void CheckAllRules()
-      {
-        if(this.rules.Count == 0)
-          return;
-        
-        List<Rule> rules = this.rules;
-        for(int i = 0 ; i < rules.Count; i++)
-        {
-          RuleChecker ruleChecker = new RuleChecker(rules[i]);
-          ruleChecker.CheckRule(userInfo, userSubjects);
-        }
-      }
-    }
 
     public class RuleBuilder
     {
@@ -255,14 +197,15 @@ namespace ReadExcel.Models
       {
         this.rule = rule;
       }
-
+      // 룰 체크 함수
       public bool GetRuleChecked(UserInfo _userInfo, List<UserSubject> _userSubjects)
       {     
         bool isRuleSatisfied = false;
         Rule rule = this.rule;
+        // 룰에서 요구하는 과목 리스트
         List<Class> reqClasses = rule.requiredClasses;
 
-        // 사용자 
+        // 사용자 정보
         UserInfo userInfo = _userInfo;
         List<UserSubject> userSubjects = _userSubjects;
 
@@ -403,7 +346,41 @@ namespace ReadExcel.Models
       }
     }
 
+// 전체 rule & check list
+    public class RuleManager
+    {
+      public List<Rule> rules {get;set;}
+      public List<bool> ruleCheckedList {get;set;}
 
+      public static UserInfo userInfo {get;set;}
+      public static List<UserSubject> userSubjects {get;set;}
+
+      public RuleManager()
+      {
+        this.rules = new List<Rule>();
+        this.ruleCheckedList = new List<bool>();
+      }
+      public RuleManager(List<Rule> rules, UserInfo _userInfo, List<UserSubject> _userSubjects)
+      {
+        this.rules = rules;
+        userInfo = _userInfo;
+        userSubjects = _userSubjects;
+        this.ruleCheckedList = new List<bool>();
+      }
+      public void CheckAllRules()
+      {
+        if(this.rules.Count == 0)
+          return;
+        
+        List<Rule> rules = this.rules;
+        for(int i = 0 ; i < rules.Count; i++)
+        {
+          RuleChecker ruleChecker = new RuleChecker(rules[i]);
+          // RuleManager(CheckAllRules) -> RuleChecker(CheckRule)
+          ruleChecker.CheckRule(userInfo, userSubjects);
+        }
+      }
+    }
 
     public class Pair
     {
@@ -796,7 +773,8 @@ namespace ReadExcel.Models
                     }
                 }
             }
-            UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();//종합설계 순차 이수.
+            UserSubject design1 = new UserSubject(); 
+            UserSubject design2 = new UserSubject();//종합설계 순차 이수.
             foreach (UserSubject majorClassList in majorEssentialList)
             {
                 if (majorClassList.classCode == "CSE4066")//예외 처리할 과목명 일치시
