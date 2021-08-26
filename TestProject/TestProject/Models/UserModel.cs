@@ -240,6 +240,7 @@ namespace ReadExcel.Models
                         // TODO: 공과대공통과목, 개별연구 예외처리 등
                         if (question.Contains("전공"))
                         {
+                            userCredit = userInfo.majorCredit;
                             if (question.Contains("전문"))
                             {
                                 userCredit = userInfo.majorSpecialCredit;
@@ -248,7 +249,6 @@ namespace ReadExcel.Models
                             {
                                 userCredit = userInfo.majorEssentialCredit;
                             }
-                            userCredit = userInfo.majorCredit;
                         }
 
                         if (question.Contains("설계"))
@@ -262,9 +262,12 @@ namespace ReadExcel.Models
                         if (question.Contains("영어"))
                         {
                             if (question.Contains("전공과목수"))
+                            {
                                 userCredit = userInfo.englishMajorList.Count;
+                            }
                             else if (question.Contains("총과목수"))
                                 userCredit = userInfo.englishList.Count;
+                            
                         }
                         // Todo: 평점평균, OX 등
                         if (userCredit >= Convert.ToDouble(rule.singleInput))
@@ -557,7 +560,6 @@ namespace ReadExcel.Models
                     {
                         this.majorDesignCredit += subjectCredit;
                         this.majorClasses.Add(userSubject);
-                        continue;
                     }
                     if (userSubject.english == "영어")
                     {
