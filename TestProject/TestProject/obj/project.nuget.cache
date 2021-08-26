@@ -1,9 +1,14 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "2NkqWuK8waSf1VTW6FJ43ajkzfdT07lqiTgQv8XiCq+tWqt9oPSzfGl7DYPCNpm7KD1gztU1dv13iyICmHG1sg==",
+=======
+  "dgSpecHash": "E9G/FIOexpGyLej1FZvX+wOaU0MHN7A0JoAIqJobXXFw24Xz4zKFA89omtGWfthGqpBdowNwIuVgT2TTgzhIPw==",
+>>>>>>> f95c01ca06dca9318dfbe39409210698a6f8d5b8
   "success": true,
-  "projectFilePath": "D:\\repos\\GraduationAssesment\\TestProject\\TestProject\\TestProject.csproj",
+  "projectFilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/TestProject.csproj",
   "expectedPackageFiles": [
+<<<<<<< HEAD
     "C:\\Users\\정동구\\.nuget\\packages\\bouncycastle.netcore\\1.8.5\\bouncycastle.netcore.1.8.5.nupkg.sha512",
     "C:\\Users\\정동구\\.nuget\\packages\\exceldatareader\\3.6.0\\exceldatareader.3.6.0.nupkg.sha512",
     "C:\\Users\\정동구\\.nuget\\packages\\google.protobuf\\3.14.0\\google.protobuf.3.14.0.nupkg.sha512",
@@ -24,6 +29,12 @@
     "C:\\Users\\정동구\\.nuget\\packages\\system.security.principal.windows\\4.7.0\\system.security.principal.windows.4.7.0.nupkg.sha512",
     "C:\\Users\\정동구\\.nuget\\packages\\system.text.encoding.codepages\\5.0.0\\system.text.encoding.codepages.5.0.0.nupkg.sha512",
     "C:\\Users\\정동구\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
+=======
+    "/Users/apple/.nuget/packages/exceldatareader/3.6.0/exceldatareader.3.6.0.nupkg.sha512",
+    "/Users/apple/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "/Users/apple/.nuget/packages/system.runtime.compilerservices.unsafe/5.0.0/system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
+    "/Users/apple/.nuget/packages/system.text.encoding.codepages/5.0.0/system.text.encoding.codepages.5.0.0.nupkg.sha512"
+>>>>>>> f95c01ca06dca9318dfbe39409210698a6f8d5b8
   ],
   "logs": []
 }

@@ -182,6 +182,7 @@ S:/repos/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Tes
 S:/repos/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/TestProject.pdb
 S:/repos/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/TestProject.genruntimeconfig.cache
 >>>>>>> 7c00041fbb823a7ef612b444534778056edc05c2
+<<<<<<< HEAD
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\appsettings.Development.json
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\appsettings.json
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\TestProject.exe
@@ -239,3 +240,5 @@ D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\Zst
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\System.Configuration.ConfigurationManager.dll
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\System.Security.Cryptography.ProtectedData.dll
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+=======
+>>>>>>> f95c01ca06dca9318dfbe39409210698a6f8d5b8
