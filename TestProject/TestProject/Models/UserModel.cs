@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ExcelDataReader;
+using MySql.Data.MySqlClient;
 
 namespace ReadExcel.Models
 {
@@ -98,7 +99,7 @@ namespace ReadExcel.Models
         // 엑셀 입력 데이터
         public string singleInput { get; set; }
         // rule passed
-        public bool isPassed {get; set;}
+        public bool isPassed { get; set; }
         public List<Class> requiredClasses { get; set; }
         public List<UserSubject> userClasses { get; set; }
         public UserInfo userInfo { get; set; }
@@ -126,193 +127,193 @@ namespace ReadExcel.Models
     // 전체 rule & check list
     public class RuleManager
     {
-      public List<Rule> rules {get;set;}
-      public List<bool> ruleCheckedList {get;set;}
+        public List<Rule> rules { get; set; }
+        public List<bool> ruleCheckedList { get; set; }
 
-      public static UserInfo userInfo {get;set;}
-      public static List<UserSubject> userSubjects {get;set;}
+        public static UserInfo userInfo { get; set; }
+        public static List<UserSubject> userSubjects { get; set; }
 
-      public RuleManager()
-      {
-        this.rules = new List<Rule>();
-        this.ruleCheckedList = new List<bool>();
-      }
-      public RuleManager(List<Rule> rules, UserInfo _userInfo, List<UserSubject> _userSubjects)
-      {
-        this.rules = rules;
-        userInfo = _userInfo;
-        userSubjects = _userSubjects;
-        this.ruleCheckedList = new List<bool>();
-      }
-      public void CheckAllRules()
-      {
-        if(this.rules.Count == 0)
-          return;
-        
-        List<Rule> rules = this.rules;
-        for(int i = 0 ; i < this.rules.Count; i++)
+        public RuleManager()
         {
-          RuleChecker ruleChecker = new RuleChecker(rules[i]);
-          ruleChecker.CheckRule(userInfo, userSubjects);
+            this.rules = new List<Rule>();
+            this.ruleCheckedList = new List<bool>();
         }
-      }
+        public RuleManager(List<Rule> rules, UserInfo _userInfo, List<UserSubject> _userSubjects)
+        {
+            this.rules = rules;
+            userInfo = _userInfo;
+            userSubjects = _userSubjects;
+            this.ruleCheckedList = new List<bool>();
+        }
+        public void CheckAllRules()
+        {
+            if (this.rules.Count == 0)
+                return;
+
+            List<Rule> rules = this.rules;
+            for (int i = 0; i < this.rules.Count; i++)
+            {
+                RuleChecker ruleChecker = new RuleChecker(rules[i]);
+                ruleChecker.CheckRule(userInfo, userSubjects);
+            }
+        }
     }
     // 개별 Rule Checker (클래스 분리)
     // todo: UserInfo, UserClass 등 사용자 정보(+디비?)를
     // rule이 아닌 ruleChecker 또는 Manager가 가지고 있도록 하기
     public class RuleChecker
     {
-      public Rule rule {get;set;}
-      public RuleChecker(Rule rule)
-      {
-        this.rule = rule;
-      }
-
-      public bool GetRuleChecked(UserInfo _userInfo, List<UserSubject> _userSubjects)
-      {     
-        bool isRuleSatisfied = false;
-        Rule rule = this.rule;
-        List<Class> reqClasses = rule.requiredClasses;
-
-        // 사용자 
-        UserInfo userInfo = _userInfo;
-        List<UserSubject> userSubjects = _userSubjects;
-
-        int totalCredit = userInfo.totalCredit;
-
-        // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
-        int flag = rule.flag;
-        double userCredit = 0;
-        // 띄어쓰기 제거
-        string question = Regex.Replace(rule.question, @"\s", "");
-        switch (flag)
+        public Rule rule { get; set; }
+        public RuleChecker(Rule rule)
         {
-            case 0: // 대소비교 (학점, 평균학점 등)
-                if (!rule.singleInput.Contains("예시"))
-                {
-                    // 공통교양, 기본소양
-                    if (question.Contains("공통교양"))
-                        userCredit = userInfo.publicLibCredit;
-                    if (question.Contains("기본소양"))
-                        userCredit = userInfo.basicLibCredit;
-                    // MSC
-                    if (question.Contains("MSC") || question.Contains("BSM"))
-                    {
-                        userCredit = userInfo.mscCredit;
-                    }
-                    if (question.Contains("과학") && question.Contains("실험"))
-                        userCredit = userInfo.mscScienceExperimentCredit;
-                    if (question.Contains("수학이수")) // 그냥 '수학' -> 이'수학'점 에 걸림
-                        userCredit = userInfo.mscMathCredit;
-                    if (question.Contains("전산학"))
-                        userCredit = userInfo.mscComputerCredit;
-                    // 전공과목 기준
-                    // TODO: 공과대공통과목, 개별연구 예외처리 등
-                    if (question.Contains("전공"))
-                    {
-                      if(question.Contains("전문"))
-                      {
-                        userCredit = userInfo.majorSpecialCredit;
-                      }
-                      if(question.Contains("필수"))
-                      {
-                        userCredit = userInfo.majorEssentialCredit;
-                      }
-                      userCredit = userInfo.majorCredit;
-                    }
-
-                    if (question.Contains("설계"))
-                    {
-                        userCredit = userInfo.majorDesignCredit;
-                    }
-                    if(question.Contains("총취득학점"))
-                      userCredit = userInfo.totalCredit;
-                    if(question.Contains("평점평균"))
-                      userCredit = userInfo.gradeAverage;
-                    if(question.Contains("영어"))
-                    {
-                      if(question.Contains("전공과목수"))
-                        userCredit = userInfo.englishMajorList.Count;
-                      else if(question.Contains("총과목수"))
-                        userCredit = userInfo.englishList.Count;
-                    }
-                    // Todo: 평점평균, OX 등
-                    if (userCredit >= Convert.ToDouble(rule.singleInput))
-                    {
-                        isRuleSatisfied = true;
-                    }
-                }
-                break;
-            case 1: // OX
-                    // OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등에 따라
-                    // 다른 룰에 영향 미침 (예) 졸업논문 대체가능 ox ?
-                if(question.Contains("패스제")) // 외국어패스제 대상
-                {
-                  if(userInfo.englishPass[0] == "대상" && userInfo.englishPass[1].ToUpper() == "PASS")
-                    return true;
-                  else
-                    return false;
-                }
-                if(question.Contains("영어강의")) // 영어강의 대상
-                {
-                  if(userInfo.englishClassPass[0] == "대상" && userInfo.englishClassPass[1].ToUpper() == "PASS")
-                    return true;
-                  else
-                    return false;
-                }
-                if(question.Contains("졸업논문") || question.Contains("졸업시험"))
-                {
-                  // 졸업시험, 논문 여부 미구현 -> 종설 들었거나 IPP 패스했다면 룰 PASS로 우회
-                  // if(userInfo.graduationPaper == "O" || userInfo.graduationTest == "O")
-                  IEnumerable<UserSubject> matches = userInfo.majorClasses.Where(
-                                                      subject => subject.className.Contains("종합설계") 
-                                                              || subject.className.Contains("현장실습"));
-                  if(matches.Count() > 0)
-                    return true;
-                  else
-                    return false;
-                }
-                break;
-            case 2: // 최소한 하나 만족
-                foreach (UserSubject userSubject in userSubjects)
-                {
-                    foreach (Class reqClass in rule.requiredClasses)
-                    {
-                        if (userSubject.classCode == reqClass.classCode)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                break;
-            case 3: // 전체 만족
-                int count = 0;
-                foreach (UserSubject userSubject in userSubjects)
-                {
-                    foreach (Class reqClass in rule.requiredClasses)
-                    {
-                        if (userSubject.classCode == reqClass.classCode)
-                        {
-                            count += 1;
-                            break;
-                        }
-                    }
-                }
-                if (count >= reqClasses.Count)
-                    isRuleSatisfied = true;
-                break;
-            default:
-                break;
+            this.rule = rule;
         }
-        return isRuleSatisfied;
-      }
 
-      public void CheckRule(UserInfo userInfo, List<UserSubject> userSubjects)
-      {
-        if(this.rule == null)
-          return;
-        this.rule.isPassed = GetRuleChecked(userInfo, userSubjects);
-      }
+        public bool GetRuleChecked(UserInfo _userInfo, List<UserSubject> _userSubjects)
+        {
+            bool isRuleSatisfied = false;
+            Rule rule = this.rule;
+            List<Class> reqClasses = rule.requiredClasses;
+
+            // 사용자 
+            UserInfo userInfo = _userInfo;
+            List<UserSubject> userSubjects = _userSubjects;
+
+            int totalCredit = userInfo.totalCredit;
+
+            // 0: 대소비교, 1: OX, 2: 목록중선택, 3: 목록전체필수
+            int flag = rule.flag;
+            double userCredit = 0;
+            // 띄어쓰기 제거
+            string question = Regex.Replace(rule.question, @"\s", "");
+            switch (flag)
+            {
+                case 0: // 대소비교 (학점, 평균학점 등)
+                    if (!rule.singleInput.Contains("예시"))
+                    {
+                        // 공통교양, 기본소양
+                        if (question.Contains("공통교양"))
+                            userCredit = userInfo.publicLibCredit;
+                        if (question.Contains("기본소양"))
+                            userCredit = userInfo.basicLibCredit;
+                        // MSC
+                        if (question.Contains("MSC") || question.Contains("BSM"))
+                        {
+                            userCredit = userInfo.mscCredit;
+                        }
+                        if (question.Contains("과학") && question.Contains("실험"))
+                            userCredit = userInfo.mscScienceExperimentCredit;
+                        if (question.Contains("수학이수")) // 그냥 '수학' -> 이'수학'점 에 걸림
+                            userCredit = userInfo.mscMathCredit;
+                        if (question.Contains("전산학"))
+                            userCredit = userInfo.mscComputerCredit;
+                        // 전공과목 기준
+                        // TODO: 공과대공통과목, 개별연구 예외처리 등
+                        if (question.Contains("전공"))
+                        {
+                            if (question.Contains("전문"))
+                            {
+                                userCredit = userInfo.majorSpecialCredit;
+                            }
+                            if (question.Contains("필수"))
+                            {
+                                userCredit = userInfo.majorEssentialCredit;
+                            }
+                            userCredit = userInfo.majorCredit;
+                        }
+
+                        if (question.Contains("설계"))
+                        {
+                            userCredit = userInfo.majorDesignCredit;
+                        }
+                        if (question.Contains("총취득학점"))
+                            userCredit = userInfo.totalCredit;
+                        if (question.Contains("평점평균"))
+                            userCredit = userInfo.gradeAverage;
+                        if (question.Contains("영어"))
+                        {
+                            if (question.Contains("전공과목수"))
+                                userCredit = userInfo.englishMajorList.Count;
+                            else if (question.Contains("총과목수"))
+                                userCredit = userInfo.englishList.Count;
+                        }
+                        // Todo: 평점평균, OX 등
+                        if (userCredit >= Convert.ToDouble(rule.singleInput))
+                        {
+                            isRuleSatisfied = true;
+                        }
+                    }
+                    break;
+                case 1: // OX
+                        // OX가 좀 복잡함. 특정 학점의 인정/비인정, 대상/비대상 등에 따라
+                        // 다른 룰에 영향 미침 (예) 졸업논문 대체가능 ox ?
+                    if (question.Contains("패스제")) // 외국어패스제 대상
+                    {
+                        if (userInfo.englishPass[0] == "대상" && userInfo.englishPass[1].ToUpper() == "PASS")
+                            return true;
+                        else
+                            return false;
+                    }
+                    if (question.Contains("영어강의")) // 영어강의 대상
+                    {
+                        if (userInfo.englishClassPass[0] == "대상" && userInfo.englishClassPass[1].ToUpper() == "PASS")
+                            return true;
+                        else
+                            return false;
+                    }
+                    if (question.Contains("졸업논문") || question.Contains("졸업시험"))
+                    {
+                        // 졸업시험, 논문 여부 미구현 -> 종설 들었거나 IPP 패스했다면 룰 PASS로 우회
+                        // if(userInfo.graduationPaper == "O" || userInfo.graduationTest == "O")
+                        IEnumerable<UserSubject> matches = userInfo.majorClasses.Where(
+                                                            subject => subject.className.Contains("종합설계")
+                                                                    || subject.className.Contains("현장실습"));
+                        if (matches.Count() > 0)
+                            return true;
+                        else
+                            return false;
+                    }
+                    break;
+                case 2: // 최소한 하나 만족
+                    foreach (UserSubject userSubject in userSubjects)
+                    {
+                        foreach (Class reqClass in rule.requiredClasses)
+                        {
+                            if (userSubject.classCode == reqClass.classCode)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    break;
+                case 3: // 전체 만족
+                    int count = 0;
+                    foreach (UserSubject userSubject in userSubjects)
+                    {
+                        foreach (Class reqClass in rule.requiredClasses)
+                        {
+                            if (userSubject.classCode == reqClass.classCode)
+                            {
+                                count += 1;
+                                break;
+                            }
+                        }
+                    }
+                    if (count >= reqClasses.Count)
+                        isRuleSatisfied = true;
+                    break;
+                default:
+                    break;
+            }
+            return isRuleSatisfied;
+        }
+
+        public void CheckRule(UserInfo userInfo, List<UserSubject> userSubjects)
+        {
+            if (this.rule == null)
+                return;
+            this.rule.isPassed = GetRuleChecked(userInfo, userSubjects);
+        }
     }
 
 
@@ -324,6 +325,15 @@ namespace ReadExcel.Models
 
         public string retake { get; set; }
 
+    }
+
+    public class SimillarMajor
+    {
+        public string currClassName { get;set; }
+        public int currClassStartYear { get; set; }
+        public string prevClassName { get; set; }
+        public int prevClassStartYear { get; set; }
+        public int prevClassEndYear { get; set; }
     }
 
     public class UserSubject
@@ -362,13 +372,13 @@ namespace ReadExcel.Models
         public string doubleMajor2 { get; set; }//복수전공2
 
         public string[] englishPass { get; set; }//영어 패스 대상, 패스여부
-        public string[] englishClassPass {get; set;} // 영어 강의 여부
+        public string[] englishClassPass { get; set; } // 영어 강의 여부
 
         public string teaching { get; set; }//교직인적성 대상 여부
 
-        public string graduationPaper {get;set;} // 졸업논문대상 ; 공대생 input file에 값이 없음
-        public string graduationTest {get; set;} // 졸업시험대상 ; 공대생 input file에 값이 없음
- 
+        public string graduationPaper { get; set; } // 졸업논문대상 ; 공대생 input file에 값이 없음
+        public string graduationTest { get; set; } // 졸업시험대상 ; 공대생 input file에 값이 없음
+
         public int publicLibCredit { get; set; }
         public int basicLibCredit { get; set; }
 
@@ -388,7 +398,7 @@ namespace ReadExcel.Models
         public int englishMajorCredit { get; set; }
 
         public int totalCredit { get; set; }
-        public double gradeAverage {get; set;}
+        public double gradeAverage { get; set; }
 
         public List<UserSubject> publicClasses = new List<UserSubject>();//기초교양 수강 목록
         public List<UserSubject> basicClasses = new List<UserSubject>();//기본소양 수강 목록
@@ -468,7 +478,7 @@ namespace ReadExcel.Models
                     }
                     this.mscClasses.Add(userSubject);
                 }
-                if (userSubject.engineeringFactor == "전공")
+                if (userSubject.engineeringFactor == "전공" || userSubject.completionDiv == "전공")
                 {
                     this.majorCredit += subjectCredit;
                     if (userSubject.completionDiv == "전필")
@@ -542,7 +552,7 @@ namespace ReadExcel.Models
                             split = readCell.Split(":");
                             this.advancedStatus = split[1].Trim();
                         }
-                        
+
                     }
                     infoReader.Read();
                     for (int i = 0; i < colNum; i++)
@@ -614,36 +624,38 @@ namespace ReadExcel.Models
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishPass = split[1].Split(",");
-                                if(englishPass.Length > 1)
+                                if (englishPass.Length > 1)
                                 {
-                                  englishPass[0] = englishPass[0].Trim();
-                                  // Console.WriteLine(englishPass[0]);
-                                  if (englishPass[0] == "대상")
-                                      englishPass[1] = englishPass[1].Trim();
-                                  else
-                                      englishPass[1] = "";
+                                    englishPass[0] = englishPass[0].Trim();
+                                    // Console.WriteLine(englishPass[0]);
+                                    if (englishPass[0] == "대상")
+                                        englishPass[1] = englishPass[1].Trim();
+                                    else
+                                        englishPass[1] = "";
                                 }
 
                                 // Console.WriteLine(englishPass[1]);
                             }
-                            if(readCell.Contains("영어강의이수:")) // :붙이는 이유: 다음에 오는 '영어강의이수결과' 때문
+                            if (readCell.Contains("영어강의이수:")) // :붙이는 이유: 다음에 오는 '영어강의이수결과' 때문
                             {
                                 split = infoReader.GetValue(i).ToString().Split(":");
                                 this.englishClassPass = split[1].Split(",");
-                                if(englishClassPass.Length > 1)
+                                if (englishClassPass.Length > 1)
                                 {
-                                  englishClassPass[0] = englishClassPass[0].Trim();
-                                  // Console.WriteLine(englishPass[0]);
-                                  if (englishClassPass[0] == "대상")
-                                      englishClassPass[1] = englishClassPass[1].Trim();
-                                  else
-                                      englishClassPass[1] = "";
+                                    englishClassPass[0] = englishClassPass[0].Trim();
+                                    // Console.WriteLine(englishPass[0]);
+                                    if (englishClassPass[0] == "대상")
+                                        englishClassPass[1] = englishClassPass[1].Trim();
+                                    else
+                                        englishClassPass[1] = "";
+
+                                    Console.WriteLine(englishClassPass[1]);
                                 }
                             }
-                            if(readCell.Contains("평점평균"))
+                            if (readCell.Contains("평점평균"))
                             {
-                              split = infoReader.GetValue(i).ToString().Split(":");
-                              this.gradeAverage = Convert.ToDouble(split[1]);
+                                split = infoReader.GetValue(i).ToString().Split(":");
+                                this.gradeAverage = Convert.ToDouble(split[1]);
                             }
                             if (readCell.Contains("교직"))
                             {
@@ -703,7 +715,7 @@ namespace ReadExcel.Models
                             tempSubject = msc;
                         }
                     }
-                    if(CSE2026 == false && PRI4027 ==true)
+                    if (CSE2026 == false && PRI4027 == true)
                     {
                         mscClasses.Remove(new UserSubject() { classCode = "PRI4027" });
                         tempSubject.classCode = "CSE2026"; // 학수번호만 변경. 교과목명 유지
@@ -712,38 +724,98 @@ namespace ReadExcel.Models
                 }
             }
             UserSubject design1 = new UserSubject(); UserSubject design2 = new UserSubject();//종합설계 순차 이수.
+            bool design1Status = false; bool design2Status = false; bool fieldPractice = false;
+
             foreach (UserSubject majorClassList in majorEssentialList)
             {
                 Console.WriteLine(majorClassList.className);
                 if (majorClassList.classCode == "CSE4066")//예외 처리할 과목명 일치시
                 {
                     design1 = majorClassList;
+                    design1Status = true;
                 }
-                if(majorClassList.classCode == "CSE4067")
+                if (majorClassList.classCode == "CSE4067")
                 {
-                design2 = majorClassList;
+                    design2 = majorClassList;
+                    design2Status = true;
                 }
             }
-            if(Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year))
+            foreach(UserSubject majorClassList in majorClasses)
+            {
+                if ((majorClassList.classCode == "ITS4003") || (majorClassList.classCode == "ITS4004"))
+                {
+                    fieldPractice = true;
+                }
+            }
+            if(design1Status == false && fieldPractice == true)
+            {
+                exceptionList.Add("종합설계1의 현장실습 대체 여부를 확인하십시오.");
+            }
+            else if (design2Status == false && fieldPractice == true)
+            {
+                exceptionList.Add("종합설계2의 현장실습 대체 여부를 확인하십시오.");
+            }
+            Console.WriteLine(Convert.ToInt32(design2.year));
+            if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year)!=0)
             {
                 exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
                 Console.WriteLine(design1.year + design2.year);
             }
-            else if(Convert.ToInt32(design1.year) == Convert.ToInt32(design2.year))
+            else if (Convert.ToInt32(design1.year) == Convert.ToInt32(design2.year))
             {
-                if(design1.semester == "2학기" && design2.semester == "1학기")
+                if (design1.semester == "2학기" && design2.semester == "1학기")
                 {
                     exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
                 }
                 //같은 학기에 동시에 이수 한 경우 ??
             }
 
-            foreach (string exceptionList_ in exceptionList)
+            // 현장실습 종합설계 
+
+            ////동일유사전공교과목 처리
+            //List<SimillarMajor> simillarList = new List<SimillarMajor>();
+            //using (MySqlConnection connection = new MySqlConnection("Server=101.101.167.78;Port=5555;Database=test;Uid=root;Pwd=1q2w3e4r"))
+            //{
+            //    string selectQuery = "SELECT * from SIMMILAR";
+
+            //    connection.Open();
+            //    MySqlCommand command = new MySqlCommand(selectQuery, connection);
+
+            //    using (var reader = command.ExecuteReader())
+            //    {
+            //        while(reader.Read())
+            //        {
+            //            simillarList.Add(new SimillarMajor
+            //            {
+            //                currClassName = reader["CURR_CLASS_NAME"].ToString(),
+            //                currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
+            //                prevClassName = reader["PREV_CLASS_NAME"].ToString(),
+            //                prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
+            //                prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
+            //            });
+
+            //        }
+            //    }
+            //    connection.Close();
+            //}
+            //temp = this.majorClasses;
+            
+            //foreach(UserSubject major in temp)//타전공동일유사교과목,
+            //{
+            //    foreach(SimillarMajor simillar in simillarList)
+            //    {
+            //        if(major.className == simillar.prevClassName)
+            //        {
+
+            //        }
+            //    }
+            //}
+
+                foreach (string exceptionList_ in exceptionList)
             {
                 Console.WriteLine(exceptionList_);
             }
+
         }
-
-
     }
 }
