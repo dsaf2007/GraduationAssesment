@@ -14432,6 +14432,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Admin/Index.cshtml",
+      "TargetPath": "Views\\Admin\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/_ViewStart.cshtml",
       "TargetPath": "Views\\_ViewStart.cshtml",
       "FileKind": "mvc"
@@ -14444,6 +14449,11 @@
     {
       "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/Upload.cshtml",
       "TargetPath": "Views\\User\\Upload.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Admin/Upload.cshtml",
+      "TargetPath": "Views\\Admin\\Upload.cshtml",
       "FileKind": "mvc"
     },
     {
