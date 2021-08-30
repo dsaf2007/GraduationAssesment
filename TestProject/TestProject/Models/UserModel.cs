@@ -848,11 +848,11 @@ namespace ReadExcel.Models
                     {
                         simillarList.Add(new SimillarMajor
                         {
-                            //currClassName = reader["CURR_CLASS_NAME"].ToString(),
-                            //currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
-                            //prevClassName = reader["PREV_CLASS_NAME"].ToString(),
-                            //prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
-                            //prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
+                            currClassName = reader["CURR_CLASS_NAME"].ToString(),
+                            currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
+                            prevClassName = reader["PREV_CLASS_NAME"].ToString(),
+                            prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
+                            prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
                         });
 
                     }
