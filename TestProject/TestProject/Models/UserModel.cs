@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using ExcelDataReader;
-// using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 
 namespace ReadExcel.Models
 {
@@ -834,45 +834,45 @@ namespace ReadExcel.Models
             // 현장실습 종합설계 
 
             ////동일유사전공교과목 처리
-            //List<SimillarMajor> simillarList = new List<SimillarMajor>();
-            //using (MySqlConnection connection = new MySqlConnection("Server=101.101.167.78;Port=5555;Database=test;Uid=root;Pwd=1q2w3e4r"))
-            //{
-            //    string selectQuery = "SELECT * from SIMMILAR";
+            List<SimillarMajor> simillarList = new List<SimillarMajor>();
+            using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
+            {
+                string selectQuery = "SELECT * from SIMILLAR";
 
-            //    connection.Open();
-            //    MySqlCommand command = new MySqlCommand(selectQuery, connection);
+                connection.Open();
+                MySqlCommand command = new MySqlCommand(selectQuery, connection);
 
-            //    using (var reader = command.ExecuteReader())
-            //    {
-            //        while(reader.Read())
-            //        {
-            //            simillarList.Add(new SimillarMajor
-            //            {
-            //                currClassName = reader["CURR_CLASS_NAME"].ToString(),
-            //                currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
-            //                prevClassName = reader["PREV_CLASS_NAME"].ToString(),
-            //                prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
-            //                prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
-            //            });
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        simillarList.Add(new SimillarMajor
+                        {
+                            //currClassName = reader["CURR_CLASS_NAME"].ToString(),
+                            //currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
+                            //prevClassName = reader["PREV_CLASS_NAME"].ToString(),
+                            //prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
+                            //prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
+                        });
 
-            //        }
-            //    }
-            //    connection.Close();
-            //}
-            //temp = this.majorClasses;
-            
-            //foreach(UserSubject major in temp)//타전공동일유사교과목,
-            //{
-            //    foreach(SimillarMajor simillar in simillarList)
-            //    {
-            //        if(major.className == simillar.prevClassName)
-            //        {
+                    }
+                }
+                connection.Close();
+            }
+            temp = this.majorClasses;
 
-            //        }
-            //    }
-            //}
+            foreach (UserSubject major in temp)//타전공동일유사교과목,
+            {
+                foreach (SimillarMajor simillar in simillarList)
+                {
+                    if (major.className == simillar.prevClassName)
+                    {
 
-                foreach (string exceptionList_ in exceptionList)
+                    }
+                }
+            }
+
+            foreach (string exceptionList_ in exceptionList)
             {
                 Console.WriteLine(exceptionList_);
             }

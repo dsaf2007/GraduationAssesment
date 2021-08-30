@@ -27,7 +27,7 @@ namespace TestProject.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-          return View();
+            return View();
         }
         //Default GET method
         [HttpGet]
@@ -38,17 +38,18 @@ namespace TestProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
-            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
-            
-            foreach(IFormFile formFile in fileCollection)
+
+            var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload" + Path.DirectorySeparatorChar);
+
+            foreach (IFormFile formFile in fileCollection)
             {
-                if(formFile.Length > 0)
+                if (formFile.Length > 0)
                 {
                     string fileName = Path.GetFileName
                     (
                         ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Value
                     );
-                    using(FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
+                    using (FileStream stream = new FileStream(Path.Combine(uploadDirectoryPath, fileName), FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
                     }
