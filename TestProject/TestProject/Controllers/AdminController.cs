@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace TestProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
+
             var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload" + Path.DirectorySeparatorChar);
 
             foreach (IFormFile formFile in fileCollection)

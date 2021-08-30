@@ -205,6 +205,10 @@ D:/repos/GraduationAssesment/TestProject/TestProject/bin/Debug/netcoreapp3.1/run
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/bin/Debug/netcoreapp3.1/System.Configuration.ConfigurationManager.dll
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/bin/Debug/netcoreapp3.1/System.Security.Cryptography.ProtectedData.dll
 /Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/bin/Debug/netcoreapp3.1/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll
+<<<<<<< HEAD
+/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Razor/Views/Admin/Index.cshtml.g.cs
+/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/obj/Debug/netcoreapp3.1/Razor/Views/Admin/Upload.cshtml.g.cs
+=======
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\appsettings.Development.json
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\appsettings.json
 D:\repos\GraduationAssesment\TestProject\TestProject\bin\Debug\netcoreapp3.1\TestProject.exe
@@ -264,3 +268,4 @@ D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\Tes
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\TestProject.genruntimeconfig.cache
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Index.cshtml.g.cs
 D:\repos\GraduationAssesment\TestProject\TestProject\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Upload.cshtml.g.cs
+>>>>>>> 2b9078b5384b4a3d39c6ff74e845a1f59d94cc51

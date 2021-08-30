@@ -172,6 +172,17 @@ namespace ReadExcel.Controllers
             // 전체 rule 체크
             RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
             ruleManager.CheckAllRules();
+
+            // db 저장. 이거 나중에 함수로 빼면될듯
+            string ruleName = "2016-1-CSE";
+            foreach(Rule rule in _rules)
+            {
+              string ruleNumber = rule.sequenceNumber;
+              string ruleAlias = rule.question;
+              string ruleAttribute = (rule.flag > 1) ? ParseSubjectList(rule.requiredClasses) : rule.singleInput;
+              // todo: db 저장할 부분
+            }
+
             
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
             return View(t);
@@ -225,6 +236,29 @@ namespace ReadExcel.Controllers
                 }
             }
             return temp;
+        }
+        // 과목 목록 문자열로 파싱
+        public string ParseSubjectList(List<Class> subjects)
+        {
+          List<string> subjectArray = new List<string>();
+          char columnSeparator = '_';
+          char subjectSeperator = ',';
+
+          foreach(Class subject in subjects)
+          {
+            // UserSubject.ToString으로 할까
+            List<string> subjectMembers = new List<string>()
+            {
+              subject.classCode,
+              subject.className,
+              subject.credit.ToString(),
+              subject.year.ToString()
+            };
+            string temp = string.Join(columnSeparator, subjectMembers);
+
+            subjectArray.Add(temp);
+          }
+          return string.Join(subjectSeperator, subjectArray);
         }
     }
 }
