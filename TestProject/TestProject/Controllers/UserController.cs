@@ -185,6 +185,7 @@ namespace ReadExcel.Controllers
               RuleData ruleData = new RuleData(ruleNumber, ruleAlias, ruleAttribute, ruleReference);
 
             }
+            //RuleData ruleData = new RuleData();
 
             
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
