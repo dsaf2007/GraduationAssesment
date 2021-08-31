@@ -180,8 +180,10 @@ namespace ReadExcel.Controllers
               string ruleNumber = rule.sequenceNumber;
               string ruleAlias = rule.question;
               string ruleAttribute = (rule.flag > 1) ? ParseSubjectList(rule.requiredClasses) : rule.singleInput;
+              string ruleReference = rule.reference;
               // todo: db 저장할 부분
             }
+            //RuleData ruleData = new RuleData();
 
             
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};

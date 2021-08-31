@@ -402,6 +402,17 @@ namespace ReadExcel.Models
         public int prevClassEndYear { get; set; }
     }
 
+    public class DiffMajor
+    {
+        public int startYear { get; set; }
+        public int endYear { get; set; }
+        public string classCode { get; set; }
+        public string className { get; set; }
+        public string otherMajor { get; set; }
+        public string otherClassCode { get; set; }
+        public string otherClassName { get; set; }
+    }
+
     public class UserSubject
     {
         public string year { get; set; }
@@ -780,6 +791,7 @@ namespace ReadExcel.Models
                         mscClasses.Remove(new UserSubject() { classCode = "PRI4027" });
                         tempSubject.classCode = "CSE2026"; // 학수번호만 변경. 교과목명 유지
                         majorEssentialList.Add(tempSubject);
+                        exceptionList.Add("이산구조 교과목 이산수학으로 대체 인정");
                     }
                 }
             }
@@ -835,6 +847,7 @@ namespace ReadExcel.Models
 
             ////동일유사전공교과목 처리
             List<SimillarMajor> simillarList = new List<SimillarMajor>();
+            List<DiffMajor> diffMajorList = new List<DiffMajor>();
             using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
             {
                 string selectQuery = "SELECT * from SIMILLAR";
@@ -846,28 +859,61 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        simillarList.Add(new SimillarMajor
-                        {
-                            currClassName = reader["CURR_CLASS_NAME"].ToString(),
-                            currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"]),
-                            prevClassName = reader["PREV_CLASS_NAME"].ToString(),
-                            prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"]),
-                            prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"])
-                        });
-
+                        Console.WriteLine(reader["PREV_CLASS_START"].ToString());
+                        if(reader["PREV_CLASS_START"].ToString() == "null")
+                            simillarList.Add(new SimillarMajor
+                            {
+                                currClassName = reader["CURR_CLASS_NAME"].ToString(),
+                                currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"].ToString()),
+                                prevClassName = reader["PREV_CLASS_NAME"].ToString(),
+                                prevClassStartYear = 0,//시작년도가 없는 경우 0으로 대체
+                                prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"].ToString())
+                            });
+                        else
+                            simillarList.Add(new SimillarMajor
+                            {
+                                currClassName = reader["CURR_CLASS_NAME"].ToString(),
+                                currClassStartYear = Convert.ToInt32(reader["CURR_CLASS_START"].ToString()),
+                                prevClassName = reader["PREV_CLASS_NAME"].ToString(),
+                                prevClassStartYear = Convert.ToInt32(reader["PREV_CLASS_START"].ToString()),
+                                prevClassEndYear = Convert.ToInt32(reader["PREV_CLASS_END"].ToString())
+                            });
                     }
                 }
-                connection.Close();
+
+                selectQuery = "SELECT * FROM DIFF_MAJOR";
+                command = new MySqlCommand(selectQuery, connection);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        diffMajorList.Add(new DiffMajor
+                        {
+                            startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
+                            endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
+                            classCode = reader["CLASS_CODE"].ToString(),
+                            className = reader["CLASS_NAME"].ToString(),
+                            otherMajor = reader["OTHER_MAJOR"].ToString(),
+                            otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                            otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                        });
+                    }
+                    //}
+                    connection.Close();
             }
             temp = this.majorClasses;
 
-            foreach (UserSubject major in temp)//타전공동일유사교과목,
+            foreach (UserSubject major in temp)
             {
                 foreach (SimillarMajor simillar in simillarList)
                 {
-                    if (major.className == simillar.prevClassName)
+                    if (major.className == simillar.prevClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
                     {
-
+                        if(Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
+                        {
+                          //  exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");
+                        }
                     }
                 }
             }
