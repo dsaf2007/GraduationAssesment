@@ -176,11 +176,14 @@ namespace ReadExcel.Controllers
             // db 저장. 이거 나중에 함수로 빼면될듯
             string ruleName = "2016-1-CSE";
             foreach(Rule rule in _rules)
-            {
+            { 
               string ruleNumber = rule.sequenceNumber;
               string ruleAlias = rule.question;
               string ruleAttribute = (rule.flag > 1) ? ParseSubjectList(rule.requiredClasses) : rule.singleInput;
+              string ruleReference = rule.reference;
               // todo: db 저장할 부분
+              RuleData ruleData = new RuleData(ruleNumber, ruleAlias, ruleAttribute, ruleReference);
+
             }
 
             
@@ -238,15 +241,15 @@ namespace ReadExcel.Controllers
             return temp;
         }
         // 과목 목록 문자열로 파싱
+        // 학수번호_과목명_학점_연도,...,
         public string ParseSubjectList(List<Class> subjects)
         {
-          List<string> subjectArray = new List<string>();
+          List<string> subjectList = new List<string>();
           char columnSeparator = '_';
           char subjectSeperator = ',';
 
           foreach(Class subject in subjects)
           {
-            // UserSubject.ToString으로 할까
             List<string> subjectMembers = new List<string>()
             {
               subject.classCode,
@@ -256,9 +259,32 @@ namespace ReadExcel.Controllers
             };
             string temp = string.Join(columnSeparator, subjectMembers);
 
-            subjectArray.Add(temp);
+            subjectList.Add(temp);
           }
-          return string.Join(subjectSeperator, subjectArray);
+          return string.Join(subjectSeperator, subjectList);
+        }
+        // db에서 읽어온 과목 리스트를 Class List로 복구 
+        public List<Class> ParseSubjectString(string subjectString)
+        {
+          char columnSeparator = '_';
+          char subjectSeperator = ',';
+          List<Class> subjectList = new List<Class>();
+          List<string> subjects = subjectString.Split(subjectSeperator).ToList();
+
+          foreach(string subject in subjects)
+          {
+            Class s = new Class();
+            List<string> subjectColumns = subject.Split(columnSeparator).ToList();
+            if(subjectColumns.Count > 3)
+            {
+              s.classCode = subjectColumns[0];
+              s.className = subjectColumns[1];
+              s.credit = subjectColumns[2];
+              s.year = subjectColumns[3];
+            }
+            subjectList.Add(s);
+          }
+          return subjectList;
         }
     }
 }

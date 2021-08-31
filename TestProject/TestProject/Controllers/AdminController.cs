@@ -27,7 +27,11 @@ namespace TestProject.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            /*
+            1. Get RuleTemplate List form database
+            2. Send to View
+            */
+            return View(t);
         }
         //Default GET method
         [HttpGet]
@@ -38,7 +42,6 @@ namespace TestProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
-
             var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload" + Path.DirectorySeparatorChar);
 
             foreach (IFormFile formFile in fileCollection)

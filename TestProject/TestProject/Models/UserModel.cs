@@ -384,6 +384,24 @@ namespace ReadExcel.Models
       }
     }
 
+    public class RuleData
+    {
+      public string ruleName { get; set; }
+      public string ruleNumber { get; set; }
+      public string ruleAlias { get; set; }
+      public string ruleAttribute { get; set; }
+      public string ruleReference { get; set; }
+
+      pubic RuleData(string ruleName, string ruleNumber, string ruleAlias, string ruleAttribute, string ruleReference) 
+      {
+        this.ruleName = ruleName;
+        this.ruleNumber = ruleNumber;
+        this.ruleAlias = ruleAlias;
+        this.ruleAttribute = ruleAttribute;
+        this.ruleReference = ruleReference;
+      }
+    }
+
     public class Pair
     {
         public string year { get; set; }
