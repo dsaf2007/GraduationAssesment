@@ -258,7 +258,10 @@ namespace ReadExcel.Models
                         if (question.Contains("총취득학점"))
                             userCredit = userInfo.totalCredit;
                         if (question.Contains("평점평균"))
+                        {
                             userCredit = userInfo.gradeAverage;
+                            Console.Write(userCredit + "평점평균" + userInfo.applicationYear);
+                        }
                         if (question.Contains("영어"))
                         {
                             if (question.Contains("전공과목수"))
@@ -354,8 +357,8 @@ namespace ReadExcel.Models
       public List<Rule> rules {get;set;}
       public List<bool> ruleCheckedList {get;set;}
 
-      public static UserInfo userInfo {get;set;}
-      public static List<UserSubject> userSubjects {get;set;}
+      public UserInfo userInfo {get;set;}
+      public List<UserSubject> userSubjects {get;set;}
 
       public RuleManager()
       {
@@ -380,6 +383,7 @@ namespace ReadExcel.Models
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
           // RuleManager(CheckAllRules) -> RuleChecker(CheckRule)
           ruleChecker.CheckRule(userInfo, userSubjects);
+                Console.WriteLine("평평" + userInfo.applicationYear);
         }
       }
     }
@@ -512,7 +516,7 @@ namespace ReadExcel.Models
             this.englishMajorCredit = 0;
 
             this.totalCredit = 0;
-            this.gradeAverage = 0;
+            
 
             this.fullList = userSubject_;
 
@@ -574,6 +578,7 @@ namespace ReadExcel.Models
                     {
                         this.majorDesignCredit += subjectCredit;
                         this.majorDesignList.Add(userSubject);
+                        this.majorEssentialList.Add(userSubject);
                     }
                     if (userSubject.english == "영어")
                     {
@@ -740,6 +745,7 @@ namespace ReadExcel.Models
                     }
                 }
             }
+            Console.Write("평점평균" + gradeAverage);
         }
         // 공학경제, 공학법제, 지속가능, 기술과사회
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
@@ -832,7 +838,6 @@ namespace ReadExcel.Models
             {
                 exceptionList.Add("종합설계2의 현장실습 대체 여부를 확인하십시오.");
             }
-            Console.WriteLine(Convert.ToInt32(design2.year));
             if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year) != 0)
             {
                 exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
@@ -862,7 +867,7 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine(reader["PREV_CLASS_START"].ToString());
+                        //Console.WriteLine(reader["PREV_CLASS_START"].ToString());
                         if (reader["PREV_CLASS_START"].ToString() == "null")
                             simillarList.Add(new SimillarMajor
                             {
@@ -934,7 +939,7 @@ namespace ReadExcel.Models
                 }
                 temp = this.majorClasses;
 
-                foreach (UserSubject major in majorClasses)
+                foreach (UserSubject major in majorEssentialList)
                 {
                     foreach (SimillarMajor simillar in simillarList)
                     {
@@ -974,7 +979,7 @@ namespace ReadExcel.Models
 
                 foreach (string exceptionList_ in exceptionList)
                 {
-                    Console.WriteLine(exceptionList_);
+                   // Console.WriteLine(exceptionList_);
                 }
 
             }
