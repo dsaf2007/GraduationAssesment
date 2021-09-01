@@ -65,6 +65,28 @@ namespace ReadExcel.Controllers
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+
+            // --- DB ---
+            using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"));
+            {
+              string selectQuery = "SELECT * FROM RULE_TB";
+              connection.Open();
+              MySqlCommand command = new SqlCommand(selectQuery, connection);
+
+              using (var reader = command.ExecuteReader())
+              {
+                while (reader.Read())
+                {
+                  reader["RULE_NAME"].ToString();
+                  reader["RULE_NUM"].ToString();
+                  reader["RULE_ALIAS"].ToString();
+                  reader["RULE_ATTRIBUTE"].ToString();
+                  reader["RULE_REFERENCE"].ToString();
+                  // ...
+                }
+              }
+            }
+            // ----------
             using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 using(var reader = ExcelReaderFactory.CreateReader(stream))
