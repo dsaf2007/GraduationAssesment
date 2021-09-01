@@ -485,6 +485,7 @@ namespace ReadExcel.Models
         public List<UserSubject> majorDesignList = new List<UserSubject>();//전공설계 수강 목록
         public List<UserSubject> englishList = new List<UserSubject>();//영어강의 수강 목록
         public List<UserSubject> englishMajorList = new List<UserSubject>();//영어 전공강의 수강 목록
+        public List<UserSubject> fullList = new List<UserSubject>();
 
         public List<string> exceptionList = new List<string>();//예외 항목
 
@@ -512,6 +513,8 @@ namespace ReadExcel.Models
 
             this.totalCredit = 0;
             this.gradeAverage = 0;
+
+            this.fullList = userSubject_;
 
             foreach (UserSubject userSubject in userSubject_)
             {
@@ -701,11 +704,11 @@ namespace ReadExcel.Models
                                 this.englishPass = split[1].Split(",");
                                 if (englishPass.Length > 1)
                                 {
-                                  englishPass[0] = englishPass[0].Trim();
-                                  if (englishPass[0] == "대상")
-                                      englishPass[1] = englishPass[1].Trim();
-                                  else
-                                      englishPass[1] = "";
+                                    englishPass[0] = englishPass[0].Trim();
+                                    if (englishPass[0] == "대상")
+                                        englishPass[1] = englishPass[1].Trim();
+                                    else
+                                        englishPass[1] = "";
                                 }
 
                             }
@@ -715,11 +718,11 @@ namespace ReadExcel.Models
                                 this.englishClassPass = split[1].Split(",");
                                 if (englishClassPass.Length > 1)
                                 {
-                                  englishClassPass[0] = englishClassPass[0].Trim();
-                                  if (englishClassPass[0] == "대상")
-                                      englishClassPass[1] = englishClassPass[1].Trim();
-                                  else
-                                      englishClassPass[1] = "";
+                                    englishClassPass[0] = englishClassPass[0].Trim();
+                                    if (englishClassPass[0] == "대상")
+                                        englishClassPass[1] = englishClassPass[1].Trim();
+                                    else
+                                        englishClassPass[1] = "";
                                 }
                             }
                             if (readCell.Contains("평점평균"))
@@ -768,7 +771,7 @@ namespace ReadExcel.Models
             {
                 if (this.advancedStatus == "N")//일반과정
                 {
-                    bool CSE2026 = false; 
+                    bool CSE2026 = false;
                     bool PRI4027 = false;
                     UserSubject tempSubject = new UserSubject();
                     foreach (UserSubject majorEssential in majorEssentialList)
@@ -786,7 +789,7 @@ namespace ReadExcel.Models
                             tempSubject = msc;
                         }
                     }
-                    if(CSE2026 == false && PRI4027 == true)
+                    if (CSE2026 == false && PRI4027 == true)
                     {
                         mscClasses.Remove(new UserSubject() { classCode = "PRI4027" });
                         tempSubject.classCode = "CSE2026"; // 학수번호만 변경. 교과목명 유지
@@ -795,10 +798,10 @@ namespace ReadExcel.Models
                     }
                 }
             }
-            UserSubject design1 = new UserSubject(); 
+            UserSubject design1 = new UserSubject();
             UserSubject design2 = new UserSubject();//종합설계 순차 이수.
-            bool design1Status = false; 
-            bool design2Status = false; 
+            bool design1Status = false;
+            bool design2Status = false;
             bool fieldPractice = false;
 
             foreach (UserSubject majorClassList in majorEssentialList)
@@ -814,14 +817,14 @@ namespace ReadExcel.Models
                     design2Status = true;
                 }
             }
-            foreach(UserSubject majorClassList in majorClasses)
+            foreach (UserSubject majorClassList in majorClasses)
             {
                 if ((majorClassList.classCode == "ITS4003") || (majorClassList.classCode == "ITS4004"))
                 {
                     fieldPractice = true;
                 }
             }
-            if(design1Status == false && fieldPractice == true)
+            if (design1Status == false && fieldPractice == true)
             {
                 exceptionList.Add("종합설계1의 현장실습 대체 여부를 확인하십시오.");
             }
@@ -830,7 +833,7 @@ namespace ReadExcel.Models
                 exceptionList.Add("종합설계2의 현장실습 대체 여부를 확인하십시오.");
             }
             Console.WriteLine(Convert.ToInt32(design2.year));
-            if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year)!=0)
+            if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year) != 0)
             {
                 exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
             }
@@ -860,7 +863,7 @@ namespace ReadExcel.Models
                     while (reader.Read())
                     {
                         Console.WriteLine(reader["PREV_CLASS_START"].ToString());
-                        if(reader["PREV_CLASS_START"].ToString() == "null")
+                        if (reader["PREV_CLASS_START"].ToString() == "null")
                             simillarList.Add(new SimillarMajor
                             {
                                 currClassName = reader["CURR_CLASS_NAME"].ToString(),
@@ -888,41 +891,88 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        diffMajorList.Add(new DiffMajor
-                        {
-                            startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
-                            endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
-                            classCode = reader["CLASS_CODE"].ToString(),
-                            className = reader["CLASS_NAME"].ToString(),
-                            otherMajor = reader["OTHER_MAJOR"].ToString(),
-                            otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
-                            otherClassName = reader["OTHER_CLASS_NAME"].ToString()
-                        });
+                        if(reader["START_YEAR"].ToString()=="null")
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = 0,
+                                endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
+                        else if(reader["END_YEAR"].ToString() == "null")
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
+                                endYear = 9999,
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
+                        else
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
+                                endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
                     }
                     //}
                     connection.Close();
-            }
-            temp = this.majorClasses;
+                }
+                temp = this.majorClasses;
 
-            foreach (UserSubject major in temp)
-            {
-                foreach (SimillarMajor simillar in simillarList)
+                foreach (UserSubject major in temp)
                 {
-                    if (major.className == simillar.prevClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
+                    foreach (SimillarMajor simillar in simillarList)
                     {
-                        if(Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
+                        if (major.className == simillar.prevClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
                         {
-                          //  exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");
+                            if (Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
+                            {
+                                exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");
+                            }
                         }
                     }
                 }
-            }
 
-            foreach (string exceptionList_ in exceptionList)
-            {
-                Console.WriteLine(exceptionList_);
-            }
 
+                //타 전공 동일 유사 교과목 확인.
+
+                foreach (UserSubject subject in this.fullList)
+                {
+                    foreach(DiffMajor different in diffMajorList)
+                    {
+                        if(subject.classCode == different.otherClassCode)//유사교과목이 수강 된 경우
+                        {
+                            foreach(UserSubject majorSubject in this.majorClasses)
+                            {
+                                if(majorSubject.classCode == different.classCode )// 유사교과목과 동일한 전공 수강여부 확인
+                                {
+                                    if(Convert.ToInt32(majorSubject.year) <= different.endYear && Convert.ToInt32(majorSubject.year) >= different.startYear)
+                                    {
+                                        exceptionList.Add(majorSubject.className + "과목이 타과 동일유사교과목인 " + different.otherClassName + "과 중복 수강 되었습니다.");
+                                    }
+                                }
+                            }    
+                        }
+                    }
+                }
+
+                foreach (string exceptionList_ in exceptionList)
+                {
+                    Console.WriteLine(exceptionList_);
+                }
+
+            }
         }
     }
 }
