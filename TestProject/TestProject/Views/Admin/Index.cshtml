@@ -1,26 +1,39 @@
-﻿@{
+﻿@using ReadExcel.Models
+@model Tuple<List<RuleTemplate>>
+@{
   Layout = null;
+  int i = 1;
 }
 <html>
 
-<head></head>
+<head>
+  <title>졸업사정 관리자 페이지</title>
+</head>
 
 <body>
-  <h1>Admin Test</h1>
-  <table cellpadding="0" cellspacing="0" border="1">
-    <tr>
-      <th>No.</th>
-      <th>Major</th>
-      <th>Year</th>
-      <th>Semester</th>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>Computer</td>
-      <td>2021</td>
-      <td>1</td>
-    </tr>
-  </table>
+  <center>
+    <h1>졸업사정 체크리스트 목록</h1>
+    <hr width="30% /">
+    <table cellpadding="0" cellspacing="0" border="1">
+      <tr>
+        <th>NO</th>
+        <th>Name</th>
+        <th>입학년도</th>
+        <th>전공</th>
+      </tr>
+      @foreach (RuleTemplate rt in Model.Item1)
+      {
+        <tr>
+          @* <td>@rt.indexNum</td> *@
+          <td>@i</td>
+          <td>@rt.ruleName</td>
+          <td>@rt.year</td>
+          <td>@rt.major</td>
+        </tr>
+        i += 1;
+      }
+    </table>
+  </center>
 </body>
 
 </html>

@@ -161,11 +161,7 @@ namespace ReadExcel.Models
         int ruleFlag = this.flag;
         
         // 기본정보 룰인지 체크. 비고란 비어있지 않을때
-        if(type == "기본정보")
-        {
-          singleInput = null;
-        }
-        else
+        if(type != "기초정보")
         {
           if(reference == "단수" || reference == "OX") 
           {
@@ -388,6 +384,34 @@ namespace ReadExcel.Models
           // RuleManager(CheckAllRules) -> RuleChecker(CheckRule)
           ruleChecker.CheckRule(userInfo, userSubjects);
                 Console.WriteLine("평평" + userInfo.applicationYear);
+        }
+      }
+    }
+
+    public class RuleTemplate
+    {
+      public int indexNum = -1;
+      public string ruleName = "";
+      public int year = -1;
+      // public int semester = 1; 
+      public string major = "";
+
+      public RuleTemplate(){}
+      public RuleTemplate(int indexNum, string ruleName) 
+      {
+        this.indexNum = indexNum;
+        this.ruleName = ruleName;
+        List<string> ruleInfo = ruleName.Split("-").ToList();
+        if(ruleInfo.Count >= 2)
+        {
+          Console.WriteLine("RuleInfo: ");
+          Console.WriteLine(ruleName);
+
+          Console.WriteLine(ruleInfo[0]);
+          Console.WriteLine(ruleInfo[1]);
+
+          this.year = Convert.ToInt32(ruleInfo[0]);
+          this.major = ruleInfo[1];
         }
       }
     }

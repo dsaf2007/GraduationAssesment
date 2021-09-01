@@ -14400,6 +14400,77 @@
     "CSharpLanguageVersion": 800
   },
   "RootNamespace": "TestProject",
-  "Documents": [],
+  "Documents": [
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Home/Index.cshtml",
+      "TargetPath": "Views\\Home\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Shared/_ValidationScriptsPartial.cshtml",
+      "TargetPath": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/userview.cshtml",
+      "TargetPath": "Views\\User\\userview.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Shared/_Layout.cshtml",
+      "TargetPath": "Views\\Shared\\_Layout.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Test/Upload.cshtml",
+      "TargetPath": "Views\\Test\\Upload.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Home/Privacy.cshtml",
+      "TargetPath": "Views\\Home\\Privacy.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Admin/Index.cshtml",
+      "TargetPath": "Views\\Admin\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/_ViewStart.cshtml",
+      "TargetPath": "Views\\_ViewStart.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/Index.cshtml",
+      "TargetPath": "Views\\User\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/Upload.cshtml",
+      "TargetPath": "Views\\User\\Upload.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Admin/Upload.cshtml",
+      "TargetPath": "Views\\Admin\\Upload.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/User/start.cshtml",
+      "TargetPath": "Views\\User\\start.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/_ViewImports.cshtml",
+      "TargetPath": "Views\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/apple/Desktop/GraduationAssessment/GraduationAssesment/TestProject/TestProject/Views/Shared/Error.cshtml",
+      "TargetPath": "Views\\Shared\\Error.cshtml",
+      "FileKind": "mvc"
+    }
+  ],
   "SerializationFormat": "0.2"
 }
