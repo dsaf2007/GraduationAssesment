@@ -40,6 +40,7 @@ namespace ReadExcel.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
+          System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             var uploadDirectoryPath = Path.Combine(this.environment.WebRootPath, "upload"+Path.DirectorySeparatorChar);
             fileNames.Clear();
             foreach(IFormFile formFile in fileCollection)
@@ -63,10 +64,7 @@ namespace ReadExcel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            const string filename = "./wwwroot/upload/template_test_1.xlsx";
-
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
 
             // --- Read DB ---
             using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
@@ -95,96 +93,96 @@ namespace ReadExcel.Controllers
                 }
               }
             }
-            // ----------
-            using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-            {
-                using(var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    // sheet 
-                    int currentRuleNum = 0;
-                    int currentSheetNum = 1;
-                    List<int> multiInputRuleNumber = new List<int>();
-                    string ruleType = "";
-                    // will be passed to View
-                    reader.Read();
-                    while(reader.Read())
-                    {
-                        int ruleFlag = -1;
-                        string[] valueArray = new string[6]; // 모두 string임에 주의
+            // // ----------
+            // using (var stream = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            // {
+            //     using(var reader = ExcelReaderFactory.CreateReader(stream))
+            //     {
+            //         // sheet 
+            //         int currentRuleNum = 0;
+            //         int currentSheetNum = 1;
+            //         List<int> multiInputRuleNumber = new List<int>();
+            //         string ruleType = "";
+            //         // will be passed to View
+            //         reader.Read();
+            //         while(reader.Read())
+            //         {
+            //             int ruleFlag = -1;
+            //             string[] valueArray = new string[6]; // 모두 string임에 주의
                         
-                        for(int i = 0; i < 6; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                valueArray[i] = "";
-                            else
-                                valueArray[i] = reader.GetValue(i).ToString();
-                        }
-                        if(valueArray[0] == "" || valueArray[0] == null)
-                          valueArray[0] = ruleType;
-                        else
-                          ruleType = valueArray[0];
+            //             for(int i = 0; i < 6; i++)
+            //             {
+            //                 if (reader.GetValue(i) == null)
+            //                     valueArray[i] = "";
+            //                 else
+            //                     valueArray[i] = reader.GetValue(i).ToString();
+            //             }
+            //             if(valueArray[0] == "" || valueArray[0] == null)
+            //               valueArray[0] = ruleType;
+            //             else
+            //               ruleType = valueArray[0];
 
-                        // -- Rule Generator --
-                        RuleBuilder ruleBuilder = new RuleBuilder();
-                        Rule newRule = ruleBuilder.SetType(ruleType)
-                                                  .SetSequenceNumber(valueArray[1])
-                                                  .SetQuestion(valueArray[2])
-                                                  .SetSingleInput(valueArray[3])
-                                                  .SetFlag(ruleFlag)
-                                                  .SetReference(valueArray[5])
-                                                  .Build();
+            //             // -- Rule Generator --
+            //             RuleBuilder ruleBuilder = new RuleBuilder();
+            //             Rule newRule = ruleBuilder.SetType(ruleType)
+            //                                       .SetSequenceNumber(valueArray[1])
+            //                                       .SetQuestion(valueArray[2])
+            //                                       .SetSingleInput(valueArray[3])
+            //                                       .SetFlag(ruleFlag)
+            //                                       .SetReference(valueArray[5])
+            //                                       .Build();
                                             
-                        if(valueArray[5] == "목록")
-                        {
-                            multiInputRuleNumber.Add(currentRuleNum);
-                        }
-                        // 실제 Rule 저장
-                        _rules.Add(newRule);
-                        currentRuleNum++;
-                    }
+            //             if(valueArray[5] == "목록")
+            //             {
+            //                 multiInputRuleNumber.Add(currentRuleNum);
+            //             }
+            //             // 실제 Rule 저장
+            //             _rules.Add(newRule);
+            //             currentRuleNum++;
+            //         }
 
-                    while(reader.NextResult()) // next sheet
-                    {
-                      List<Class> newClasses = new List<Class>();
-                      currentSheetNum++;
-                      reader.Read();reader.Read();
-                      while(reader.Read())
-                      {
-                        // 전공 or 설계과목 : cols = 5
-                        int cols = reader.FieldCount;
-                        string[] valueArray = new string[cols];
-                        for(int i = 0 ; i < cols ; i++)
-                        {
-                            if (reader.GetValue(i) == null)
-                                valueArray[i] = "";
-                            else
-                                valueArray[i] = Regex.Replace(reader.GetValue(i).ToString(), @"\s", ""); // 과목명 내 띄어쓰기 제거
-                        }
-                        if (String.IsNullOrEmpty(valueArray[1])) break;
+            //         while(reader.NextResult()) // next sheet
+            //         {
+            //           List<Class> newClasses = new List<Class>();
+            //           currentSheetNum++;
+            //           reader.Read();reader.Read();
+            //           while(reader.Read())
+            //           {
+            //             // 전공 or 설계과목 : cols = 5
+            //             int cols = reader.FieldCount;
+            //             string[] valueArray = new string[cols];
+            //             for(int i = 0 ; i < cols ; i++)
+            //             {
+            //                 if (reader.GetValue(i) == null)
+            //                     valueArray[i] = "";
+            //                 else
+            //                     valueArray[i] = Regex.Replace(reader.GetValue(i).ToString(), @"\s", ""); // 과목명 내 띄어쓰기 제거
+            //             }
+            //             if (String.IsNullOrEmpty(valueArray[1])) break;
                         
-                        if(!(valueArray[0].Contains("예시"))) // 대체인정 시트가 아닌경우만
-                        {
-                            Class newClass = new Class{
-                              classCode = valueArray[1],
-                              className = valueArray[2],
-                              credit = Convert.ToInt32(valueArray[3].Trim()),
-                              design = -1,
-                              year = Convert.ToInt32(valueArray[4].Trim())
-                            };
-                            if(cols == 6) // 설계과목일 경우
-                            {
-                              newClass.design = Convert.ToInt32(valueArray[cols-2]);
-                              newClass.year = Convert.ToInt32(valueArray[cols-1]);
-                            }
-                            newClasses.Add(newClass);
-                        }
-                      }
+            //             if(!(valueArray[0].Contains("예시"))) // 대체인정 시트가 아닌경우만
+            //             {
+            //                 Class newClass = new Class{
+            //                   classCode = valueArray[1],
+            //                   className = valueArray[2],
+            //                   credit = Convert.ToInt32(valueArray[3].Trim()),
+            //                   design = -1,
+            //                   year = Convert.ToInt32(valueArray[4].Trim())
+            //                 };
+            //                 if(cols == 6) // 설계과목일 경우
+            //                 {
+            //                   newClass.design = Convert.ToInt32(valueArray[cols-2]);
+            //                   newClass.year = Convert.ToInt32(valueArray[cols-1]);
+            //                 }
+            //                 newClasses.Add(newClass);
+            //             }
+            //           }
                   
-                      int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
-                      _rules[ruleIdx].requiredClasses = newClasses;
-                    }
-                }
-            }
+            //           int ruleIdx = multiInputRuleNumber[currentSheetNum-2];
+            //           _rules[ruleIdx].requiredClasses = newClasses;
+            //         }
+            //     }
+            // }
             // var filename = "./wwwroot/upload/input.xls";
             //var gradeFile = "./wwwroot/upload/Sheet1.xlsx";
             string filePath = this.environment.WebRootPath;
@@ -205,21 +203,8 @@ namespace ReadExcel.Controllers
             RuleManager ruleManager = new RuleManager(tempRules, userInfo, userSubjects);
 
             ruleManager.CheckAllRules();
-
-            // db 저장. 이거 나중에 함수로 빼면될듯
-            string ruleName = "2016-1-CSE";
-            foreach(Rule rule in _rules)
-            { 
-              string ruleNumber = rule.sequenceNumber;
-              string ruleAlias = rule.question;
-              string ruleAttribute = (rule.flag > 1) ? ParseSubjectList(rule.requiredClasses) : rule.singleInput;
-              string ruleReference = rule.reference;
-              // todo: db 저장할 부분
-              RuleData ruleData = new RuleData(ruleName, ruleNumber, ruleAlias, ruleAttribute, ruleReference);
-            }
             //RuleData ruleData = new RuleData();
 
-            
             // var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
             var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, tempRules, userInfo.exceptionList) {};
 

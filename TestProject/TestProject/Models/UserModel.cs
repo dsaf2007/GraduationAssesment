@@ -503,6 +503,8 @@ namespace ReadExcel.Models
         public List<UserSubject> majorDesignList = new List<UserSubject>();//전공설계 수강 목록
         public List<UserSubject> englishList = new List<UserSubject>();//영어강의 수강 목록
         public List<UserSubject> englishMajorList = new List<UserSubject>();//영어 전공강의 수강 목록
+        public List<UserSubject> fullList = new List<UserSubject>();
+
 
         public List<string> exceptionList = new List<string>();//예외 항목
 
@@ -906,20 +908,43 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        diffMajorList.Add(new DiffMajor
-                        {
-                            startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
-                            endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
-                            classCode = reader["CLASS_CODE"].ToString(),
-                            className = reader["CLASS_NAME"].ToString(),
-                            otherMajor = reader["OTHER_MAJOR"].ToString(),
-                            otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
-                            otherClassName = reader["OTHER_CLASS_NAME"].ToString()
-                        });
+                        if(reader["START_YEAR"].ToString()== "")
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = 0,
+                                endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
+                        else if(reader["END_YEAR"].ToString() == "")
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
+                                endYear = 9999,
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
+                        else
+                            diffMajorList.Add(new DiffMajor
+                            {
+                                startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
+                                endYear = Convert.ToInt32(reader["END_YEAR"].ToString()),
+                                classCode = reader["CLASS_CODE"].ToString(),
+                                className = reader["CLASS_NAME"].ToString(),
+                                otherMajor = reader["OTHER_MAJOR"].ToString(),
+                                otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
+                                otherClassName = reader["OTHER_CLASS_NAME"].ToString()
+                            });
                     }
                     //}
                     connection.Close();
-            }
+                }
             temp = this.majorClasses;
 
             foreach (UserSubject major in this.fullList)
