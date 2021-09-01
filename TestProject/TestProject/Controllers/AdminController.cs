@@ -149,7 +149,7 @@ namespace TestProject.Controllers
               connection.Open();
               string ruleName = "2016-1-TEST";
 
-              string insertQuery = "INSERT INTO RULE_NAME_TB(RULE_NAME) VALUES('" + ruleName + "') ON DUPLICATE KEY UPDATE RULE_NAME=RULE_NAME";
+              string insertQuery = "INSERT INTO RULE_NAME_TB(RULE_NAME) VALUES('" + ruleName + "')";
 
               MySqlCommand command = new MySqlCommand(insertQuery, connection);
               command.ExecuteNonQuery();
@@ -163,7 +163,7 @@ namespace TestProject.Controllers
                                     + ",'" + rule.question
                                     + "','" + ((rule.flag > 1) ? userController.ParseSubjectList(rule.requiredClasses) : rule.singleInput)
                                     + "','" + rule.reference
-                                    + "') ON DUPLICATE KEY UPDATE RULE_NAME=RULE_NAME";
+                                    + "')";
                 command = new MySqlCommand(insertQuery, connection);
                 command.ExecuteNonQuery();
               }

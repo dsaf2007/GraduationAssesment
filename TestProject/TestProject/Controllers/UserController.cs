@@ -267,7 +267,7 @@ namespace ReadExcel.Controllers
         {
           List<string> subjectList = new List<string>();
           char columnSeparator = '_';
-          char subjectSeperator = ',';
+          char subjectSeperator = '%';
 
           foreach(Class subject in subjects)
           {
@@ -288,7 +288,7 @@ namespace ReadExcel.Controllers
         public List<Class> ParseSubjectString(string subjectString)
         {
           char columnSeparator = '_';
-          char subjectSeperator = ',';
+          char subjectSeperator = '%';
           List<Class> subjectList = new List<Class>();
           List<string> subjects = subjectString.Split(subjectSeperator).ToList();
 

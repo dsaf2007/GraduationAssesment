@@ -232,7 +232,7 @@ namespace ReadExcel.Models
                         }
                         if (question.Contains("과학") && question.Contains("실험"))
                             userCredit = userInfo.mscScienceExperimentCredit;
-                        if (question.Contains("수학이수")) // 그냥 '수학' -> 이'수학'점 에 걸림
+                        if (question.Contains("수학이수")) // 그냥 '수학'이라고 하면 -> "이'수학'점" 에 걸림
                             userCredit = userInfo.mscMathCredit;
                         if (question.Contains("전산학"))
                             userCredit = userInfo.mscComputerCredit;
@@ -322,10 +322,14 @@ namespace ReadExcel.Models
                     }
                     break;
                 case 3: // 전체 만족
+                    if(reqClasses == null || reqClasses.Count() == 0) // 템플릿 비어있을때
+                      return true;
+                    if(string.IsNullOrEmpty(reqClasses.First().classCode))
+                      return true;
                     int count = 0;
                     foreach (UserSubject userSubject in userSubjects)
                     {
-                        foreach (Class reqClass in rule.requiredClasses)
+                        foreach (Class reqClass in reqClasses)
                         {
                             if (userSubject.classCode == reqClass.classCode)
                             {
