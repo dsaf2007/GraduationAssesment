@@ -158,7 +158,7 @@ namespace ReadExcel.Models
 
       public Rule Build()
       {
-        int ruleFlag = -1;
+        int ruleFlag = this.flag;
         
         // 기본정보 룰인지 체크. 비고란 비어있지 않을때
         if(type == "기본정보")
@@ -392,7 +392,7 @@ namespace ReadExcel.Models
       public string ruleAttribute { get; set; }
       public string ruleReference { get; set; }
 
-      pubic RuleData(string ruleName, string ruleNumber, string ruleAlias, string ruleAttribute, string ruleReference) 
+      public RuleData(string ruleName, string ruleNumber, string ruleAlias, string ruleAttribute, string ruleReference) 
       {
         this.ruleName = ruleName;
         this.ruleNumber = ruleNumber;
@@ -922,7 +922,7 @@ namespace ReadExcel.Models
             }
             temp = this.majorClasses;
 
-            foreach (UserSubject major in temp)
+            foreach (UserSubject major in this.fullList)
             {
                 foreach (SimillarMajor simillar in simillarList)
                 {

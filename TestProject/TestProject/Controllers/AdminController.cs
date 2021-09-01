@@ -12,6 +12,7 @@ using ExcelDataReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using MySql.Data.MySqlClient;
 
 
 namespace TestProject.Controllers

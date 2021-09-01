@@ -12,12 +12,14 @@ using ExcelDataReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
+using MySql.Data.MySqlClient;
 
 namespace ReadExcel.Controllers
 {
     public class UserController : Controller
     {
         public static List<Rule> _rules = new List<Rule>();
+        public static List<Rule> tempRules = new List<Rule>();
         public static List<UserSubject> userSubjects = new List<UserSubject>();
         public static List<string> fileNames = new List<string>();
         public IActionResult start()
@@ -66,23 +68,30 @@ namespace ReadExcel.Controllers
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
 
-            // --- DB ---
-            using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"));
+            // --- Read DB ---
+            using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
             {
               string selectQuery = "SELECT * FROM RULE_TB";
               connection.Open();
-              MySqlCommand command = new SqlCommand(selectQuery, connection);
+              MySqlCommand command = new MySqlCommand(selectQuery, connection);
 
               using (var reader = command.ExecuteReader())
               {
                 while (reader.Read())
                 {
-                  reader["RULE_NAME"].ToString();
-                  reader["RULE_NUM"].ToString();
-                  reader["RULE_ALIAS"].ToString();
-                  reader["RULE_ATTRIBUTE"].ToString();
-                  reader["RULE_REFERENCE"].ToString();
-                  // ...
+                  List<Class> tempClasses = new List<Class>();
+                  Rule tempRule = new Rule();
+                  RuleBuilder ruleBuilder = new RuleBuilder();
+
+                  tempRule = ruleBuilder.SetSequenceNumber(reader["RULE_NUM"].ToString())
+                                        .SetQuestion(reader["RULE_ALIAS"].ToString())
+                                        .SetSingleInput(reader["RULE_ATTRIBUTE"].ToString())
+                                        .SetReference(reader["RULE_REFERENCE"].ToString())
+                                        .Build();
+                                        
+                  if(tempRule.reference == "목록")
+                    tempRule.requiredClasses = ParseSubjectString(reader["RULE_ATTRIBUTE"].ToString());
+                  tempRules.Add(tempRule);
                 }
               }
             }
@@ -192,7 +201,9 @@ namespace ReadExcel.Controllers
             userInfo.GetUserInfo(inputFile);
             
             // 전체 rule 체크
-            RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
+            // RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
+            RuleManager ruleManager = new RuleManager(tempRules, userInfo, userSubjects);
+
             ruleManager.CheckAllRules();
 
             // db 저장. 이거 나중에 함수로 빼면될듯
@@ -204,13 +215,14 @@ namespace ReadExcel.Controllers
               string ruleAttribute = (rule.flag > 1) ? ParseSubjectList(rule.requiredClasses) : rule.singleInput;
               string ruleReference = rule.reference;
               // todo: db 저장할 부분
-              RuleData ruleData = new RuleData(ruleNumber, ruleAlias, ruleAttribute, ruleReference);
-
+              RuleData ruleData = new RuleData(ruleName, ruleNumber, ruleAlias, ruleAttribute, ruleReference);
             }
             //RuleData ruleData = new RuleData();
 
             
-            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
+            // var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, _rules, userInfo.exceptionList) {};
+            var t = new Tuple<IEnumerable<UserSubject>, UserInfo, List<Rule>,List<string>>(userSubjects, userInfo, tempRules, userInfo.exceptionList) {};
+
             return View(t);
         }
 
@@ -302,8 +314,8 @@ namespace ReadExcel.Controllers
             {
               s.classCode = subjectColumns[0];
               s.className = subjectColumns[1];
-              s.credit = subjectColumns[2];
-              s.year = subjectColumns[3];
+              s.credit = Convert.ToInt32(subjectColumns[2]);
+              s.year = Convert.ToInt32(subjectColumns[3]);
             }
             subjectList.Add(s);
           }
