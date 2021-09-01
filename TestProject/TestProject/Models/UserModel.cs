@@ -884,6 +884,10 @@ namespace ReadExcel.Models
                     }
                 }
 
+                connection.Close();
+
+                connection.Open();
+
                 selectQuery = "SELECT * FROM DIFF_MAJOR";
                 command = new MySqlCommand(selectQuery, connection);
 
@@ -891,7 +895,7 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        if(reader["START_YEAR"].ToString()=="null")
+                        if(reader["START_YEAR"].ToString()== "")
                             diffMajorList.Add(new DiffMajor
                             {
                                 startYear = 0,
@@ -902,7 +906,7 @@ namespace ReadExcel.Models
                                 otherClassCode = reader["OTHER_CLASS_CODE"].ToString(),
                                 otherClassName = reader["OTHER_CLASS_NAME"].ToString()
                             });
-                        else if(reader["END_YEAR"].ToString() == "null")
+                        else if(reader["END_YEAR"].ToString() == "")
                             diffMajorList.Add(new DiffMajor
                             {
                                 startYear = Convert.ToInt32(reader["START_YEAR"].ToString()),
@@ -930,7 +934,7 @@ namespace ReadExcel.Models
                 }
                 temp = this.majorClasses;
 
-                foreach (UserSubject major in temp)
+                foreach (UserSubject major in this.fullList)
                 {
                     foreach (SimillarMajor simillar in simillarList)
                     {
