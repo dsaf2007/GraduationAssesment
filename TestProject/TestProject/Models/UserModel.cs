@@ -258,7 +258,10 @@ namespace ReadExcel.Models
                         if (question.Contains("총취득학점"))
                             userCredit = userInfo.totalCredit;
                         if (question.Contains("평점평균"))
+                        {
                             userCredit = userInfo.gradeAverage;
+                            Console.Write(userCredit + "평점평균" + userInfo.applicationYear);
+                        }
                         if (question.Contains("영어"))
                         {
                             if (question.Contains("전공과목수"))
@@ -354,8 +357,8 @@ namespace ReadExcel.Models
       public List<Rule> rules {get;set;}
       public List<bool> ruleCheckedList {get;set;}
 
-      public static UserInfo userInfo {get;set;}
-      public static List<UserSubject> userSubjects {get;set;}
+      public UserInfo userInfo {get;set;}
+      public List<UserSubject> userSubjects {get;set;}
 
       public RuleManager()
       {
@@ -380,6 +383,7 @@ namespace ReadExcel.Models
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
           // RuleManager(CheckAllRules) -> RuleChecker(CheckRule)
           ruleChecker.CheckRule(userInfo, userSubjects);
+                Console.WriteLine("평평" + userInfo.applicationYear);
         }
       }
     }
@@ -531,7 +535,7 @@ namespace ReadExcel.Models
             this.englishMajorCredit = 0;
 
             this.totalCredit = 0;
-            this.gradeAverage = 0;
+            
 
             foreach (UserSubject userSubject in userSubject_)
             {
@@ -590,7 +594,8 @@ namespace ReadExcel.Models
                     if (userSubject.engineeringFactorDetail == "전공설계")
                     {
                         this.majorDesignCredit += subjectCredit;
-                        this.majorClasses.Add(userSubject);
+                        this.majorDesignList.Add(userSubject);
+                        this.majorEssentialList.Add(userSubject);
                     }
                     if (userSubject.english == "영어")
                     {
@@ -757,6 +762,7 @@ namespace ReadExcel.Models
                     }
                 }
             }
+            Console.Write("평점평균" + gradeAverage);
         }
         // 공학경제, 공학법제, 지속가능, 기술과사회
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };
@@ -786,7 +792,7 @@ namespace ReadExcel.Models
             //이산수학 이산구조 수강
             if (Convert.ToInt32(this.applicationYear) >= 2017) //https://cse.dongguk.edu/?page_id=799&uid=1480&mod=document
             {
-                if (this.advancedStatus == "N")//일반과정
+                if (this.advancedStatus == "N" && this.applicationYear == "2017")//일반과정
                 {
                     bool CSE2026 = false; 
                     bool PRI4027 = false;
@@ -800,7 +806,7 @@ namespace ReadExcel.Models
                     }
                     foreach (UserSubject msc in mscClasses)
                     {
-                        if (msc.classCode == "PRI4027")
+                        if (msc.classCode == "PRI4027" && msc.year =="2017")
                         {
                             PRI4027 = true;
                             tempSubject = msc;
@@ -849,8 +855,8 @@ namespace ReadExcel.Models
             {
                 exceptionList.Add("종합설계2의 현장실습 대체 여부를 확인하십시오.");
             }
-            Console.WriteLine(Convert.ToInt32(design2.year));
-            if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year)!=0)
+            
+            if ((Convert.ToInt32(design1.year) > Convert.ToInt32(design2.year)) && Convert.ToInt32(design2.year) != 0)
             {
                 exceptionList.Add("종합설계를 순차적으로 이수하지 않았습니다.");
             }
@@ -879,8 +885,7 @@ namespace ReadExcel.Models
                 {
                     while (reader.Read())
                     {
-                        Console.WriteLine(reader["PREV_CLASS_START"].ToString());
-                        if(reader["PREV_CLASS_START"].ToString() == "null")
+                        if (reader["PREV_CLASS_START"].ToString() == "null")
                             simillarList.Add(new SimillarMajor
                             {
                                 currClassName = reader["CURR_CLASS_NAME"].ToString(),
@@ -947,26 +952,44 @@ namespace ReadExcel.Models
                 }
             temp = this.majorClasses;
 
-            foreach (UserSubject major in this.fullList)
-            {
-                foreach (SimillarMajor simillar in simillarList)
+                foreach (UserSubject major in majorEssentialList)
                 {
-                    if (major.className == simillar.prevClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
+                    foreach (SimillarMajor simillar in simillarList)
                     {
-                        if(Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
+                        if (major.className == simillar.currClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
                         {
-                          //  exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");
+                           // Console.WriteLine("교육과정 적용년도 " + major.);
+                            if (Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
+                            {
+                                exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");
+                            }
                         }
                     }
                 }
-            }
 
-            foreach (string exceptionList_ in exceptionList)
-            {
-                Console.WriteLine(exceptionList_);
-            }
 
-    }
-    }
+                //타 전공 동일 유사 교과목 확인.
+
+                foreach (UserSubject subject in this.fullList)
+                {
+                    foreach(DiffMajor different in diffMajorList)
+                    {
+                        if(subject.classCode == different.otherClassCode)//유사교과목이 수강 된 경우
+                        {
+                            foreach(UserSubject majorSubject in this.majorClasses)
+                            {
+                                if(majorSubject.classCode == different.classCode )// 유사교과목과 동일한 전공 수강여부 확인
+                                {
+                                    if(Convert.ToInt32(majorSubject.year) <= different.endYear && Convert.ToInt32(majorSubject.year) >= different.startYear)
+                                    {
+                                        exceptionList.Add(majorSubject.className + "과목이 타과 동일유사교과목인 " + different.otherClassName + "과 중복 수강 되었습니다.");
+                                    }
+                                }
+                            }    
+                        }
+                    }
+                }
+       }
+      }
     }
 }
