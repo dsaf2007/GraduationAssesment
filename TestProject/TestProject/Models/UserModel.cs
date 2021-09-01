@@ -404,12 +404,6 @@ namespace ReadExcel.Models
         List<string> ruleInfo = ruleName.Split("-").ToList();
         if(ruleInfo.Count >= 2)
         {
-          Console.WriteLine("RuleInfo: ");
-          Console.WriteLine(ruleName);
-
-          Console.WriteLine(ruleInfo[0]);
-          Console.WriteLine(ruleInfo[1]);
-
           this.year = Convert.ToInt32(ruleInfo[0]);
           this.major = ruleInfo[1];
         }

@@ -198,7 +198,14 @@ namespace ReadExcel.Controllers
             userInfo.GetUserInfo(inputFile);
             userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
            
-            
+            // string ruleName = userInfo.applicationYear + "-" + userInfo.major;
+            // major: 컴퓨터공학전공->컴퓨터, 정보통신공학 -> 정보통신 등으로 template 기초정보와
+            // 호환 되도록 자르면
+            // template파일 통해 만든 ruleName 과
+            // userInfo 통해 만든 ruleName 호환 가능
+            // 그러면 
+            // select * from RULE_TB where template.ruleName = userInfo.ruleName 같은 방식으로 가능
+
             // 전체 rule 체크
             // RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
             RuleManager ruleManager = new RuleManager(tempRules, userInfo, userSubjects);

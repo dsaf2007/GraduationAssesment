@@ -33,6 +33,11 @@
         i += 1;
       }
     </table>
+    <hr width="30% /">
+    @using (Html.BeginForm("Upload", "Admin", FormMethod.Get))
+    {
+      <input type="submit" value="추가" />
+    }
   </center>
 </body>
 

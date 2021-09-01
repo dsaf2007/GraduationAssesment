@@ -101,7 +101,7 @@ namespace TestProject.Controllers
                         {
                             multiInputRuleNumber.Add(currentRuleNum);
                         }
-
+                        // 기초정보를 바탕으로 rule name 생성
                         if(newRule.type == "기초정보")
                         {
                           if (newRule.question.Contains("입학년도"))
