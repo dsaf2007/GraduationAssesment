@@ -573,7 +573,7 @@ namespace ReadExcel.Models
                     if (userSubject.engineeringFactorDetail == "전공설계")
                     {
                         this.majorDesignCredit += subjectCredit;
-                        this.majorClasses.Add(userSubject);
+                        this.majorDesignList.Add(userSubject);
                     }
                     if (userSubject.english == "영어")
                     {
@@ -769,7 +769,7 @@ namespace ReadExcel.Models
             //이산수학 이산구조 수강
             if (Convert.ToInt32(this.applicationYear) >= 2017) //https://cse.dongguk.edu/?page_id=799&uid=1480&mod=document
             {
-                if (this.advancedStatus == "N")//일반과정
+                if (this.advancedStatus == "N" && this.applicationYear == "2017")//일반과정
                 {
                     bool CSE2026 = false;
                     bool PRI4027 = false;
@@ -783,7 +783,7 @@ namespace ReadExcel.Models
                     }
                     foreach (UserSubject msc in mscClasses)
                     {
-                        if (msc.classCode == "PRI4027")
+                        if (msc.classCode == "PRI4027" && msc.year =="2017")
                         {
                             PRI4027 = true;
                             tempSubject = msc;
@@ -934,12 +934,13 @@ namespace ReadExcel.Models
                 }
                 temp = this.majorClasses;
 
-                foreach (UserSubject major in this.fullList)
+                foreach (UserSubject major in majorClasses)
                 {
                     foreach (SimillarMajor simillar in simillarList)
                     {
-                        if (major.className == simillar.prevClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
+                        if (major.className == simillar.currClassName)// 수강한 과목이 이전 전공명과 동일 할 경우(ex. 14년도 교육과정 적용 학생이 주니어디자인프로젝트가 아닌 공개sw수강)
                         {
+                           // Console.WriteLine("교육과정 적용년도 " + major.);
                             if (Convert.ToInt32(this.applicationYear) <= simillar.prevClassEndYear && Convert.ToInt32(this.applicationYear) >= simillar.prevClassStartYear)
                             {
                                 exceptionList.Add(simillar.prevClassName + "과목이 동일유사전공교과목인 " + major.className + " 으로 수강되었는지 확인하십시오.");

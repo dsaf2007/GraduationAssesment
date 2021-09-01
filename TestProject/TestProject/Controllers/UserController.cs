@@ -166,8 +166,9 @@ namespace ReadExcel.Controllers
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             userSubjects = ReadUserSubject(gradeFile);//전체성적 파일 조회
-            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
             userInfo.GetUserInfo(inputFile);
+            userInfo.GetUserSubjects(userSubjects);//수강 과목 리스트 및 이수 학점
+           
             
             // 전체 rule 체크
             RuleManager ruleManager = new RuleManager(_rules, userInfo, userSubjects);
