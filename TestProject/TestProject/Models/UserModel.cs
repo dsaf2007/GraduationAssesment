@@ -941,6 +941,7 @@ namespace ReadExcel.Models
                 Console.WriteLine(exceptionList_);
             }
 
-        }
     }
-    }}
+    }
+    }
+}
