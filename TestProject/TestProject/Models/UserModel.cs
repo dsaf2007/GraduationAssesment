@@ -137,6 +137,15 @@ namespace ReadExcel.Models
       }
       public RuleBuilder SetQuestion(string question)
       {
+        List<string> suffixList = new List<string>{"을 입력하세요.", "를 입력하세요.", "을 선택하세요.", "를 선택하세요."};
+        for(int i = 0 ; i < 4; i++)
+        {
+          if(question.Contains(suffixList[i]))
+          {
+            question = question.Replace(suffixList[i], " 만족 여부 확인");
+            break;
+          }
+        }
         this.question = question;
         return this;
       }

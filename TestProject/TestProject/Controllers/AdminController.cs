@@ -94,7 +94,7 @@ namespace TestProject.Controllers
                                                   .SetQuestion(valueArray[2])
                                                   .SetSingleInput(valueArray[3])
                                                   .SetFlag(ruleFlag)
-                                                  .SetReference(valueArray[5])
+                                                  .SetReference(valueArray[4]) // cell order changed
                                                   .Build();
                                             
                         if(valueArray[5] == "목록")
