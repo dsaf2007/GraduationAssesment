@@ -158,18 +158,47 @@ namespace TestProject.Controllers
             }
             using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
             {
-              connection.Open();
-              string ruleName = enrollmentYear.ToString() + "-" + major;
+             connection.Open();
+             string ruleName = enrollmentYear.ToString() + "-" + major;
+                bool nameExist = false;  
 
-              string insertQuery = "INSERT INTO RULE_NAME_TB(RULE_NAME) VALUES('" + ruleName + "')";
+                List<string> ruleNameList = new List<string>();
+                string selectQuery = "SELECT RULE_NAME FROM RULE_NAME_TB";
 
-              MySqlCommand command = new MySqlCommand(insertQuery, connection);
-              command.ExecuteNonQuery();
+                MySqlCommand command = new MySqlCommand(selectQuery, connection);
+
+                using (var reader = command.ExecuteReader())//db에서 ruleName 가져오기.
+                {
+                    while (reader.Read())
+                    {
+                        ruleNameList.Add(reader["RULE_NAME"].ToString());
+                    }
+                }
+
+                foreach(string name in ruleNameList)//ruleName 존재하는지 비교
+                {
+                    if (name == ruleName)
+                        nameExist = true;
+                }
+
+                if(nameExist = true)//존재할 경우 기존 RULE_TB에 있는 RULE_NAME 항목 삭제.
+                {
+                    string deleteQuery = "DELETE FROM RULE_TB WHERE RULE_NAME='" + ruleName + "';";
+                    command = new MySqlCommand(deleteQuery, connection);
+                    command.ExecuteNonQuery();
+                }
+                else//없을 경우 RULE_NAME을 RULE_NAME_TB에 추가.
+                {
+                    string insertQuery = "INSERT INTO RULE_NAME_TB(RULE_NAME) VALUES('" + ruleName + "')";
+                    command = new MySqlCommand(insertQuery, connection);
+                    command.ExecuteNonQuery();
+                }
+                
 
               var userController = new UserController(environment); 
-              foreach(Rule rule in _rules)
+              foreach(Rule rule in _rules)//RULE_TB에 추가
               {
-                insertQuery = "INSERT INTO RULE_TB(RULE_NAME, RULE_NUM, RULE_ALIAS, RULE_ATTRIBUTE, RULE_REFERENCE) VALUES("
+                string insertQuery = "INSERT INTO RULE_TB(RULE_NAME, RULE_NUM, RULE_ALIAS, RULE_ATTRIBUTE, RULE_REFERENCE) VALUES("
                                     + "'" + ruleName
                                     + "'," + rule.sequenceNumber
                                     + ",'" + rule.question
@@ -179,7 +208,9 @@ namespace TestProject.Controllers
                 command = new MySqlCommand(insertQuery, connection);
                 command.ExecuteNonQuery();
               }
+                connection.Close();
             }
+            
             return RedirectToAction("Index", "Admin");
         }
         [HttpGet]
