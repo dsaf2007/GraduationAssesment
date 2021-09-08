@@ -265,7 +265,6 @@ namespace ReadExcel.Models
                         if (question.Contains("평점평균"))
                         {
                             userCredit = userInfo.gradeAverage;
-                            Console.Write(userCredit + "평점평균" + userInfo.applicationYear);
                         }
                         if (question.Contains("영어"))
                         {
@@ -392,7 +391,6 @@ namespace ReadExcel.Models
           RuleChecker ruleChecker = new RuleChecker(rules[i]);
           // RuleManager(CheckAllRules) -> RuleChecker(CheckRule)
           ruleChecker.CheckRule(userInfo, userSubjects);
-                Console.WriteLine("평평" + userInfo.applicationYear);
         }
       }
     }
@@ -793,7 +791,6 @@ namespace ReadExcel.Models
                     }
                 }
             }
-            Console.Write("평점평균" + gradeAverage);
         }
         // 공학경제, 공학법제, 지속가능, 기술과사회
         public string[] basicArray = new string[] { "PRI4041", "PRI4043", "PRI4048", "PRI4040" };

@@ -97,7 +97,7 @@ namespace TestProject.Controllers
                                                   .SetReference(valueArray[4]) // cell order changed
                                                   .Build();
                                             
-                        if(valueArray[5] == "목록")
+                        if(valueArray[4] == "목록")
                         {
                             multiInputRuleNumber.Add(currentRuleNum);
                         }
@@ -181,7 +181,7 @@ namespace TestProject.Controllers
                         nameExist = true;
                 }
 
-                if(nameExist = true)//존재할 경우 기존 RULE_TB에 있는 RULE_NAME 항목 삭제.
+                if(nameExist == true)//존재할 경우 기존 RULE_TB에 있는 RULE_NAME 항목 삭제.
                 {
                     string deleteQuery = "DELETE FROM RULE_TB WHERE RULE_NAME='" + ruleName + "';";
                     command = new MySqlCommand(deleteQuery, connection);
