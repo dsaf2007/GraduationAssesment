@@ -1,13 +1,23 @@
 ﻿@{
   Layout = null;
 }
-<center>
-  <h1>관리 데이터 입력</h1>
-  <hr width="30%" />
-  <form asp-controller="Admin" asp-action="Upload" method="post" enctype="multipart/form-data">
-    <h3>졸업사정 체크리스트 입력</h3>
-    <p><input type="file" name="fileCollection" multiple /></p>
-    <p><input type="submit" value="업로드" /></p>
-  </form>
-  <hr width="30%" />
-</center>
+<html>
+
+<head>
+  <title>졸업사정 관리자 페이지</title>
+</head>
+
+<body>
+  <center>
+    <h1>관리 데이터 입력</h1>
+    <hr width="30%" />
+    <form asp-controller="Admin" asp-action="Upload" method="post" enctype="multipart/form-data">
+      <h3>졸업사정 체크리스트 입력</h3>
+      <p><input type="file" name="fileCollection" multiple /></p>
+      <p><input type="submit" value="업로드" /></p>
+    </form>
+    <hr width="30%" />
+  </center>
+</body>
+
+</html>

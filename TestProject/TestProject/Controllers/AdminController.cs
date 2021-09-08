@@ -32,6 +32,10 @@ namespace TestProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(ICollection<IFormFile> fileCollection)//파일 업로드
         {
+          // rule name 정보
+          int enrollmentYear = -1;
+          string major = "";
+
           System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string fileName = "";
             string templateFilePath = "";
@@ -90,12 +94,20 @@ namespace TestProject.Controllers
                                                   .SetQuestion(valueArray[2])
                                                   .SetSingleInput(valueArray[3])
                                                   .SetFlag(ruleFlag)
-                                                  .SetReference(valueArray[5])
+                                                  .SetReference(valueArray[4]) // cell order changed
                                                   .Build();
                                             
                         if(valueArray[5] == "목록")
                         {
                             multiInputRuleNumber.Add(currentRuleNum);
+                        }
+                        // 기초정보를 바탕으로 rule name 생성
+                        if(newRule.type == "기초정보")
+                        {
+                          if (newRule.question.Contains("입학년도"))
+                            enrollmentYear = Convert.ToInt32(newRule.singleInput);
+                          else if (newRule.question.Contains("학과"))
+                            major = newRule.singleInput;
                         }
                         // 실제 Rule 저장
                         _rules.Add(newRule);
@@ -147,7 +159,7 @@ namespace TestProject.Controllers
             using (MySqlConnection connection = new MySqlConnection("Server=118.67.128.31;Port=5555;Database=test;Uid=CSDC;Pwd=1q2w3e4r"))
             {
               connection.Open();
-              string ruleName = "2016-1-TEST";
+              string ruleName = enrollmentYear.ToString() + "-" + major;
 
               string insertQuery = "INSERT INTO RULE_NAME_TB(RULE_NAME) VALUES('" + ruleName + "')";
 
@@ -177,7 +189,7 @@ namespace TestProject.Controllers
             1. Get RuleTemplate Name List form database
             2. Send to View
             */
-            List<string> ruleNames = new List<string>();
+            List<RuleTemplate> ruleTemplates = new List<RuleTemplate>();
 
             // RULE_NAME_TB : INDEX_NUM, RULE_NAME -> Admin View
             // RULE_TB : INDEX_NUM, RULE_{NAME, NUM(INT), ALIAS, ATTRIBUTE, REFERENCE} -> User View
@@ -189,16 +201,18 @@ namespace TestProject.Controllers
                 connection.Open();
                 MySqlCommand command = new MySqlCommand(selectQuery, connection);
 
-
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        ruleNames.Add(reader["RULE_NAME"].ToString());
+                        int indexNum = Convert.ToInt32(reader["INDEX_NUM"]);
+                        string ruleName = reader["RULE_NAME"].ToString();
+                        RuleTemplate newTemplate = new RuleTemplate(indexNum, ruleName);
+                        ruleTemplates.Add(newTemplate);
                     }
                 }
             }
-            var t = new Tuple<List<string>>(ruleNames);
+            var t = new Tuple<List<RuleTemplate>>(ruleTemplates);
             return View(t);
         }
         //Default GET method
